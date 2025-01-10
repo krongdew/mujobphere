@@ -5,12 +5,13 @@ import Image from "next/image";
 import Homebutton from "../../button/Homebutton";
 import { useTranslations } from 'next-intl';
 
+
 const index = () => {
   const t = useTranslations("Hero");
   return (
     <section
       className="banner-section-nine"
-      style={{ backgroundColor:"#ff006e",paddingTop:200 }}
+      style={{ backgroundImage:"url('/images/background/11.jpg')",paddingTop:200 }}
 
     
     >
@@ -25,6 +26,9 @@ const index = () => {
           alt="hero image"
          
         />
+
+        
+
             {/* <h3 style={{color:"#3863a9"}}>15,000+ Browse Jobs</h3> */}
             <div className="text">
               
