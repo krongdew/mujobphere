@@ -1,0 +1,80 @@
+{
+  "Common" : {
+  "Home": "Home",
+  "Find Jobs": "Find Jobs",
+  "Employers": "Employers",
+  "Candidates": "Candidates",
+  "Candidates Dashboard":"Candidates Dashboard",
+  "Employers Dashboard":"Employers Dashboard",
+  "Pages": "Pages",
+  "Language": "Language",
+  "UploadCV": "Upload your CV",
+  "Login / Register": "Sign in / Register",
+  "Logout": "Sign out",
+  "Job Post": "Job Post",
+  "About SGDs": "About SGDs",
+  "MU JobSphere Description": "MU JobSphere Promote and drive sustainable development goals"
+  },
+  "LanguageSwitcher": {
+    "thai": "Thai",
+    "english": "English"
+  },
+  "Hero":{
+  "DiscirptionWeb":"Find Jobs, Employment & Career Opportunities",
+  "For":"For",
+  "Hiring":"Hiring",
+  "Find a job":"Find a job",
+  "Mahidol student only":"Mahidol student only"
+  },
+  "funfact": {
+    "space": {
+      "1": "Advertising Space 1",
+      "2": "Advertising Space 2",
+      "3": "Advertising Space 3",
+      "4": "Advertising Space 4"
+    }
+  },
+  "testimonials": {
+    "1": {
+      "feedback": "ส่งเสริมเศรษฐกิจ",
+      "feedbackText": "ส่งเสริมเศรษฐกิจผ่านการสร้างงานที่ปลอดภัย และมีคุณค่า  "
+    },
+    "2": {
+      "feedback": "เพิ่มรายได้",
+      "feedbackText": "เพิ่มรายได้ให้ครัวเรือน เพื่อเพิ่มคุณภาพชีวิต  "
+    }, 
+    "3": {
+      "feedback": "สร้างหลักประกัน",
+      "feedbackText": "สร้างหลักประกันของความเท่าเทียมทางการศึกษาให้นักศึกษามหิดล โดยเฉพาะกลุ่มเปราะบางให้มีทุนทรัพย์ที่เพียงพอ สามารถสำเร็จการศึกษาได้อย่างเต็มคุณภาพ"
+    }, 
+    "4": {
+      "feedback": "สร้างความเข้มแข็ง",
+      "feedbackText": "สร้างความเข้มแข็งให้ชุมชนมหิดล ด้วยการส่งเสริมการจ้างงาน"
+    }, 
+    "5": {
+      "feedback": "สร้างความสัมพันธ์อันดี",
+      "feedbackText": "สร้างความสัมพันธ์อันดีกับภาคธุรกิจ และส่งเสริมอัตราการจ้างงานเต็มเวลาเมื่อนักศึกษาจบการศึกษาต่อไป"
+    } 
+  },
+  "Login":{
+      "Login to JobSphere": "Login to JobSphere",
+      "Email":"Email",
+      "Password":"Password",
+      "Forgot password":"Forgot password",
+      "LogIn": "Sign in",
+      "Dont have an account" : "Don't have an account?",
+      "Sign up" : "Sign up",
+      "or" : "or",
+      "Login via" : "Log In via Mahidol Account"
+    },
+    "Block5": {
+      "title": "About JobSphere",
+      "descriptions": "MU JobSphere เป็นโครงการใต้การกำกับดูแลของสภามหาวิทยาลัย กองวิเทศสัมพันธ์ และกองกิจการนักศึกษา จัดตั้งขึ้นเพื่อแก้ไขปัญหาหลัก นั่นคือปัญหาทางการเงิน โดยการเป็นแพล็ตฟอร์มที่จะช่วยเติมเต็มช่องว่างทางเศรษฐกิจระหว่างที่นักศึกษากำลังศึกษาอยู่จนจบการศึกษา  ด้วยการเติมเต็ม“โอกาสและรายได้",
+      "list": {
+        "item1": "มีหน้าที่เป็นสื่อกลางที่ทำให้นักศึกษาได้ร่วมงานกับผู้จ้างงานในมหาวิทยาลัย ส่งเสริมให้ส่วนงานและบุคคลากรชาวมหิดลได้จ้างงานบุคคลคุณภาพ ทั้งงานทั่วไป และงานด้านวิชาการ เช่น งานผู้ช่วยสอน งานผู้ช่วยวิจัย",
+        "item2": "เพิ่มรายได้ให้กับนักศึกษา เพิ่มทักษะในการทำงาน (Employability Skills) ปลดล็อกศักยภาพและสร้างความภาคภูมิใจในตนเองให้กับนักศึกษา",
+        "item3": "ส่งเสริมความเป็นหนึ่งเดียวกันด้วยการมีส่วนร่วมระหว่างนักศึกษาและบุคลากร ตลอดจนสร้างสภาพแวดล้อมที่สนับสนุนต่อการเติบโตของคนในชุมชน"
+      },
+      "employersCount": "300k+ Employers"
+    }
+}
