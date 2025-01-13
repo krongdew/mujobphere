@@ -1,10 +1,7 @@
-// app/[locale]/layout.js
-
 import { NextIntlClientProvider } from 'next-intl';
-import { Providers } from './providers';
 import ClientLayout from './ClientLayout';
+import { Providers } from '../providers';
 
-// ฟังก์ชันสำหรับโหลด messages
 async function getMessages(locale) {
   try {
     return (await import(`../../messages/${locale}.json`)).default;
@@ -13,6 +10,8 @@ async function getMessages(locale) {
     return {};
   }
 }
+
+
 
 export default async function LocaleLayout({ children, params: { locale } }) {
   const messages = await getMessages(locale);
@@ -28,9 +27,11 @@ export default async function LocaleLayout({ children, params: { locale } }) {
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <ClientLayout>{children}</ClientLayout>
-        </NextIntlClientProvider>
+        <Providers>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <ClientLayout>{children}</ClientLayout>
+          </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   );

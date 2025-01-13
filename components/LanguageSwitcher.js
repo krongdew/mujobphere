@@ -7,12 +7,14 @@ export default function LanguageSwitcher() {
 
   return (
     <>
+    <ul>
       <li>
         <Link href="/th">{t('thai')}</Link>
       </li>
       <li>
         <Link href="/en">{t('english')}</Link>
       </li>
+      </ul>
     </>
   );
 }

@@ -135,86 +135,86 @@ module.exports = [
       },
     ],
   },
-  {
-    id: 3,
-    label: "Employers",
-    items: [
-      {
-        name: "Employers List V1",
-        routePath: "/employers-list-v1",
-      },
-      {
-        name: "Employers List V2",
-        routePath: "/employers-list-v2",
-      },
-      {
-        name: "Employers List V3",
-        routePath: "/employers-list-v3",
-      },
-      {
-        name: "Employers List V4",
-        routePath: "/employers-list-v4",
-      },
-    ],
-  },
-  {
-    id: 4,
-    label: "Candidates",
-    items: [
-      {
-        name: "Candidates List V1",
-        routePath: "/candidates-list-v1",
-      },
-      {
-        name: "Candidates List V2",
-        routePath: "/candidates-list-v2",
-      },
-      {
-        name: "Candidates List V3",
-        routePath: "/candidates-list-v3",
-      },
-      {
-        name: "Candidates List V4",
-        routePath: "/candidates-list-v4",
-      },
-      {
-        name: "Candidates List V5",
-        routePath: "/candidates-list-v5",
-      },
-    ],
-  },
-  {
-    id: 5,
-    label: "Pages",
-    items: [
-      {
-        name: "About",
-        routePath: "/about",
-      },
-      {
-        name: "Pricing",
-        routePath: "/pricing",
-      },
-      {
-        name: "FAQ's",
-        routePath: "/faq",
-      },
-      {
-        name: "Terms",
-        routePath: "/terms",
-      },
-      {
-        name: "Invoice",
-        routePath: "/invoice",
-      },
-      {
-        name: "Contact",
-        routePath: "/contact",
-      },
-      {
-        name: "404",
-        routePath: "/404",
-      },
-    ],
-  }
+  // {
+  //   id: 3,
+  //   label: "Employers",
+  //   items: [
+  //     {
+  //       name: "Employers List V1",
+  //       routePath: "/employers-list-v1",
+  //     },
+  //     {
+  //       name: "Employers List V2",
+  //       routePath: "/employers-list-v2",
+  //     },
+  //     {
+  //       name: "Employers List V3",
+  //       routePath: "/employers-list-v3",
+  //     },
+  //     {
+  //       name: "Employers List V4",
+  //       routePath: "/employers-list-v4",
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: 4,
+  //   label: "Candidates",
+  //   items: [
+  //     {
+  //       name: "Candidates List V1",
+  //       routePath: "/candidates-list-v1",
+  //     },
+  //     {
+  //       name: "Candidates List V2",
+  //       routePath: "/candidates-list-v2",
+  //     },
+  //     {
+  //       name: "Candidates List V3",
+  //       routePath: "/candidates-list-v3",
+  //     },
+  //     {
+  //       name: "Candidates List V4",
+  //       routePath: "/candidates-list-v4",
+  //     },
+  //     {
+  //       name: "Candidates List V5",
+  //       routePath: "/candidates-list-v5",
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: 5,
+  //   label: "Pages",
+  //   items: [
+  //     {
+  //       name: "About",
+  //       routePath: "/about",
+  //     },
+  //     {
+  //       name: "Pricing",
+  //       routePath: "/pricing",
+  //     },
+  //     {
+  //       name: "FAQ's",
+  //       routePath: "/faq",
+  //     },
+  //     {
+  //       name: "Terms",
+  //       routePath: "/terms",
+  //     },
+  //     {
+  //       name: "Invoice",
+  //       routePath: "/invoice",
+  //     },
+  //     {
+  //       name: "Contact",
+  //       routePath: "/contact",
+  //     },
+  //     {
+  //       name: "404",
+  //       routePath: "/404",
+  //     },
+  //   ],
+  // }
 ];

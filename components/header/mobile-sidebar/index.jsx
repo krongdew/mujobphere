@@ -9,31 +9,35 @@ import {
   SubMenu,
 } from "react-pro-sidebar";
 import { useTranslations } from 'next-intl';
-import mobileMenuData from "../../../data/mobileMenuData";
 import SidebarFooter from "./SidebarFooter";
 import SidebarHeader from "./SidebarHeader";
-import {
-  isActiveLink,
-  isActiveParentChaild,
-} from "../../../utils/linkActiveChecker";
-import { useRouter, usePathname } from 'next/navigation'; // แก้ไขบรรทัดนี้
+import { useRouter, usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
+
 // Dynamic import for LanguageSwitcher
 const LanguageSwitcher = dynamic(() => import('../../LanguageSwitcher'), {
-  ssr: false // ไม่ทำ server-side rendering
+  ssr: false
 });
 
 const Index = () => {
   const t = useTranslations("Common");
   const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
-    return null; // หรือแสดง loading state
+    return null;
   }
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/' });
+  };
 
   return (
     <div
@@ -46,38 +50,31 @@ const Index = () => {
       
       <Sidebar>
         <Menu>
-          {mobileMenuData.map((item) => (
-            <SubMenu
-              className={
-                isActiveParentChaild(item.items, usePathname())
-                  ? "menu-active"
-                  : ""
-              }
-              label={t(item.label)}
-              key={item.id}
-            >
-              {item.items.map((menuItem, i) => (
-                <MenuItem
-                  onClick={() => router.push(menuItem.routePath)}
-                  className={
-                    isActiveLink(menuItem.routePath, usePathname())
-                      ? "menu-active-link"
-                      : ""
-                  }
-                  key={i}
-                >
-                  {menuItem.name}
-                </MenuItem>
-              ))}
-            </SubMenu>
-          ))}
-          
-          {/* Language Switcher */}
+          <MenuItem 
+            className={pathname === "/" ? "menu-active-link" : ""}
+            onClick={() => router.push("/")}
+          >
+            {t('Home')}
+          </MenuItem>
+
+          <MenuItem 
+            className={pathname === "/job-list-v2" ? "menu-active-link" : ""}
+            onClick={() => router.push("/job-list-v2")}
+          >
+            {t('Find Jobs')}
+          </MenuItem>
+
+          {/* แก้ไขส่วนนี้ */}
           <SubMenu label={t('Language')}>
-            <MenuItem>
-              <LanguageSwitcher />
-            </MenuItem>
+            {/* นำ LanguageSwitcher ออกมาวางข้างนอก SubMenu */}
+            <LanguageSwitcher />
           </SubMenu>
+           {/* แสดง Logout เฉพาะตอนที่ Login แล้ว */}
+           {session?.user && (
+            <MenuItem onClick={handleSignOut}>
+              {t('Logout')}
+            </MenuItem>
+          )}
         </Menu>
       </Sidebar>
 
@@ -87,3 +84,4 @@ const Index = () => {
 };
 
 export default Index;
+

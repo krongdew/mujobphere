@@ -8,6 +8,7 @@ export default function getRequestConfig({ locale }) {
     },
     timeZone: 'Asia/Bangkok',
     defaultLocale,
-    locales
+    locales,
+    locale // เพิ่มบรรทัดนี้
   }
 }

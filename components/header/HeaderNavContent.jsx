@@ -202,9 +202,9 @@ const HeaderNavContent = () => {
 
           <li className="dropdown">
             <span>{t('Language')}</span>
-            <ul>
+            
               <LanguageSwitcher />
-            </ul>
+            
           </li>
           {/* End Language menu items */}
         </ul>

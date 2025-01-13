@@ -5,8 +5,16 @@ import { useTranslations } from 'next-intl';
 const LoginWithSocial = () => {
   const t = useTranslations("Login");
 
-  const handleGoogleLogin = () => {
-    signIn('google', { callbackUrl: '/' });
+  const handleGoogleLogin = async () => {
+    try {
+       // ใช้ callbackUrl ที่จะ redirect ไปหลัง login สำเร็จ
+       await signIn('google', {
+        callbackUrl: '/api/auth/callback/redirect', // สร้าง API route ใหม่สำหรับ redirect
+        redirect: true
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (

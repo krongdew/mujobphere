@@ -1,0 +1,7 @@
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.edu","event":"signin_attempt","timestamp":"2025-01-13T13:43:26.783Z"}}
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.edu","error":"determineRole is not defined","event":"signin_error","timestamp":"2025-01-13T13:43:26.786Z"}}
+{"level":"info","message":{"email":"dewwiisunny14@gmail.com","error":"Email domain not allowed","event":"signin_error","timestamp":"2025-01-13T13:43:35.925Z"}}
+{"level":"info","message":{"email":"dewwiisunny14@gmail.com","error":"Email domain not allowed","event":"signin_error","timestamp":"2025-01-13T13:46:59.398Z"}}
+{"level":"info","message":{"email":"dewwiisunny14@gmail.com","error":"Email domain not allowed","event":"signin_error","timestamp":"2025-01-13T13:50:42.400Z"}}
+{"level":"info","message":{"email":"dewwiisunny14@gmail.com","error":"Email domain not allowed","event":"signin_error","timestamp":"2025-01-13T14:02:36.456Z"}}
+{"level":"info","message":{"email":"dewwiisunny14@gmail.com","error":"Email domain not allowed","event":"signin_error","timestamp":"2025-01-13T14:07:24.316Z"}}

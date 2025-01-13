@@ -1,4 +1,11 @@
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+
 const SidebarFooter = () => {
+  const { data: session } = useSession();
+  const t = useTranslations("Common");
+
   const socialContent = [
     { id: 1, icon: "fa-facebook-f", link: "https://www.facebook.com/" },
     { id: 2, icon: "fa-twitter", link: "https://www.twitter.com/" },
@@ -8,9 +15,14 @@ const SidebarFooter = () => {
 
   return (
     <div className="mm-add-listing mm-listitem pro-footer">
-      <a href="#" className="theme-btn btn-style-one mm-listitem__text">
-        Job Post
-      </a>
+       {session?.user?.role && (session.user.role === 'employer' || session.user.role === 'employeroutside') && (
+              <Link
+                href="/employers-dashboard/post-jobs"
+                className="theme-btn btn-style-one"
+              >
+                {t('Job Post')}
+              </Link>
+            )}
       {/* job post btn */}
 
       <div className="mm-listitem__text">

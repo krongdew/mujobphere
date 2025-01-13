@@ -6,16 +6,20 @@ const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   database: process.env.DB_NAME,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-// เพิ่ม test connection
-pool.connect((err, client, release) => {
-  if (err) {
-    console.error('Error acquiring client', err.stack);
-    return;
+const query = async (text, params) => {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(text, params);
+    return result;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw error;
+  } finally {
+    client.release();
   }
-  console.log('Successfully connected to PostgreSQL.');
-  release();
-});
+};
 
-export default pool;
+export { pool, query };

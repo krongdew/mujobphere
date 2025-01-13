@@ -1,14 +1,25 @@
+'use client';
+
 import Link from "next/link";
 import MobileSidebar from "./mobile-sidebar";
 import Image from "next/image";
-
+import { useSession } from 'next-auth/react';
 
 const MobileMenu = () => {
+  const { data: session } = useSession();
+
+  // ฟังก์ชันสำหรับกำหนด URL ตาม role
+  const getProfileUrl = () => {
+    if (!session?.user?.role) return '#';
+    return session.user.role === 'student'
+      ? '/candidates-dashboard/my-profile'
+      : '/employers-dashboard/company-profile';
+  };
+
+
   return (
-    // <!-- Main Header-->
     <header className="main-header main-header-mobile">
       <div className="auto-container">
-        {/* <!-- Main box --> */}
         <div className="inner-box">
           <div className="nav-outer">
             <div className="logo-box">
@@ -23,25 +34,26 @@ const MobileMenu = () => {
                 </Link>
               </div>
             </div>
-            {/* End .logo-box */}
-
             <MobileSidebar />
-            {/* <!-- Main Menu End--> */}
           </div>
-          {/* End .nav-outer */}
 
           <div className="outer-box">
             <div className="login-box">
-              <a
-                href="#"
-                className="call-modal"
-                data-bs-toggle="modal"
-                data-bs-target="#loginPopupModal"
-              >
-                <span className="icon icon-user"></span>
-              </a>
+              {session ? (
+                <Link href={getProfileUrl()}>
+                  <span className="icon icon-user"></span>
+                </Link>
+              ) : (
+                <a
+                  href="#"
+                  className="call-modal"
+                  data-bs-toggle="modal"
+                  data-bs-target="#loginPopupModal"
+                >
+                  <span className="icon icon-user"></span>
+                </a>
+              )}
             </div>
-            {/* login popup end */}
 
             <a
               href="#"
@@ -51,7 +63,6 @@ const MobileMenu = () => {
             >
               <span className="flaticon-menu-1"></span>
             </a>
-            {/* right humberger menu */}
           </div>
         </div>
       </div>

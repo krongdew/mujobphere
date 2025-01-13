@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,23 +10,36 @@ import { useSession, signOut } from 'next-auth/react';
 const Header = () => {
   const [navbar, setNavbar] = useState(false);
   const t = useTranslations("Common");
-  const { data: session } = useSession();
-
-  const changeBackground = () => {
-    if (window.scrollY >= 10) {
-      setNavbar(true);
-    } else {
-      setNavbar(false);
-    }
-  };
+  const { data: session, status } = useSession();
 
   useEffect(() => {
+    if (status === "loading") return;
+    
+    const changeBackground = () => {
+      if (window.scrollY >= 10) {
+        setNavbar(true);
+      } else {
+        setNavbar(false);
+      }
+    };
+
     window.addEventListener("scroll", changeBackground);
-  }, []);
+    return () => window.removeEventListener("scroll", changeBackground);
+  }, [status]);
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' });
   };
+
+  // แสดง loading state
+  if (status === "loading") {
+      return (
+        <div className="loading-state">
+          <div className="spinner"></div>
+        </div>
+      );
+    }
+  
 
   return (
     <header
@@ -55,7 +68,7 @@ const Header = () => {
 
           <div className="outer-box">
             <div className="btn-box">
-              {session ? (
+            {session?.user ? (
                 <>
                   <span className="theme-btn btn-style-six me-3">
                     {session.user.name}
@@ -68,21 +81,25 @@ const Header = () => {
                   </button>
                 </>
               ) : (
-                < a
+                <button
                   href="#"
                   className="theme-btn btn-style-six call-modal"
                   data-bs-toggle="modal"
                   data-bs-target="#loginPopupModal"
                 >
                   {t('Login / Register')}
-                </a>
+                </button>
               )}
+           
+            {/* แสดงปุ่ม Job Post เฉพาะ employer และ employeroutside */}
+            {session?.user?.role && (session.user.role === 'employer' || session.user.role === 'employeroutside') && (
               <Link
                 href="/employers-dashboard/post-jobs"
                 className="theme-btn btn-style-five ms-3"
               >
                 {t('Job Post')}
               </Link>
+            )}
             </div>
           </div>
         </div>
