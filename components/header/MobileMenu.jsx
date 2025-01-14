@@ -39,7 +39,7 @@ const MobileMenu = () => {
 
           <div className="outer-box">
             <div className="login-box">
-              {session ? (
+              {session.user ? (
                 <Link href={getProfileUrl()}>
                   <span className="icon icon-user"></span>
                 </Link>
