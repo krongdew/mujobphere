@@ -8,7 +8,6 @@ import { useSession } from 'next-auth/react';
 const MobileMenu = () => {
   const { data: session } = useSession();
 
-  // ฟังก์ชันสำหรับกำหนด URL ตาม role
   const getProfileUrl = () => {
     if (!session?.user?.role) return '#';
     return session.user.role === 'student'
@@ -39,7 +38,7 @@ const MobileMenu = () => {
 
           <div className="outer-box">
             <div className="login-box">
-              {session.user ? (
+              {session?.user ? (
                 <Link href={getProfileUrl()}>
                   <span className="icon icon-user"></span>
                 </Link>
