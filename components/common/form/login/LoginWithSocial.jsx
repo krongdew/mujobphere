@@ -1,18 +1,20 @@
 "use client";
 import { signIn } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
+import { logSecurityEvent } from '@/lib/security/logging';
+
 
 const LoginWithSocial = () => {
   const t = useTranslations("Login");
-
   const handleGoogleLogin = async () => {
     try {
-       // ใช้ callbackUrl ที่จะ redirect ไปหลัง login สำเร็จ
-       await signIn('google', {
-        callbackUrl: '/api/auth/callback/redirect', // สร้าง API route ใหม่สำหรับ redirect
+      logSecurityEvent('google_login_attempt', {});
+      await signIn('google', {
+        callbackUrl: '/api/auth/callback/redirect',
         redirect: true
       });
     } catch (error) {
+      logSecurityEvent('google_login_error', { error: error.message });
       console.error('Login error:', error);
     }
   };

@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import ClientLayout from './ClientLayout';
 import { Providers } from '../providers';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 async function getMessages(locale) {
   try {
@@ -28,9 +29,11 @@ export default async function LocaleLayout({ children, params: { locale } }) {
       </head>
       <body>
         <Providers>
+        <ErrorBoundary>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <ClientLayout>{children}</ClientLayout>
           </NextIntlClientProvider>
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>
