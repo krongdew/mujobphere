@@ -1,17 +1,10 @@
-import dynamic from "next/dynamic";
+"use client";
+
 import CompanyProfile from "@/components/dashboard-pages/employers-dashboard/company-profile";
+import withRoleProtection from "@/components/auth/withRoleProtection";
 
-export const metadata = {
-  title: "Company Profile || Superio - Job Borad React NextJS Template",
-  description: "Superio - Job Borad React NextJS Template",
+const CompanyProfilePage = () => {
+  return <CompanyProfile />;
 };
 
-const index = () => {
-  return (
-    <>
-      <CompanyProfile />
-    </>
-  );
-};
-
-export default dynamic(() => Promise.resolve(index), { ssr: false });
+export default withRoleProtection(CompanyProfilePage, ['employer', 'employeroutside', 'admin']);

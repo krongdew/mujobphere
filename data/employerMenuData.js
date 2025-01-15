@@ -8,7 +8,7 @@ module.exports = [
   },
   {
     id: 2,
-    name: "Company Profile",
+    name: "Employer Profile",
     icon: "la-user-tie",
     routePath: "/employers-dashboard/company-profile",
     active: "",

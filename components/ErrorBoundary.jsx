@@ -15,12 +15,18 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error
-    logSecurityEvent('client_error', {
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack
-    });
+ // ถ้าเป็น error เกี่ยวกับ auth ให้ redirect ไปหน้า login
+ if (error.message.includes('role') || error.message.includes('session')) {
+  window.location.href = '/';
+  return;
+}
+
+// Log error ตามปกติ
+logSecurityEvent('client_error', {
+  error: error.message,
+  stack: error.stack,
+  componentStack: errorInfo.componentStack
+});
   }
 
   render() {

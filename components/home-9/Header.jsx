@@ -36,15 +36,6 @@ const Header = () => {
 
   return (
     <>
-      {/* แถบแจ้งเตือนสำหรับผู้ใช้ที่รอการอนุมัติ
-      {session?.user?.role === "waituser" && (
-        <div className="bg-yellow-100 p-2 text-center">
-          <p className="text-yellow-800">
-            บัญชีของคุณอยู่ระหว่างการตรวจสอบ กรุณารอการอนุมัติจากผู้ดูแลระบบ
-          </p>
-        </div>
-      )} */}
-
       <header
         className={`main-header header-style-two alternate2 ${
           navbar ? "fixed-header animated slideInDown" : ""
@@ -73,10 +64,22 @@ const Header = () => {
               <div className="btn-box">
                 {session?.user ? (
                   <div className="d-flex align-items-center">
-                    <span className="theme-btn btn-style-six me-3">
-                      {session.user.name}
-                    </span>
-
+                    {session?.user.role === "employer" || session?.user.role === "employeroutside" ? (
+                      <Link 
+                        className="theme-btn btn-style-six me-3"
+                        href="/employers-dashboard/company-profile"
+                      >
+                        {session.user.name}
+                      </Link>
+                    ) : session?.user.role === "student" ? (
+                      <Link 
+                        className="theme-btn btn-style-six me-3"
+                        href="/candidates-dashboard/my-profile"
+                      >
+                        {session.user.name}
+                      </Link>
+                    ) : null}
+                    
                     {session.user.role === "waituser" ? (
                       <span className="badge bg-warning text-dark me-3">
                         รอการอนุมัติ
