@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: mujobsphere
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      # Security
+      - key: NODE_ENV
+        value: production
+      - key: ENCRYPTION_KEY
+        fromSecret: ENCRYPTION_KEY # จะตั้งค่าใน Render dashboard
+
+      # Session Configuration
+      - key: SESSION_MAXAGE
+        value: 3600
+
+      # Rate Limiting
+      - key: RATE_LIMIT_WINDOW
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 5
+
+      # Database
+      - key: DB_USER
+        fromSecret: root
+      - key: DB_PASSWORD
+        fromSecret: PRsJPOcaEYCmfBCAOPHsBIzblE5HNmBY
+      - key: DB_HOST
+        fromSecret: dpg-cu3rvftds78s73ehgrlg-a.oregon-postgres.render.com
+      - key: DB_PORT
+        fromSecret: 5432
+      - key: DB_NAME
+        fromSecret: mujobsphere
+
+      # Google Auth
+      - key: GOOGLE_CLIENT_ID
+        fromSecret: GOOGLE_CLIENT_ID
+      - key: GOOGLE_CLIENT_SECRET
+        fromSecret: GOOGLE_CLIENT_SECRET
+      - key: NEXTAUTH_URL
+        value: https://your-app-url.onrender.com # เปลี่ยนเป็น URL จริงของ app
+      - key: NEXTAUTH_SECRET
+        fromSecret: NEXTAUTH_SECRET
