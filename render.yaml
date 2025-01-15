@@ -39,6 +39,6 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         fromSecret: GOOGLE_CLIENT_SECRET
       - key: NEXTAUTH_URL
-        value: https://your-app-url.onrender.com # เปลี่ยนเป็น URL จริงของ app
+        value: https://mujobphere.onrender.com # เปลี่ยนเป็น URL จริงของ app
       - key: NEXTAUTH_SECRET
         fromSecret: NEXTAUTH_SECRET
