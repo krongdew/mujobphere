@@ -19,7 +19,16 @@ const nextConfig = {
     },
     eslint: {
       ignoreDuringBuilds: true,
-    }
+    },
+    // เพิ่มส่วนนี้เพื่อแก้ปัญหา dynamic server usage
+    staticPageGenerationTimeout: 1000,
+    compiler: {
+      styledComponents: true,
+    },
+    // ปิดการ generate static pages
+    generateStaticParams: false,
+    // กำหนดให้ทุก route เป็น dynamic
+    dynamicParams: true
 };
 
 module.exports = withNextIntl(nextConfig);
