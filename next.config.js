@@ -60,22 +60,49 @@ const nextConfig = {
       },
     ];
   },
+  // แก้ไข rewrites ให้ใช้ beforeFiles
   async rewrites() {
-    return [
-      {
-        source: '/:locale/404',
-        destination: '/404',
-      },
-      {
-        source: '/:locale/500',
-        destination: '/500',
-      },
-      {
-        source: '/:locale/_error',
-        destination: '/_error',
-      },
-    ];
-  },
+    return {
+      beforeFiles: [
+        {
+          source: '/:locale/404',
+          destination: '/404',
+        },
+        {
+          source: '/:locale/500',
+          destination: '/500',
+        },
+        {
+          source: '/:locale/_error',
+          destination: '/_error',
+        },
+        {
+          source: '/404',
+          destination: '/_not-found',
+        },
+        {
+          source: '/500',
+          destination: '/_error',
+        }
+      ]
+    };
+  }
 };
 
-module.exports = withNextIntl(nextConfig);
+// แยก config ก่อน wrap ด้วย withNextIntl
+const config = withNextIntl(nextConfig);
+
+// เพิ่มการกำหนดค่าพิเศษสำหรับ production
+if (process.env.NODE_ENV === 'production') {
+  config.webpack = (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+    return config;
+  };
+}
+
+module.exports = config;
