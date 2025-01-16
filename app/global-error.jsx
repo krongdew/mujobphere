@@ -1,6 +1,6 @@
 'use client';
-
-export default function Error({ error, reset }) {
+ 
+export default function GlobalError({ error, reset }) {
   return (
     <div className="error-page-wrapper">
       <div className="content">
