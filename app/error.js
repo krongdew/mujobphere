@@ -1,17 +1,10 @@
-'use client';
+import dynamic from 'next/dynamic';
+
+const ErrorContent = dynamic(
+  () => import('./components/error/ErrorContent'),
+  { ssr: false }
+);
 
 export default function Error({ error, reset }) {
-  return (
-    <div className="error-page-wrapper">
-      <div className="content">
-        <h2>Something went wrong!</h2>
-        <button 
-          onClick={() => reset()}
-          className="theme-btn btn-style-three"
-        >
-          Try again
-        </button>
-      </div>
-    </div>
-  );
+  return <ErrorContent reset={reset} />;
 }
