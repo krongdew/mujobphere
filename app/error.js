@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 
 const ErrorContent = dynamic(
-  () => import('./components/error/ErrorContent'),
+  () => import('../components/error/ErrorContent'),
   { ssr: false }
 );
 
