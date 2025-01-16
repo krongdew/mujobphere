@@ -1,10 +1,8 @@
-import { NextIntlClientProvider } from 'next-intl';
-import ClientLayout from './ClientLayout';
+// app/[locale]/layout.js
 import { Providers } from '../providers';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import ClientLayoutWrapper from './ClientLayoutWrapper';
 import { Prompt } from 'next/font/google';
 
-// กำหนด font configuration
 const prompt = Prompt({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   style: ['normal', 'italic'],
@@ -34,11 +32,12 @@ export default async function LocaleLayout({ children, params: { locale } }) {
     <html lang={locale} className={prompt.className}>
       <body>
         <Providers>
-          <ErrorBoundary>
-            <NextIntlClientProvider locale={locale} messages={messages}>
-              <ClientLayout>{children}</ClientLayout>
-            </NextIntlClientProvider>
-          </ErrorBoundary>
+          <ClientLayoutWrapper 
+            locale={locale} 
+            messages={messages}
+          >
+            {children}
+          </ClientLayoutWrapper>
         </Providers>
       </body>
     </html>

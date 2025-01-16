@@ -34,19 +34,12 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    appDir: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverActions: {
-    bodySizeLimit: '2mb',
-  },
-  // จัดการ headers สำหรับ auth routes
   async headers() {
     return [
       {
@@ -62,5 +55,4 @@ const nextConfig = {
   }
 };
 
-// wrap config ด้วย withNextIntl และ export
 module.exports = withNextIntl(nextConfig);
