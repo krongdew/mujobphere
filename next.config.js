@@ -43,11 +43,10 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // เพิ่มส่วนนี้
   serverActions: {
     bodySizeLimit: '2mb',
   },
-  // กำหนดให้ routes ที่เกี่ยวกับ auth เป็น dynamic
+  // จัดการทั้ง auth routes และ error pages
   async headers() {
     return [
       {
@@ -61,7 +60,22 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/:locale/404',
+        destination: '/404',
+      },
+      {
+        source: '/:locale/500',
+        destination: '/500',
+      },
+      {
+        source: '/:locale/_error',
+        destination: '/_error',
+      },
+    ];
+  },
 };
 
 module.exports = withNextIntl(nextConfig);
-
