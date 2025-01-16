@@ -20,7 +20,7 @@ const FormInfoBox = () => {
             <div className="row">
                 {/* <!-- Input --> */}
                 <div className="form-group col-lg-6 col-md-12">
-                    <label>Company name (optional)</label>
+                    <label>ชื่อบริษัท</label>
                     <input
                         type="text"
                         name="name"

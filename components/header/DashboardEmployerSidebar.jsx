@@ -3,19 +3,38 @@
 import Link from "next/link";
 import employerMenuData from "../../data/employerMenuData";
 import { isActiveLink } from "../../utils/linkActiveChecker";
-
 import { useDispatch, useSelector } from "react-redux";
 import { menuToggle } from "../../features/toggle/toggleSlice";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from 'next-auth/react';
+import { useEffect, useState } from "react";
 
 const DashboardEmployerSidebar = () => {
-
     const { menu } = useSelector((state) => state.toggle);
-
     const dispatch = useDispatch();
-    // menu togggle handler
+    const { data: session, status } = useSession(); // เพิ่ม status
+    const [navbar, setNavbar] = useState(false);
+
+    // menu toggle handler
     const menuToggleHandler = () => {
         dispatch(menuToggle());
+    };
+
+    const changeBackground = () => {
+        if (window.scrollY >= 10) {
+          setNavbar(true);
+        } else {
+          setNavbar(false);
+        }
+      };
+    
+    useEffect(() => {
+        window.addEventListener("scroll", changeBackground);
+      }, []);
+    
+    // handle sign out
+    const handleSignOut = () => {
+        signOut({ callbackUrl: '/' });
     };
 
     return (
@@ -38,7 +57,13 @@ const DashboardEmployerSidebar = () => {
                                     : ""
                             } mb-1`}
                             key={item.id}
-                            onClick={menuToggleHandler}
+                            onClick={() => {
+                                menuToggleHandler();
+                                // Handle logout separately
+                                if (item.name === "Logout") {
+                                    handleSignOut();
+                                }
+                            }}
                         >
                             <Link href={item.routePath}>
                                 <i className={`la ${item.icon}`}></i>{" "}

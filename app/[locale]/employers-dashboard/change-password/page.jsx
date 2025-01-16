@@ -1,12 +1,10 @@
-import dynamic from "next/dynamic";
+"use client";
+
 import ChangePassword from "@/components/dashboard-pages/employers-dashboard/change-password";
+import withRoleProtection from "@/components/auth/withRoleProtection";
 
-export const metadata = {
-  title: "Change Password || Superio - Job Borad React NextJS Template",
-  description: "Superio - Job Borad React NextJS Template",
-};
 
-const index = () => {
+const EmChangePassword = () => {
   return (
     <>
       <ChangePassword />
@@ -14,4 +12,4 @@ const index = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(index), { ssr: false });
+export default withRoleProtection(EmChangePassword, ['employer', 'employeroutside', 'admin']);

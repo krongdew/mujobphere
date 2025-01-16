@@ -73,7 +73,7 @@ const ContactInfoBox = () => {
                 </div>
 
                 {/* <!-- Input --> */}
-                <div className="form-group col-lg-12 col-md-12">
+                {/* <div className="form-group col-lg-12 col-md-12">
                     <button className="theme-btn btn-style-three">
                         Search Location
                     </button>
@@ -85,7 +85,7 @@ const ContactInfoBox = () => {
                             <Map />
                         </div>
                     </div>
-                </div>
+                </div> */}
                 {/* End MapBox */}
 
                 {/* <!-- Input --> */}

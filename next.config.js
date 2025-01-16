@@ -1,30 +1,31 @@
-/** @type {import('next').NextConfig} */
-const withNextIntl = require('next-intl/plugin')('./i18n.js');
+// /** @type {import('next').NextConfig} */
+// const withNextIntl = require('next-intl/plugin')('./i18n.js');
 
-const nextConfig = {
-    output: 'standalone',
-    images: {
-      formats: ['image/webp'],
-      deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    },
-    output: 'standalone',
-    images: {
-      unoptimized: true,
-    },
-    experimental: {
-      appDir: true,
-    },
-    typescript: {
-      ignoreBuildErrors: true,
-    },
-    eslint: {
-      ignoreDuringBuilds: true,
-    }
-  }
+// const nextConfig = {
+//     output: 'standalone',
+//     images: {
+//       formats: ['image/webp'],
+//       deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+//       imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+//     },
+//     output: 'standalone',
+//     images: {
+//       unoptimized: true,
+//     },
+//     experimental: {
+//       appDir: true,
+//     },
+//     typescript: {
+//       ignoreBuildErrors: true,
+//     },
+//     eslint: {
+//       ignoreDuringBuilds: true,
+//     },
+    
+//   }
 
 
-module.exports = withNextIntl(nextConfig);
+// module.exports = withNextIntl(nextConfig);
 
 // /** @type {import('next').NextConfig} */
 // const withNextIntl = require('next-intl/plugin')('./i18n.js');
@@ -71,3 +72,26 @@ module.exports = withNextIntl(nextConfig);
 // };
 
 // module.exports = withNextIntl(nextConfig);
+
+/** @type {import('next').NextConfig} */
+const withNextIntl = require('next-intl/plugin')('./i18n.js');
+
+const nextConfig = {
+  output: 'standalone',
+  images: {
+    unoptimized: true,
+    formats: ['image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  }
+  
+  
+};
+
+module.exports = withNextIntl(nextConfig);

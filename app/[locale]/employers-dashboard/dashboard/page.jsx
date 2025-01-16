@@ -1,17 +1,12 @@
-import dynamic from "next/dynamic";
+"use client";
+
 import DashboadHome from "@/components/dashboard-pages/employers-dashboard/dashboard";
+import withRoleProtection from "@/components/auth/withRoleProtection";
 
-export const metadata = {
-  title: "Employeers Dashboard || Superio - Job Borad React NextJS Template",
-  description: "Superio - Job Borad React NextJS Template",
+
+
+const CompanyDashboard = () => {
+  return ( <DashboadHome />);
 };
 
-const index = () => {
-  return (
-    <>
-      <DashboadHome />
-    </>
-  );
-};
-
-export default dynamic(() => Promise.resolve(index), { ssr: false });
+export default withRoleProtection(CompanyDashboard, ['employer', 'employeroutside', 'admin']);
