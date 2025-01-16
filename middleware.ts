@@ -15,7 +15,8 @@ const publicPaths = [
   '/_next',
   '/images',
   '/favicon.ico',
-  '/api/auth/callback'
+  '/api/auth/callback',
+  '/_not-found'  // เพิ่มบรรทัดนี้
 ];
 
 function isPublicPath(path: string): boolean {
