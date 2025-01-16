@@ -1,5 +1,5 @@
-// app/[locale]/not-found.js หรือ pages/404.js
+import NotFoundWrapper from '../not-found-wrapper';
+
 export default function NotFound() {
-    return <div>Page not found!</div>;
-  }
-  
+  return <NotFoundWrapper />;
+}

@@ -53,6 +53,16 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/:locale/404',
+          destination: '/not-found',
+        }
+      ]
+    };
   }
 };
 
