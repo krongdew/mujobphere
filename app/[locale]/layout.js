@@ -2,6 +2,15 @@ import { NextIntlClientProvider } from 'next-intl';
 import ClientLayout from './ClientLayout';
 import { Providers } from '../providers';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { Prompt } from 'next/font/google';
+
+// กำหนด font configuration
+const prompt = Prompt({
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  style: ['normal', 'italic'],
+  subsets: ['latin', 'thai'],
+  display: 'swap',
+});
 
 async function getMessages(locale) {
   try {
@@ -22,21 +31,15 @@ export default async function LocaleLayout({ children, params: { locale } }) {
   const messages = await getMessages(locale);
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={prompt.className}>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers>
-            <ErrorBoundary>
+        <Providers>
+          <ErrorBoundary>
+            <NextIntlClientProvider locale={locale} messages={messages}>
               <ClientLayout>{children}</ClientLayout>
-            </ErrorBoundary>
-          </Providers>
-        </NextIntlClientProvider>
-
-        {/* Move font to head in metadata or use link tag here */}
-        <link 
-          rel="stylesheet" 
-          href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" 
-        />
+            </NextIntlClientProvider>
+          </ErrorBoundary>
+        </Providers>
       </body>
     </html>
   );

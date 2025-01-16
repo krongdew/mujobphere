@@ -46,45 +46,21 @@ const nextConfig = {
   serverActions: {
     bodySizeLimit: '2mb',
   },
-  // Disable static optimization for error pages
+  // จัดการ headers สำหรับ auth routes
   async headers() {
     return [
       {
         source: '/api/auth/:path*',
-        headers: [{ key: 'Cache-Control', value: 'no-store' }],
-      },
-      {
-        source: '/:path*',
-        headers: [{ key: 'x-custom-header', value: 'my custom header value' }],
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
       },
     ];
-  },
-  // Simplified rewrites
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/:locale/404',
-          destination: '/_not-found',
-        },
-        {
-          source: '/:locale/500',
-          destination: '/_error',
-        }
-      ],
-    };
   }
 };
 
-const config = withNextIntl(nextConfig);
-
-if (process.env.NODE_ENV === 'production') {
-  config.webpack = (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = { fs: false };
-    }
-    return config;
-  };
-}
-
-module.exports = config;
+// wrap config ด้วย withNextIntl และ export
+module.exports = withNextIntl(nextConfig);
