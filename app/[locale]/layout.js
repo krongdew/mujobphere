@@ -25,17 +25,18 @@ export const metadata = {
   keywords: 'candidates, career, employment...',
 };
 
-export default async function LocaleLayout({ children, params: { locale } }) {
-  const messages = await getMessages(locale);
+export default async function LocaleLayout({ children, params }) {
+  const localeValue = params?.locale || "en"; // ✅ ใช้ชื่ออื่นแทน locale
+
+  console.log("Params:", params); // ✅ Debugging เพื่อเช็คค่าที่ส่งมา
+
+  const messages = await getMessages(localeValue);
 
   return (
-    <html lang={locale} className={prompt.className}>
+    <html lang={localeValue}>
       <body>
         <Providers>
-          <ClientLayoutWrapper 
-            locale={locale} 
-            messages={messages}
-          >
+          <ClientLayoutWrapper locale={localeValue} messages={messages}>
             {children}
           </ClientLayoutWrapper>
         </Providers>
