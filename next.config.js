@@ -1,38 +1,66 @@
+// /** @type {import('next').NextConfig} */
+// const withNextIntl = require('next-intl/plugin')('./i18n.js');
+
+// const nextConfig = {
+//     output: 'standalone',
+//     images: {
+//       formats: ['image/webp'],
+//       deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+//       imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+//     },
+//     output: 'standalone',
+//     images: {
+//       unoptimized: true,
+//     },
+//     experimental: {
+//       appDir: true,
+//     },
+//     typescript: {
+//       ignoreBuildErrors: true,
+//     },
+//     eslint: {
+//       ignoreDuringBuilds: true,
+//     }
+//   }
+
+
+// module.exports = withNextIntl(nextConfig);
+
 /** @type {import('next').NextConfig} */
 const withNextIntl = require('next-intl/plugin')('./i18n.js');
 
 const nextConfig = {
-    output: 'standalone',
-    images: {
-      formats: ['image/webp'],
-      deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    },
-    i18n: {
-      locales: ['th', 'en'],
-      defaultLocale: 'th',
-    },
-    images: {
-      unoptimized: true,
-    },
-    experimental: {
-      appDir: true
-    },
-    typescript: {
-      ignoreBuildErrors: true,
-    },
-    eslint: {
-      ignoreDuringBuilds: true,
-    },
-    // เพิ่มส่วนนี้เพื่อแก้ปัญหา dynamic server usage
-    staticPageGenerationTimeout: 1000,
-    compiler: {
-      styledComponents: true,
-    },
-    // ปิดการ generate static pages
-    generateStaticParams: false,
-    // กำหนดให้ทุก route เป็น dynamic
-    dynamicParams: true
+  output: 'standalone',
+  images: {
+    unoptimized: true,
+  },
+  experimental: {
+    appDir: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // เพิ่มส่วนนี้
+  serverActions: {
+    bodySizeLimit: '2mb',
+  },
+  // กำหนดให้ routes ที่เกี่ยวกับ auth เป็น dynamic
+  async headers() {
+    return [
+      {
+        source: '/api/auth/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = withNextIntl(nextConfig);

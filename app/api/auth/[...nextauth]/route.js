@@ -1,4 +1,3 @@
-// app/api/auth/[...nextauth]/route.js
 import NextAuth from 'next-auth';
 import GoogleProvider from "next-auth/providers/google";
 import { handleUserSignIn } from '@/lib/auth/userManagement';
@@ -54,4 +53,8 @@ export const authOptions = {
 };
 
 const handler = NextAuth(authOptions);
+
+// เพิ่มบรรทัดนี้เพื่อบังคับให้เป็น dynamic route
+export const dynamic = 'force-dynamic';
+
 export { handler as GET, handler as POST };

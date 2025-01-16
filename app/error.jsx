@@ -5,9 +5,9 @@ export default function Error({ error, reset }) {
     <div className="error-page-wrapper">
       <div className="content">
         <h2>Something went wrong!</h2>
-        <button
-          className="theme-btn btn-style-three"
+        <button 
           onClick={() => reset()}
+          className="theme-btn btn-style-three"
         >
           Try again
         </button>
