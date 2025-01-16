@@ -1,14 +1,7 @@
-// app/[locale]/layout.js
+import { NextIntlClientProvider } from 'next-intl';
+import ClientLayout from './ClientLayout';
 import { Providers } from '../providers';
-import ClientLayoutWrapper from './ClientLayoutWrapper';
-import { Prompt } from 'next/font/google';
-
-const prompt = Prompt({
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  style: ['normal', 'italic'],
-  subsets: ['latin', 'thai'],
-  display: 'swap',
-});
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 async function getMessages(locale) {
   try {
@@ -19,26 +12,28 @@ async function getMessages(locale) {
   }
 }
 
-export const metadata = {
-  title: 'MUJobSphere - ค้นหางานและเส้นทางอาชีพ',
-  description: 'Superio - Job Board React NextJS Template',
-  keywords: 'candidates, career, employment...',
-};
 
-export default async function LocaleLayout({ children, params }) {
-  const localeValue = params?.locale || "en"; // ✅ ใช้ชื่ออื่นแทน locale
 
-  console.log("Params:", params); // ✅ Debugging เพื่อเช็คค่าที่ส่งมา
-
-  const messages = await getMessages(localeValue);
+export default async function LocaleLayout({ children, params: { locale } }) {
+  const messages = await getMessages(locale);
 
   return (
-    <html lang={localeValue}>
+    <html lang={locale}>
+      <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" />
+        <meta httpEquiv="x-ua-compatible" content="ie=edge" />
+        <meta name="keywords" content="candidates, career, employment..." />
+        <meta name="description" content="Superio - Job Board React NextJS Template" />
+        <meta name="ibthemes" content="ATFN" />
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body>
         <Providers>
-          <ClientLayoutWrapper locale={localeValue} messages={messages}>
-            {children}
-          </ClientLayoutWrapper>
+        <ErrorBoundary>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <ClientLayout>{children}</ClientLayout>
+          </NextIntlClientProvider>
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>
