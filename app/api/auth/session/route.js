@@ -1,8 +1,8 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
-export const dynamic = 'force-dynamic'; // เพิ่มบรรทัดนี้
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

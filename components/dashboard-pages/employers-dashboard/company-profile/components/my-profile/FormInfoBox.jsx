@@ -1,125 +1,332 @@
+'use client';
 
-'use client'
-
-import Select from "react-select";
+import React, { useState, useEffect } from 'react';
+import { useSession } from "next-auth/react";
 
 const FormInfoBox = () => {
-    const catOptions = [
-        { value: "Banking", label: "Banking" },
-        { value: "Digital & Creative", label: "Digital & Creative" },
-        { value: "Retail", label: "Retail" },
-        { value: "Human Resources", label: "Human Resources" },
-        { value: "Managemnet", label: "Managemnet" },
-        { value: "Accounting & Finance", label: "Accounting & Finance" },
-        { value: "Digital", label: "Digital" },
-        { value: "Creative Art", label: "Creative Art" },
-    ];
+  const { data: session, status } = useSession();
+  const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
-    return (
-        <form className="default-form">
-            <div className="row">
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>ชื่อบริษัท</label>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Invisionn"
-                        required
-                    />
-                </div>
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (status === 'loading' || !session?.user?.id) return;
 
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>Email address</label>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="ib-themes"
-                        required
-                    />
-                </div>
+      try {
+        const response = await fetch(`/api/profile/${session.user.id}`, {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch profile');
+        }
 
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>Phone</label>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="0 123 456 7890"
-                        required
-                    />
-                </div>
+        const data = await response.json();
+        setFormData(data);
+      } catch (err) {
+        console.error('Profile fetch error:', err);
+        setError(err.message || 'Failed to load profile data');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>Website</label>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="www.invision.com"
-                        required
-                    />
-                </div>
+    fetchProfileData();
+  }, [session, status]);
 
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>Est. Since</label>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="06.04.2020"
-                        required
-                    />
-                </div>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>Team Size</label>
-                    <select className="chosen-single form-select" required>
-                        <option>50 - 100</option>
-                        <option>100 - 150</option>
-                        <option>200 - 250</option>
-                        <option>300 - 350</option>
-                        <option>500 - 1000</option>
-                    </select>
-                </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!session?.user?.id) return;
 
-                {/* <!-- Search Select --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>Multiple Select boxes </label>
-                    <Select
-                        defaultValue={[catOptions[2]]}
-                        isMulti
-                        name="colors"
-                        options={catOptions}
-                        className="basic-multi-select"
-                        classNamePrefix="select"
-                    />
-                </div>
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
 
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <label>Allow In Search & Listing</label>
-                    <select className="chosen-single form-select">
-                        <option>Yes</option>
-                        <option>No</option>
-                    </select>
-                </div>
+    try {
+      const response = await fetch('/api/profile/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          userId: session.user.id,
+          role: session.user.role,
+          ...formData
+        }),
+      });
 
-                {/* <!-- About Company --> */}
-                <div className="form-group col-lg-12 col-md-12">
-                    <label>About Company</label>
-                    <textarea placeholder="Spent several years working on sheep on Wall Street. Had moderate success investing in Yugo's on Wall Street. Managed a small team buying and selling Pogo sticks for farmers. Spent several years licensing licorice in West Palm Beach, FL. Developed several new methods for working it banjos in the aftermarket. Spent a weekend importing banjos in West Palm Beach, FL.In this position, the Software Engineer collaborates with Evention's Development team to continuously enhance our current software solutions as well as create new solutions to eliminate the back-office operations and management challenges present"></textarea>
-                </div>
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update profile');
+      }
 
-                {/* <!-- Input --> */}
-                <div className="form-group col-lg-6 col-md-12">
-                    <button className="theme-btn btn-style-one">Save</button>
-                </div>
+      const updatedData = await response.json();
+      setFormData(updatedData);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (status === 'loading' || loading) {
+    return <div className="text-center p-4">Loading...</div>;
+  }
+
+  if (status === 'unauthenticated') {
+    return <div className="text-center p-4">Please login to view this page</div>;
+  }
+
+  return (
+    <form className="default-form" onSubmit={handleSubmit}>
+      <div className="row">
+        {error && (
+          <div className="col-12 mb-4">
+            <div className="alert alert-danger">{error}</div>
+          </div>
+        )}
+        {success && (
+          <div className="col-12 mb-4">
+            <div className="alert alert-success">Profile updated successfully!</div>
+          </div>
+        )}
+
+        {/* Common fields for all roles */}
+        <div className="form-group col-lg-6 col-md-12">
+          <label>Email</label>
+          <input
+            type="email"
+            value={formData.email || ''}
+            readOnly
+            disabled
+            className="form-control bg-gray-100"
+          />
+        </div>
+
+        <div className="form-group col-lg-6 col-md-12">
+          <label>Name *</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name || ''}
+            onChange={handleInputChange}
+            required
+            className="form-control"
+          />
+        </div>
+
+        {session?.user?.role === 'employeroutside' ? (
+          // Form fields for employeroutside
+          <>
+            <div className="form-group col-lg-6 col-md-12">
+              <label>Company Name *</label>
+              <input
+                type="text"
+                name="company_name"
+                value={formData.company_name || ''}
+                onChange={handleInputChange}
+                required
+                className="form-control"
+              />
             </div>
-        </form>
-    );
+
+          <div className="form-group col-lg-12 col-md-12">
+            <label>Company Address *</label>
+            <textarea
+              name="company_address"
+              value={formData.company_address || ''}
+              onChange={handleInputChange}
+              required
+              className="form-control"
+              rows="3"
+            />
+          </div>
+
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Company Phone</label>
+            <input
+              type="tel"
+              name="company_phone"
+              value={formData.company_phone || ''}
+              onChange={handleInputChange}
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Company Email *</label>
+            <input
+              type="email"
+              name="company_email"
+              value={formData.company_email || ''}
+              onChange={handleInputChange}
+              required
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Contact First Name *</label>
+            <input
+              type="text"
+              name="contact_first_name"
+              value={formData.contact_first_name || ''}
+              onChange={handleInputChange}
+              required
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Contact Last Name *</label>
+            <input
+              type="text"
+              name="contact_last_name"
+              value={formData.contact_last_name || ''}
+              onChange={handleInputChange}
+              required
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Contact Phone *</label>
+            <input
+              type="tel"
+              name="contact_phone"
+              value={formData.contact_phone || ''}
+              onChange={handleInputChange}
+              required
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group col-lg-12 col-md-12">
+            <label>Company Description</label>
+            <textarea
+              name="company_description"
+              value={formData.company_description || ''}
+              onChange={handleInputChange}
+              className="form-control"
+              rows="4"
+            />
+          </div>
+
+          <div className="form-group col-lg-12 col-md-12">
+            <label>Company Benefits</label>
+            <textarea
+              name="company_benefits"
+              value={formData.company_benefits || ''}
+              onChange={handleInputChange}
+              className="form-control"
+              rows="4"
+            />
+          </div>
+        </>
+      ) : (
+        // Form fields for employer (internal)
+        <>
+            <div className="form-group col-lg-6 col-md-12">
+              <label>Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title || ''}
+                onChange={handleInputChange}
+                required
+                className="form-control"
+              />
+            </div>
+
+            <div className="form-group col-lg-6 col-md-12">
+              <label>Department *</label>
+              <input
+                type="text"
+                name="department"
+                value={formData.department || ''}
+                onChange={handleInputChange}
+                required
+                className="form-control"
+              />
+            </div>
+
+            <div className="form-group col-lg-6 col-md-12">
+              <label>Faculty *</label>
+              <input
+                type="text"
+                name="faculty"
+                value={formData.faculty || ''}
+                onChange={handleInputChange}
+                required
+                className="form-control"
+              />
+            </div>
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Position *</label>
+            <input
+              type="text"
+              name="position"
+              value={formData.position || ''}
+              onChange={handleInputChange}
+              required
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Phone</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone || ''}
+              onChange={handleInputChange}
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group col-lg-6 col-md-12">
+            <label>Mobile Phone *</label>
+            <input
+              type="tel"
+              name="mobile_phone"
+              value={formData.mobile_phone || ''}
+              onChange={handleInputChange}
+              required
+              className="form-control"
+            />
+          </div>
+        </>
+      )}
+
+<div className="form-group col-lg-12 col-md-12">
+          <button
+            type="submit"
+            className="theme-btn btn-style-one"
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
 };
 
 export default FormInfoBox;
