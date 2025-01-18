@@ -1,11 +1,11 @@
 module.exports = [
-  {
-    id: 1,
-    name: "Dashboard",
-    icon: "la-home",
-    routePath: "/candidates-dashboard/dashboard",
-    active: "active",
-  },
+  // {
+  //   id: 1,
+  //   name: "Dashboard",
+  //   icon: "la-home",
+  //   routePath: "/candidates-dashboard/dashboard",
+  //   active: "active",
+  // },
   {
     id: 2,
     name: "My Profile",
@@ -27,20 +27,20 @@ module.exports = [
     routePath: "/candidates-dashboard/applied-jobs",
     active: "",
   },
-  {
-    id: 5,
-    name: "Job Alerts",
-    icon: "la la-bell",
-    routePath: "/candidates-dashboard/job-alerts",
-    active: "",
-  },
-  {
-    id: 6,
-    name: "Shortlisted Jobs",
-    icon: "la-bookmark-o",
-    routePath: "/candidates-dashboard/short-listed-jobs",
-    active: "",
-  },
+  // {
+  //   id: 5,
+  //   name: "Job Alerts",
+  //   icon: "la la-bell",
+  //   routePath: "/candidates-dashboard/job-alerts",
+  //   active: "",
+  // },
+  // {
+  //   id: 6,
+  //   name: "Shortlisted Jobs",
+  //   icon: "la-bookmark-o",
+  //   routePath: "/candidates-dashboard/short-listed-jobs",
+  //   active: "",
+  // },
   {
     id: 7,
     name: "CV manager",
@@ -48,20 +48,20 @@ module.exports = [
     routePath: "/candidates-dashboard/cv-manager",
     active: "",
   },
-  {
-    id: 8,
-    name: "Packages",
-    icon: "la-box",
-    routePath: "/candidates-dashboard/packages",
-    active: "",
-  },
-  {
-    id: 9,
-    name: "Messages",
-    icon: "la-comment-o",
-    routePath: "/candidates-dashboard/messages",
-    active: "",
-  },
+  // {
+  //   id: 8,
+  //   name: "Packages",
+  //   icon: "la-box",
+  //   routePath: "/candidates-dashboard/packages",
+  //   active: "",
+  // },
+  // {
+  //   id: 9,
+  //   name: "Messages",
+  //   icon: "la-comment-o",
+  //   routePath: "/candidates-dashboard/messages",
+  //   active: "",
+  // },
   {
     id: 10,
     name: "Change Password",
@@ -76,11 +76,11 @@ module.exports = [
     routePath: "/login",
     active: "",
   },
-  {
-    id: 12,
-    name: "Delete Profile",
-    icon: "la-trash",
-    routePath: "/",
-    active: "",
-  },
+  // {
+  //   id: 12,
+  //   name: "Delete Profile",
+  //   icon: "la-trash",
+  //   routePath: "/",
+  //   active: "",
+  // },
 ];

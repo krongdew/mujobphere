@@ -1,30 +1,162 @@
-
 'use client'
-
-import Select from "react-select";
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 const SkillsMultiple = () => {
-  const catOptions = [
-    { value: "Banking", label: "Banking" },
-    { value: "Digital & Creative", label: "Digital & Creative" },
-    { value: "Retail", label: "Retail" },
-    { value: "Human Resources", label: "Human Resources" },
-    { value: "Managemnet", label: "Managemnet" },
-    { value: "Accounting & Finance", label: "Accounting & Finance" },
-    { value: "Digital", label: "Digital" },
-    { value: "Creative Art", label: "Creative Art" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [formData, setFormData] = useState({
+    description: '',
+    programming_skills: '',
+    language_skills: '',
+    other_skills: ''
+  });
+
+  useEffect(() => {
+    fetchSkillsData();
+  }, []);
+
+  const fetchSkillsData = async () => {
+    try {
+      const response = await fetch('/api/student/resume');
+      if (!response.ok) throw new Error('Failed to fetch data');
+      
+      const data = await response.json();
+      setFormData({
+        description: data.description || '',
+        programming_skills: data.programming_skills || '',
+        language_skills: data.language_skills || '',
+        other_skills: data.other_skills || ''
+      });
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // ฟังก์ชันกรองข้อมูล
+    const sanitizeInput = (input) => {
+      // กรองเฉพาะอักขระที่อนุญาต
+      return input 
+        ? input.replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s]/g, '').trim() 
+        : '';
+    };
+  
+    // กรองข้อมูล
+    const cleanFormData = {
+      description: sanitizeInput(formData.description),
+      programming_skills: sanitizeInput(formData.programming_skills),
+      language_skills: sanitizeInput(formData.language_skills),
+      other_skills: sanitizeInput(formData.other_skills)
+    };
+  
+    try {
+      const response = await fetch('/api/student/resume', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify(cleanFormData)
+      });
+  
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(responseData.error || 'บันทึกข้อมูลไม่สำเร็จ');
+      }
+  
+      setSuccessMessage('บันทึกข้อมูลเรียบร้อยแล้ว');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+  
+    } catch (err) {
+      console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล:', err);
+      alert(err.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+    }
+  };
+
+  
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <Select
-      defaultValue={[catOptions[1]]}
-      isMulti
-      name="colors"
-      options={catOptions}
-      className="basic-multi-select"
-      classNamePrefix="select"
-      required
-    />
+    <form onSubmit={handleSubmit}>
+      <div className="row">
+        <div className="form-group col-lg-12 col-md-12">
+          <label>Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            className="form-control"
+            placeholder="Briefly describe your professional background and career objectives..."
+            rows="4"
+          />
+        </div>
+
+        <div className="form-group col-lg-12 col-md-12">
+          <label>Programming Skills *</label>
+          <textarea
+            name="programming_skills"
+            value={formData.programming_skills}
+            onChange={handleInputChange}
+            className="form-control"
+            placeholder="List programming tools and technologies you are familiar with (e.g., VS Code, Eclipse, Git, Docker)"
+            rows="3"
+            required
+          />
+        </div>
+
+        <div className="form-group col-lg-12 col-md-12">
+          <label>Language Skills *</label>
+          <textarea
+            name="language_skills"
+            value={formData.language_skills}
+            onChange={handleInputChange}
+            className="form-control"
+            placeholder="List languages you can communicate in (e.g., Thai-Native, English-Intermediate)"
+            rows="3"
+            required
+          />
+        </div>
+
+        <div className="form-group col-lg-12 col-md-12">
+          <label>Other Skills</label>
+          <textarea
+            name="other_skills"
+            value={formData.other_skills}
+            onChange={handleInputChange}
+            className="form-control"
+            placeholder="List any other skills you have (e.g., Leadership, Problem Solving, Project Management)"
+            rows="3"
+          />
+        </div>
+
+        {successMessage && (
+          <div className="col-12">
+            <div className="alert alert-success">{successMessage}</div>
+          </div>
+        )}
+
+        <div className="form-group col-lg-12 col-md-12">
+          <button type="submit" className="theme-btn btn-style-one">
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
   );
 };
 

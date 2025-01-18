@@ -9,17 +9,38 @@ import { isActiveLink } from "../../utils/linkActiveChecker";
 import { useDispatch, useSelector } from "react-redux";
 import { menuToggle } from "../../features/toggle/toggleSlice";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from 'next-auth/react';
+import { useEffect, useState } from "react";
 
 const DashboardCandidatesSidebar = () => {
   const { menu } = useSelector((state) => state.toggle);
   const percentage = 30;
-
-
   const dispatch = useDispatch();
+  const { data: session, status } = useSession(); // เพิ่ม status
+  const [navbar, setNavbar] = useState(false);
+
   // menu togggle handler
   const menuToggleHandler = () => {
     dispatch(menuToggle());
   };
+
+  const changeBackground = () => {
+    if (window.scrollY >= 10) {
+      setNavbar(true);
+    } else {
+      setNavbar(false);
+    }
+  };
+
+useEffect(() => {
+    window.addEventListener("scroll", changeBackground);
+  }, []);
+
+// handle sign out
+const handleSignOut = () => {
+    signOut({ callbackUrl: '/' });
+};
+
 
   return (
     <div className={`user-sidebar ${menu ? "sidebar_open" : ""}`}>
@@ -31,16 +52,25 @@ const DashboardCandidatesSidebar = () => {
       </div>
       {/* End sidebar close icon */}
 
+
       <div className="sidebar-inner">
-        <ul className="navigation">
-          {candidatesuData.map((item) => (
-            <li
-              className={`${
-                isActiveLink(item.routePath, usePathname()) ? "active" : ""
-              } mb-1`}
-              key={item.id}
-              onClick={menuToggleHandler}
-            >
+                <ul className="navigation">
+                    {candidatesuData.map((item) => (
+                        <li
+                            className={`${
+                                isActiveLink(item.routePath, usePathname())
+                                    ? "active"
+                                    : ""
+                            } mb-1`}
+                            key={item.id}
+                            onClick={() => {
+                                menuToggleHandler();
+                                // Handle logout separately
+                                if (item.name === "Logout") {
+                                    handleSignOut();
+                                }
+                            }}
+                        >
               <Link href={item.routePath}>
                 <i className={`la ${item.icon}`}></i> {item.name}
               </Link>
@@ -48,7 +78,7 @@ const DashboardCandidatesSidebar = () => {
           ))}
         </ul>
         {/* End navigation */}
-
+{/* 
         <div className="skills-percentage">
           <h4>Skills Percentage</h4>
           <p>
@@ -68,9 +98,9 @@ const DashboardCandidatesSidebar = () => {
               value={percentage}
               text={`${percentage}%`}
             />
-          </div>{" "}
+          </div>{" "} */}
           {/* <!-- Pie Graph --> */}
-        </div>
+        {/* </div> */}
       </div>
     </div>
   );

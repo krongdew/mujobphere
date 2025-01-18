@@ -1,10 +1,7 @@
-import dynamic from "next/dynamic";
+"use client";
 import MyResume from "@/components/dashboard-pages/candidates-dashboard/my-resume";
+import withRoleProtection from "@/components/auth/withRoleProtection";
 
-export const metadata = {
-  title: "My Resume || Superio - Job Borad React NextJS Template",
-  description: "Superio - Job Borad React NextJS Template",
-};
 
 const index = () => {
   return (
@@ -14,4 +11,5 @@ const index = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(index), { ssr: false });
+export default withRoleProtection(index, ['student', 'admin']);
+

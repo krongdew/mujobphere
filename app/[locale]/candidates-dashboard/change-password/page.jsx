@@ -1,10 +1,8 @@
-import dynamic from "next/dynamic";
-import ChangePassword from "@/components/dashboard-pages/candidates-dashboard/change-password";
+"use client";
 
-export const metadata = {
-  title: "Change Password || Superio - Job Borad React NextJS Template",
-  description: "Superio - Job Borad React NextJS Template",
-};
+import ChangePassword from "@/components/dashboard-pages/candidates-dashboard/change-password";
+import withRoleProtection from "@/components/auth/withRoleProtection";
+
 
 const index = () => {
   return (
@@ -14,4 +12,4 @@ const index = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(index), { ssr: false });
+export default withRoleProtection(index, ['student', 'admin']);

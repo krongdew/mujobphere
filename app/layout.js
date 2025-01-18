@@ -6,7 +6,7 @@ const prompt = Prompt({
   display: 'swap',
   variable: '--font-prompt',
   preload: true,
-  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'] // เพิ่ม fallback fonts
+  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif']
 });
 
 export const metadata = {
@@ -14,9 +14,10 @@ export const metadata = {
   description: "Job Board Application",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children, params }) {
+  const locale = params?.locale || 'th'; // ใช้ locale จาก params ถ้ามี
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className={prompt.className}>{children}</body>
     </html>
   );

@@ -25,7 +25,7 @@ const LogoUpload = () => {
                         className="uploadButton-button ripple-effect"
                         htmlFor="upload"
                     >
-                        {logImg !== "" ? logImg.name : "Browse Logo"}
+                        {logImg !== "" ? logImg.name : "Browse Profile Image"}
                     </label>
                     <span className="uploadButton-file-name"></span>
                 </div>

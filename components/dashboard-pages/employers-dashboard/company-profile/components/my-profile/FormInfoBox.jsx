@@ -4,11 +4,23 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 
 const FormInfoBox = () => {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession();  // เพิ่ม status
+  const [departments, setDepartments] = useState([]);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(false);  // เพิ่มบรรทัดนี้
+
+    // เพิ่ม array ของ titles
+    const titleOptions = [
+      "นาย",
+      "นาง",
+      "นางสาว",
+      "ศาสตราจารย์",
+      "รองศาสตราจารย์",
+      "ผู้ช่วยศาสตราจารย์",
+      "ดร."
+    ];
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -39,6 +51,25 @@ const FormInfoBox = () => {
 
     fetchProfileData();
   }, [session, status]);
+
+   // Fetch departments
+   useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch('/api/departments');
+        if (!response.ok) throw new Error('Failed to fetch departments');
+        const data = await response.json();
+        setDepartments(data);
+      } catch (err) {
+        console.error('Error fetching departments:', err);
+      }
+    };
+
+    if (session?.user?.role === 'employer') {
+      fetchDepartments();
+    }
+  }, [session?.user?.role]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,6 +128,7 @@ const FormInfoBox = () => {
   return (
     <form className="default-form" onSubmit={handleSubmit}>
       <div className="row">
+        {/* Error and Success Messages */}
         {error && (
           <div className="col-12 mb-4">
             <div className="alert alert-danger">{error}</div>
@@ -108,7 +140,7 @@ const FormInfoBox = () => {
           </div>
         )}
 
-        {/* Common fields for all roles */}
+        {/* Common fields */}
         <div className="form-group col-lg-6 col-md-12">
           <label>Email</label>
           <input
@@ -118,6 +150,23 @@ const FormInfoBox = () => {
             disabled
             className="form-control bg-gray-100"
           />
+        </div>
+        
+        <div className="form-group col-lg-6 col-md-12">
+          <label>Title</label>
+          <select
+            name="title"
+            value={formData.title || ''}
+            onChange={handleInputChange}
+            className="form-control"
+          >
+            <option value="">Select Title</option>
+            {titleOptions.map((title, index) => (
+              <option key={index} value={title}>
+                {title}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group col-lg-6 col-md-12">
@@ -132,6 +181,7 @@ const FormInfoBox = () => {
           />
         </div>
 
+        {/* Role-specific fields */}
         {session?.user?.role === 'employeroutside' ? (
           // Form fields for employeroutside
           <>
@@ -240,82 +290,68 @@ const FormInfoBox = () => {
             />
           </div>
         </>
-      ) : (
-        // Form fields for employer (internal)
-        <>
-            <div className="form-group col-lg-6 col-md-12">
-              <label>Title *</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title || ''}
-                onChange={handleInputChange}
-                required
-                className="form-control"
-              />
-            </div>
+        ) : (
+          // Form fields for employer (internal)
+          <>
+            
 
             <div className="form-group col-lg-6 col-md-12">
               <label>Department *</label>
-              <input
-                type="text"
+              <select
                 name="department"
                 value={formData.department || ''}
                 onChange={handleInputChange}
                 required
                 className="form-control"
-              />
+              >
+                <option value="">Select Department</option>
+                {departments.map(dept => (
+                  <option key={dept.id} value={dept.name}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group col-lg-6 col-md-12">
-              <label>Faculty *</label>
+              <label>Position *</label>
               <input
                 type="text"
-                name="faculty"
-                value={formData.faculty || ''}
+                name="position"
+                value={formData.position || ''}
                 onChange={handleInputChange}
                 required
                 className="form-control"
               />
             </div>
-          <div className="form-group col-lg-6 col-md-12">
-            <label>Position *</label>
-            <input
-              type="text"
-              name="position"
-              value={formData.position || ''}
-              onChange={handleInputChange}
-              required
-              className="form-control"
-            />
-          </div>
 
-          <div className="form-group col-lg-6 col-md-12">
-            <label>Phone</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone || ''}
-              onChange={handleInputChange}
-              className="form-control"
-            />
-          </div>
+            <div className="form-group col-lg-6 col-md-12">
+              <label>Phone</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone || ''}
+                onChange={handleInputChange}
+                className="form-control"
+              />
+            </div>
 
-          <div className="form-group col-lg-6 col-md-12">
-            <label>Mobile Phone *</label>
-            <input
-              type="tel"
-              name="mobile_phone"
-              value={formData.mobile_phone || ''}
-              onChange={handleInputChange}
-              required
-              className="form-control"
-            />
-          </div>
-        </>
-      )}
+            <div className="form-group col-lg-6 col-md-12">
+              <label>Mobile Phone *</label>
+              <input
+                type="tel"
+                name="mobile_phone"
+                value={formData.mobile_phone || ''}
+                onChange={handleInputChange}
+                required
+                className="form-control"
+              />
+            </div>
+          </>
+        )}
 
-<div className="form-group col-lg-12 col-md-12">
+        {/* Submit Button */}
+        <div className="form-group col-lg-12 col-md-12">
           <button
             type="submit"
             className="theme-btn btn-style-one"
@@ -327,6 +363,5 @@ const FormInfoBox = () => {
       </div>
     </form>
   );
-};
-
+}
 export default FormInfoBox;

@@ -32,7 +32,6 @@ export async function GET(request, { params }) {
     }
 
     const userData = userResult.rows[0];
-
     let profileQuery;
     if (session.user.role === 'employeroutside') {
       profileQuery = `
@@ -53,6 +52,17 @@ export async function GET(request, { params }) {
         FROM employer_profiles 
         WHERE user_id = $1
       `;
+    } else if (session.user.role === 'student') {
+      profileQuery = `
+        SELECT 
+          id, user_id, student_id, first_name, last_name,
+          faculty, major, gpa, birth_date, student_card_image,
+          language_skills, programming_skills, cv_file, portfolio_file,
+          phone, address, 
+          created_at, updated_at
+        FROM student_profiles 
+        WHERE user_id = $1
+      `;
     } else {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
@@ -60,9 +70,41 @@ export async function GET(request, { params }) {
     const profileResult = await query(profileQuery, [userId]);
     
     if (!profileResult.rows.length) {
-      // ... create new profile code ...
+      // สร้าง profile ใหม่ตาม role
+      let createProfileQuery;
+      if (session.user.role === 'student') {
+        createProfileQuery = `
+          INSERT INTO student_profiles (
+            user_id,
+            phone,
+            address,
+            created_at
+          ) VALUES ($1, NULL, NULL, CURRENT_TIMESTAMP)
+          RETURNING *
+        `;
+      } else if (session.user.role === 'employeroutside') {
+        createProfileQuery = `
+          INSERT INTO employer_outside_profiles (
+            user_id,
+            created_at
+          ) VALUES ($1, CURRENT_TIMESTAMP)
+          RETURNING *
+        `;
+      } else if (session.user.role === 'employer') {
+        createProfileQuery = `
+          INSERT INTO employer_profiles (
+            user_id,
+            created_at
+          ) VALUES ($1, CURRENT_TIMESTAMP)
+          RETURNING *
+        `;
+      }
+    
+      const newProfile = await query(createProfileQuery, [userId]);
+      
       return NextResponse.json({
-        ...userData
+        ...userData,
+        ...newProfile.rows[0]
       });
     }
 

@@ -78,7 +78,7 @@ export default async function LocaleLayout({ children, params: { locale } }) {
   const messages = await getMessages(locale);
 
   return (
-    <html lang={locale} >
+    <html lang={locale}>
       <head>
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

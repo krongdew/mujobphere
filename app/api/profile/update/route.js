@@ -87,6 +87,41 @@ export async function POST(request) {
         otherData.mobile_phone ? encrypt(otherData.mobile_phone) : null,
         userId
       ];
+    } else if (role === 'student') {
+      updateProfileQuery = `
+        UPDATE student_profiles 
+        SET 
+          student_id = $1,
+          first_name = $2,
+          last_name = $3,
+          faculty = $4,
+          major = $5,
+          gpa = $6,
+          birth_date = $7,
+          student_card_image = $8,
+          language_skills = $9,
+          programming_skills = $10,
+          phone = $11,
+          address = $12,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = $13
+        RETURNING *
+      `;
+      queryParams = [
+        otherData.student_id,
+        otherData.first_name,
+        otherData.last_name,
+        otherData.faculty,
+        otherData.major,
+        otherData.gpa || null,
+        otherData.birth_date,
+        otherData.student_card_image || null,
+        otherData.language_skills || null,
+        otherData.programming_skills || null,
+        otherData.phone || null,
+        otherData.address || null,
+        userId
+      ];
     } else {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
@@ -137,6 +172,11 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Profile update error:', error);
+    // Log full error details
+    console.error('Full error:', {
+      message: error.message,
+      stack: error.stack
+    });
     return NextResponse.json(
       { error: 'Failed to update profile' },
       { status: 500 }
