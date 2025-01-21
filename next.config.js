@@ -1,6 +1,8 @@
 // /** @type {import('next').NextConfig} */
 // const withNextIntl = require('next-intl/plugin')('./i18n.js');
 
+const { base } = require('@faker-js/faker');
+
 // const nextConfig = {
 //     output: 'standalone',
 //     images: {
@@ -89,8 +91,17 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
-  }
-  
+  },
+  basePath: '',
+  // เพิ่มส่วนนี้
+  remotePatterns: [
+    {
+      protocol: 'http',
+      hostname: 'localhost',
+      port: '3000',
+      pathname: '/uploads/**',
+    },
+  ],
   
 };
 

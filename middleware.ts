@@ -1,3 +1,4 @@
+// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
@@ -14,9 +15,9 @@ const publicPaths = [
   '/api/auth',
   '/_next',
   '/images',
+  '/uploads',  // เพิ่ม path สำหรับรูปภาพ
   '/favicon.ico',
   '/api/auth/callback'
-  
 ];
 
 function isPublicPath(path: string): boolean {
@@ -24,28 +25,35 @@ function isPublicPath(path: string): boolean {
 }
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
   // Skip middleware for public paths
-  if (isPublicPath(request.nextUrl.pathname)) {
+  if (isPublicPath(pathname)) {
+    return NextResponse.next();
+  }
+
+  // ถ้าเป็น path ของรูปภาพ ให้ข้าม middleware
+  if (pathname.startsWith('/uploads/')) {
     return NextResponse.next();
   }
 
   // Handle auth checks first
   let authResponse;
-  
-  if (request.nextUrl.pathname.startsWith('/admin-dashboard')) {
+
+  if (pathname.startsWith('/admin-dashboard')) {
     authResponse = await withAdminAuth(request);
     if (authResponse.status !== 200) return authResponse;
-  } else if (request.nextUrl.pathname.startsWith('/employers-dashboard')) {
+  } else if (pathname.startsWith('/employers-dashboard')) {
     authResponse = await withEmployerAuth(request);
     if (authResponse.status !== 200) return authResponse;
-  } else if (request.nextUrl.pathname.startsWith('/candidates-dashboard')) {
+  } else if (pathname.startsWith('/candidates-dashboard')) {
     authResponse = await withStudentAuth(request);
     if (authResponse.status !== 200) return authResponse;
   }
 
   // If auth passed or not required, handle intl
   const response = await intlMiddleware(request);
-  
+
   // Add security headers
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
@@ -57,7 +65,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next|_vercel|.*\\..*).*)' // Skip API and static files
+    // ไม่ใช้ middleware กับ path ที่เริ่มต้นด้วย uploads, api, _next, _vercel
+    '/((?!uploads|api|_next|_vercel|.*\\..*).*)'
   ]
 };
 
