@@ -1,17 +1,13 @@
-import dynamic from "next/dynamic";
+"use client";
+
 import PostJob from "@/components/dashboard-pages/employers-dashboard/post-jobs";
+import withRoleProtection from "@/components/auth/withRoleProtection";
 
-export const metadata = {
-  title: "Post Jobs || Superio - Job Borad React NextJS Template",
-  description: "Superio - Job Borad React NextJS Template",
-};
-
-const index = () => {
+const PostJobPage = () => {
   return (
-    <>
       <PostJob />
-    </>
+
   );
 };
 
-export default dynamic(() => Promise.resolve(index), { ssr: false });
+export default withRoleProtection(PostJobPage, ['employer', 'employeroutside', 'admin']);

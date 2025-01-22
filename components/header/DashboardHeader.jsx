@@ -12,19 +12,20 @@ import { useSession, signOut } from "next-auth/react";
 const DashboardHeader = () => {
   const [navbar, setNavbar] = useState(false);
   const { data: session, status } = useSession();
-  const [profileImage, setProfileImage] = useState(
-    "/images/resource/company-6.png"
-  );
+  const pathname = usePathname(); // Move usePathname hook to top level
+  const [profileImage, setProfileImage] = useState("/images/resource/company-6.png");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  // Load profile image when session changes
   useEffect(() => {
     if (session?.user?.image) {
       setProfileImage(session.user.image);
-      setImageError(false); // รีเซ็ต error state
+      setImageError(false);
     }
   }, [session]);
 
+  // Handle scroll background change
   const changeBackground = () => {
     if (window.scrollY >= 0) {
       setNavbar(true);
@@ -35,15 +36,11 @@ const DashboardHeader = () => {
 
   useEffect(() => {
     window.addEventListener("scroll", changeBackground);
+    return () => window.removeEventListener("scroll", changeBackground);
   }, []);
 
-  const handleSignOut = () => {
-    signOut({ callbackUrl: "/" });
-  };
-
-  // เพิ่ม useEffect สำหรับ Bootstrap
+  // Bootstrap initialization
   useEffect(() => {
-    // Import Bootstrap เฉพาะฝั่ง client
     require("bootstrap/dist/js/bootstrap.bundle.min.js");
   }, []);
 
@@ -51,14 +48,16 @@ const DashboardHeader = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" });
+  };
+
   if (status === "loading") {
     return null;
   }
 
   return (
-    <header
-      className={`main-header header-shaddow ${navbar ? "fixed-header" : ""}`}
-    >
+    <header className={`main-header header-shaddow ${navbar ? "fixed-header" : ""}`}>
       <div className="container-fluid">
         <div className="main-box">
           <div className="nav-outer">
@@ -89,19 +88,13 @@ const DashboardHeader = () => {
               <span className="icon la la-bell"></span>
             </button>
 
-            {/* แก้ไข Dropdown Menu */}
-            <div
-              className={`dropdown dashboard-option ${
-                isDropdownOpen ? "show" : ""
-              }`}
-            >
+            <div className={`dropdown dashboard-option ${isDropdownOpen ? "show" : ""}`}>
               <button
                 className="dropdown-toggle"
                 onClick={toggleDropdown}
                 aria-expanded={isDropdownOpen}
               >
                 {imageError ? (
-                  // ถ้ามี error ให้ใช้ img tag แทน
                   <img
                     alt="avatar"
                     className="thumb"
@@ -129,14 +122,11 @@ const DashboardHeader = () => {
                 {employerMenuData.map((item) => (
                   <li
                     className={`${
-                      isActiveLink(item.routePath, usePathname())
-                        ? "active"
-                        : ""
+                      isActiveLink(item.routePath, pathname) ? "active" : ""
                     } mb-1`}
                     key={item.id}
                     onClick={() => {
                       setIsDropdownOpen(false);
-                      // เพิ่มเงื่อนไขสำหรับ Logout
                       if (item.name === "Logout") {
                         handleSignOut();
                       }

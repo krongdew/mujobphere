@@ -1,69 +1,121 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from "next/link";
-import jobs from "../../../../../data/job-featured.js";
-import Image from "next/image.js";
+import { usePathname } from 'next/navigation';
+import Image from "next/image";
+import { useRouter } from 'next/navigation';
 
 const JobListingsTable = () => {
+  const router = useRouter();
+  const [jobs, setJobs] = useState([]);
+  const [period, setPeriod] = useState('6');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch(`/api/jobs/employer?period=${period}`);
+        if (!response.ok) throw new Error('Failed to fetch jobs');
+        const data = await response.json();
+        setJobs(data);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, [period]);
+
+  const handleStatusChange = async (jobId, newStatus) => {
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update status');
+
+      setJobs(prev =>
+        prev.map(job =>
+          job.id === jobId ? { ...job, status: newStatus } : job
+        )
+      );
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to update job status');
+    }
+  };
+
+  // Format date to readable string
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return <div>กำลังโหลดข้อมูล...</div>;
+  }
+
   return (
     <div className="tabs-box">
       <div className="widget-title">
-        <h4>My Job Listings</h4>
+        <h4>รายการประกาศรับสมัครงาน</h4>
 
         <div className="chosen-outer">
-          {/* <!--Tabs Box--> */}
-          <select className="chosen-single form-select">
-            <option>Last 6 Months</option>
-            <option>Last 12 Months</option>
-            <option>Last 16 Months</option>
-            <option>Last 24 Months</option>
-            <option>Last 5 year</option>
+          <select 
+            className="chosen-single form-select"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+          >
+            <option value="6">6 เดือนล่าสุด</option>
+            <option value="12">12 เดือนล่าสุด</option>
+            <option value="24">24 เดือนล่าสุด</option>
           </select>
         </div>
       </div>
-      {/* End filter top bar */}
 
-      {/* Start table widget content */}
       <div className="widget-content">
         <div className="table-outer">
           <table className="default-table manage-job-table">
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Applications</th>
-                <th>Created & Expired</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th>ชื่องาน</th>
+                <th>ผู้สมัคร</th>
+                <th>วันที่ประกาศ & วันหมดเขต</th>
+                <th>สถานะ</th>
+                <th>จัดการ</th>
               </tr>
             </thead>
 
             <tbody>
-              {jobs.slice(0, 4).map((item) => (
-                <tr key={item.id}>
+              {jobs.map((job) => (
+                <tr key={job.id}>
                   <td>
-                    {/* <!-- Job Block --> */}
                     <div className="job-block">
                       <div className="inner-box">
                         <div className="content">
-                          <span className="company-logo">
-                            <Image
-                              width={50}
-                              height={49}
-                              src={item.logo}
-                              alt="logo"
-                            />
-                          </span>
                           <h4>
-                            <Link href={`/job-single-v3/${item.id}`}>
-                              {item.jobTitle}
+                            <Link href={`/job-single-v3/${job.id}`}>
+                              {job.title}
                             </Link>
                           </h4>
                           <ul className="job-info">
                             <li>
                               <span className="icon flaticon-briefcase"></span>
-                              Segment
+                              {job.compensation_amount} บาท/{job.compensation_period}
                             </li>
                             <li>
                               <span className="icon flaticon-map-locator"></span>
-                              London, UK
+                              {job.is_online ? 'ออนไลน์' : job.location}
                             </li>
                           </ul>
                         </div>
@@ -71,41 +123,85 @@ const JobListingsTable = () => {
                     </div>
                   </td>
                   <td className="applied">
-                    <a href="#">3+ Applied</a>
+                    <Link href={`/employers-dashboard/applicants/${job.id}`}>
+                      {job.application_count || 0} คน
+                    </Link>
                   </td>
                   <td>
-                    October 27, 2017 <br />
-                    April 25, 2011
+                    {formatDate(job.created_at)} <br />
+                    {formatDate(job.application_end_date)}
                   </td>
-                  <td className="status">Active</td>
+                  <td className={`status ${job.status}`}>
+                    {job.status === 'draft' && 'แบบร่าง'}
+                    {job.status === 'published' && 'เปิดรับสมัคร'}
+                    {job.status === 'closed' && 'ปิดรับสมัคร'}
+                  </td>
                   <td>
                     <div className="option-box">
                       <ul className="option-list">
                         <li>
-                          <button data-text="View Aplication">
+                          <Link 
+                            href={`/job-single-v1/${job.id}`}
+                            data-text="ดูรายละเอียดงาน"
+                          >
                             <span className="la la-eye"></span>
-                          </button>
+                          </Link>
                         </li>
                         <li>
-                          <button data-text="Reject Aplication">
+                          <button
+                            onClick={() => router.push(`/employers-dashboard/post-jobs?edit=${job.id}`)}
+                            data-text="แก้ไขประกาศ"
+                          >
                             <span className="la la-pencil"></span>
                           </button>
                         </li>
-                        <li>
-                          <button data-text="Delete Aplication">
-                            <span className="la la-trash"></span>
-                          </button>
-                        </li>
+                        {job.status === 'draft' && (
+                          <li>
+                            <button
+                              onClick={() => handleStatusChange(job.id, 'published')}
+                              data-text="เปิดรับสมัคร"
+                            >
+                              <span className="la la-check"></span>
+                            </button>
+                          </li>
+                        )}
+                        {job.status === 'published' && (
+                          <li>
+                            <button
+                              onClick={() => handleStatusChange(job.id, 'closed')}
+                              data-text="ปิดรับสมัคร"
+                            >
+                              <span className="la la-times-circle"></span>
+                            </button>
+                          </li>
+                        )}
+                        {job.status === 'closed' && (
+                          <li>
+                            <button
+                              onClick={() => handleStatusChange(job.id, 'published')}
+                              data-text="เปิดรับสมัครอีกครั้ง"
+                            >
+                              <span className="la la-refresh"></span>
+                            </button>
+                          </li>
+                        )}
                       </ul>
                     </div>
                   </td>
                 </tr>
               ))}
+
+              {jobs.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="text-center">
+                    ไม่พบข้อมูลการประกาศรับสมัครงาน
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
-      {/* End table widget content */}
     </div>
   );
 };
