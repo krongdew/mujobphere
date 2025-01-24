@@ -2,9 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import Link from "next/link";
-import { usePathname } from 'next/navigation';
-import Image from "next/image";
 import { useRouter } from 'next/navigation';
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    const bangkokDate = new Date(
+      date.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+    );
+    return bangkokDate.toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '';
+  }
+};
 
 const JobListingsTable = () => {
   const router = useRouter();
@@ -12,54 +28,76 @@ const JobListingsTable = () => {
   const [period, setPeriod] = useState('6');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await fetch(`/api/jobs/employer?period=${period}`);
-        if (!response.ok) throw new Error('Failed to fetch jobs');
-        const data = await response.json();
-        setJobs(data);
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJobs();
-  }, [period]);
-
   const handleStatusChange = async (jobId, newStatus) => {
     try {
       const response = await fetch(`/api/jobs/${jobId}/status`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
 
       if (!response.ok) throw new Error('Failed to update status');
-
-      setJobs(prev =>
-        prev.map(job =>
-          job.id === jobId ? { ...job, status: newStatus } : job
-        )
-      );
+      await fetchJobs(); // Refetch the job data after updating the status
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to update job status');
+      alert('ไม่สามารถอัพเดทสถานะได้');
     }
   };
 
-  // Format date to readable string
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  const fetchJobs = async () => {
+    try {
+      const response = await fetch(`/api/jobs/employer?period=${period}`);
+      if (!response.ok) throw new Error('Failed to fetch jobs');
+      const data = await response.json();
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const localToday = new Date(
+        today.getTime() + (today.getTimezoneOffset() * 60 + 7 * 60) * 1000
+      );
+
+      const updatedJobs = data.map(job => {
+        const endDate = new Date(job.application_end_date);
+        const localEndDate = new Date(
+          endDate.getTime() + (endDate.getTimezoneOffset() * 60 + 7 * 60) * 1000
+        );
+        localEndDate.setHours(23, 59, 59, 999);
+
+        if (job.status === 'published' && localEndDate < localToday) {
+          handleStatusChange(job.id, 'closed');
+          return { ...job, status: 'closed' };
+        }
+        return job;
+      });
+
+      setJobs(updatedJobs);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error:', error);
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchJobs();
+  }, [period]);
+  // const formatDate = (dateString) => {
+  //   if (!dateString) return '';
+  //   try {
+  //     const date = new Date(dateString);
+  //     const bangkokDate = new Date(
+  //       date.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+  //     );
+  //     return bangkokDate.toLocaleDateString('th-TH', {
+  //       year: 'numeric',
+  //       month: 'long',
+  //       day: 'numeric'
+  //     });
+  //   } catch (error) {
+  //     console.error('Error formatting date:', error);
+  //     return '';
+  //   }
+  // };
 
   if (loading) {
     return <div>กำลังโหลดข้อมูล...</div>;
@@ -95,7 +133,6 @@ const JobListingsTable = () => {
                 <th>จัดการ</th>
               </tr>
             </thead>
-
             <tbody>
               {jobs.map((job) => (
                 <tr key={job.id}>
@@ -103,20 +140,10 @@ const JobListingsTable = () => {
                     <div className="job-block">
                       <div className="inner-box">
                         <div className="content">
-                          <h4>
-                            <Link href={`/job-single-v3/${job.id}`}>
-                              {job.title}
-                            </Link>
-                          </h4>
+                          <h4><Link href={`/job-single-v3/${job.id}`}>{job.title}</Link></h4>
                           <ul className="job-info">
-                            <li>
-                              <span className="icon flaticon-briefcase"></span>
-                              {job.compensation_amount} บาท/{job.compensation_period}
-                            </li>
-                            <li>
-                              <span className="icon flaticon-map-locator"></span>
-                              {job.is_online ? 'ออนไลน์' : job.location}
-                            </li>
+                            <li><span className="icon flaticon-briefcase"></span>{job.compensation_amount} บาท/{job.compensation_period}</li>
+                            <li><span className="icon flaticon-map-locator"></span>{job.is_online ? 'ออนไลน์' : job.location}</li>
                           </ul>
                         </div>
                       </div>
@@ -127,10 +154,7 @@ const JobListingsTable = () => {
                       {job.application_count || 0} คน
                     </Link>
                   </td>
-                  <td>
-                    {formatDate(job.created_at)} <br />
-                    {formatDate(job.application_end_date)}
-                  </td>
+                  <td>{formatDate(job.application_start_date)} <br />{formatDate(job.application_end_date)}</td>
                   <td className={`status ${job.status}`}>
                     {job.status === 'draft' && 'แบบร่าง'}
                     {job.status === 'published' && 'เปิดรับสมัคร'}
@@ -139,63 +163,25 @@ const JobListingsTable = () => {
                   <td>
                     <div className="option-box">
                       <ul className="option-list">
-                        <li>
-                          <Link 
-                            href={`/job-single-v1/${job.id}`}
-                            data-text="ดูรายละเอียดงาน"
-                          >
-                            <span className="la la-eye"></span>
-                          </Link>
-                        </li>
-                        <li>
-                          <button
-                            onClick={() => router.push(`/employers-dashboard/post-jobs?edit=${job.id}`)}
-                            data-text="แก้ไขประกาศ"
-                          >
-                            <span className="la la-pencil"></span>
-                          </button>
-                        </li>
+                        <li><Link href={`/job-single-v1/${job.id}`} data-text="ดูรายละเอียดงาน"><span className="la la-eye"></span></Link></li>
+                        <li><button onClick={() => router.push(`/employers-dashboard/post-jobs?edit=${job.id}`)} data-text="แก้ไขประกาศ"><span className="la la-pencil"></span></button></li>
                         {job.status === 'draft' && (
-                          <li>
-                            <button
-                              onClick={() => handleStatusChange(job.id, 'published')}
-                              data-text="เปิดรับสมัคร"
-                            >
-                              <span className="la la-check"></span>
-                            </button>
-                          </li>
+                          <li><button onClick={() => handleStatusChange(job.id, 'published')} data-text="เปิดรับสมัคร"><span className="la la-check"></span></button></li>
                         )}
                         {job.status === 'published' && (
-                          <li>
-                            <button
-                              onClick={() => handleStatusChange(job.id, 'closed')}
-                              data-text="ปิดรับสมัคร"
-                            >
-                              <span className="la la-times-circle"></span>
-                            </button>
-                          </li>
+                          <li><button onClick={() => handleStatusChange(job.id, 'closed')} data-text="ปิดรับสมัคร"><span className="la la-times-circle"></span></button></li>
                         )}
                         {job.status === 'closed' && (
-                          <li>
-                            <button
-                              onClick={() => handleStatusChange(job.id, 'published')}
-                              data-text="เปิดรับสมัครอีกครั้ง"
-                            >
-                              <span className="la la-refresh"></span>
-                            </button>
-                          </li>
+                          <li><button onClick={() => handleStatusChange(job.id, 'published')} data-text="เปิดรับสมัครอีกครั้ง"><span className="la la-refresh"></span></button></li>
                         )}
                       </ul>
                     </div>
                   </td>
                 </tr>
               ))}
-
               {jobs.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="text-center">
-                    ไม่พบข้อมูลการประกาศรับสมัครงาน
-                  </td>
+                  <td colSpan="5" className="text-center">ไม่พบข้อมูลการประกาศรับสมัครงาน</td>
                 </tr>
               )}
             </tbody>

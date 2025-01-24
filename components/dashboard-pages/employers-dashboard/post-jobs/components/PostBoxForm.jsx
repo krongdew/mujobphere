@@ -6,6 +6,20 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
+const formatDateForDateInput = (dateString) => {
+  if (!dateString) return null;
+
+  try {
+    const date = new Date(dateString);
+    // ปรับเวลาให้เป็น local timezone
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    return date;
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return null;
+  }
+};
+
 const defaultFormState = {
   hire_type: '',
   job_type_id: '',
@@ -85,32 +99,32 @@ const PostBoxForm = () => {
   }
 }, [isEditMode, session?.user?.role]);
   // Fetch existing job data for edit mode
-  useEffect(() => {
-    const fetchJobData = async () => {
-      if (!editId) return;
+  // ในส่วน useEffect ที่ดึงข้อมูลงาน
+useEffect(() => {
+  const fetchJobData = async () => {
+    if (!editId) return;
 
-      try {
-        const response = await fetch(`/api/jobs/${editId}`);
-        if (!response.ok) throw new Error('Failed to fetch job details');
-        const jobData = await response.json();
+    try {
+      const response = await fetch(`/api/jobs/${editId}`);
+      if (!response.ok) throw new Error('Failed to fetch job details');
+      const jobData = await response.json();
 
-        // Convert date strings to Date objects
-        jobData.application_start_date = jobData.application_start_date ? new Date(jobData.application_start_date) : null;
-        jobData.application_end_date = jobData.application_end_date ? new Date(jobData.application_end_date) : null;
-        jobData.work_start_date = jobData.work_start_date ? new Date(jobData.work_start_date) : null;
-        jobData.work_end_date = jobData.work_end_date ? new Date(jobData.work_end_date) : null;
+      // แปลงวันที่ให้ถูกต้อง
+      jobData.application_start_date = formatDateForDateInput(jobData.application_start_date);
+      jobData.application_end_date = formatDateForDateInput(jobData.application_end_date);
+      jobData.work_start_date = formatDateForDateInput(jobData.work_start_date);
+      jobData.work_end_date = formatDateForDateInput(jobData.work_end_date);
 
-        setFormData(jobData);
-      } catch (error) {
-        console.error('Error fetching job details:', error);
-        alert('เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง');
-      } finally {
-        setLoading(false);
-      }
-    };
+      setFormData(jobData);
+    } catch (error) {
+      console.error('Error fetching job details:', error);
+      alert('เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง');
+    }
+    setLoading(false);
+  };
 
-    fetchJobData();
-  }, [editId]);
+  fetchJobData();
+}, [editId]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -250,7 +264,7 @@ const PostBoxForm = () => {
         <div className="form-group col-lg-6 col-md-12">
           <label>วันที่เปิดรับสมัคร *</label>
           <DatePicker
-            selected={formData.application_start_date}
+            selected={formatDateForDateInput(formData.application_start_date)}
             onChange={date => setFormData(prev => ({
               ...prev,
               application_start_date: date
@@ -265,7 +279,7 @@ const PostBoxForm = () => {
         <div className="form-group col-lg-6 col-md-12">
           <label>วันที่ปิดรับสมัคร *</label>
           <DatePicker
-            selected={formData.application_end_date}
+            selected={formatDateForDateInput(formData.application_end_date)}
             onChange={date => setFormData(prev => ({
               ...prev,
               application_end_date: date
@@ -309,7 +323,7 @@ const PostBoxForm = () => {
         <div className="form-group col-lg-6 col-md-12">
           <label>วันที่เริ่มปฏิบัติงาน *</label>
           <DatePicker
-            selected={formData.work_start_date}
+            selected={formatDateForDateInput(formData.work_start_date)}
             onChange={date => setFormData(prev => ({
               ...prev,
               work_start_date: date
@@ -335,7 +349,7 @@ const PostBoxForm = () => {
           
           {!formData.work_end_indefinite && (
             <DatePicker
-              selected={formData.work_end_date}
+              selected={formatDateForDateInput(formData.work_end_date)}
               onChange={date => setFormData(prev => ({
                 ...prev,
                 work_end_date: date

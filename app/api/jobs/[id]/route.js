@@ -1,8 +1,19 @@
-// app/api/jobs/[id]/route.js
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/queries';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
+
+const formatDateForDatabase = (dateString) => {
+  if (!dateString) return null;
+  try {
+    const date = new Date(dateString);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    return date.toISOString();
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return null;
+  }
+};
 
 export async function GET(request, { params }) {
   try {
@@ -13,7 +24,6 @@ export async function GET(request, { params }) {
 
     const jobId = params.id;
     
-    // ดึงข้อมูลงานพื้นฐานก่อน
     const jobResult = await query(
       'SELECT * FROM job_posts WHERE id = $1 AND user_id = $2',
       [jobId, session.user.id]
@@ -25,7 +35,6 @@ export async function GET(request, { params }) {
 
     const job = jobResult.rows[0];
 
-    // ถ้าเป็นการจ่ายแบบงวด ให้ดึงข้อมูลงวดการจ่ายเงิน
     if (job.payment_type === 'installment') {
       const installmentResult = await query(
         `SELECT amount, amount_type, installment_number
@@ -61,8 +70,12 @@ export async function PUT(request, { params }) {
 
     const jobId = params.id;
     const data = await request.json();
+    
+    data.application_start_date = formatDateForDatabase(data.application_start_date);
+    data.application_end_date = formatDateForDatabase(data.application_end_date);
+    data.work_start_date = formatDateForDatabase(data.work_start_date);
+    data.work_end_date = data.work_end_indefinite ? null : formatDateForDatabase(data.work_end_date);
 
-    // Verify job belongs to user
     const jobResult = await query(
       'SELECT user_id FROM job_posts WHERE id = $1',
       [jobId]
@@ -72,7 +85,6 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Update job post
     await query(
       `UPDATE job_posts SET
         hire_type = $1, job_type_id = $2, other_job_type = $3,
@@ -96,15 +108,12 @@ export async function PUT(request, { params }) {
       ]
     );
 
-    // Handle payment installments
     if (data.payment_type === 'installment' && Array.isArray(data.payment_installments)) {
-      // Delete existing installments
       await query(
         'DELETE FROM job_payment_installments WHERE job_post_id = $1',
         [jobId]
       );
 
-      // Insert new installments
       for (let i = 0; i < data.payment_installments.length; i++) {
         const installment = data.payment_installments[i];
         if (installment?.amount && installment?.amount_type) {
@@ -128,6 +137,42 @@ export async function PUT(request, { params }) {
     console.error('Error updating job:', error);
     return NextResponse.json(
       { error: 'Failed to update job' },
+      { status: 500 }
+    );
+  }
+}
+
+// Backend: app/api/jobs/[id]/status/route.js
+export async function PATCH(request, { params }) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = params;
+    const { status } = await request.json();
+
+    // Verify job belongs to user
+    const jobResult = await query(
+      'SELECT user_id FROM job_posts WHERE id = $1',
+      [id]
+    );
+
+    if (!jobResult.rows.length || jobResult.rows[0].user_id !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    await query(
+      'UPDATE job_posts SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+      [status, id]
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating job status:', error);
+    return NextResponse.json(
+      { error: 'Failed to update job status' },
       { status: 500 }
     );
   }
