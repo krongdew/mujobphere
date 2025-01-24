@@ -15,7 +15,7 @@ const publicPaths = [
   '/api/auth',
   '/_next',
   '/images',
-  '/uploads',  // เพิ่ม path สำหรับรูปภาพ
+  '/uploads',
   '/favicon.ico',
   '/api/auth/callback'
 ];
@@ -27,13 +27,8 @@ function isPublicPath(path: string): boolean {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Skip middleware for public paths
-  if (isPublicPath(pathname)) {
-    return NextResponse.next();
-  }
-
-  // ถ้าเป็น path ของรูปภาพ ให้ข้าม middleware
-  if (pathname.startsWith('/uploads/')) {
+  // Skip middleware for public paths and static files
+  if (isPublicPath(pathname) || pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp)$/)) {
     return NextResponse.next();
   }
 
@@ -65,7 +60,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // ไม่ใช้ middleware กับ path ที่เริ่มต้นด้วย uploads, api, _next, _vercel
     '/((?!uploads|api|_next|_vercel|.*\\..*).*)'
   ]
 };

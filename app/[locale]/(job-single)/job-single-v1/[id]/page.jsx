@@ -1,93 +1,155 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import dynamic from "next/dynamic";
-import jobs from "@/data/job-featured";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+
 import LoginPopup from "@/components/common/form/login/LoginPopup";
 import FooterDefault from "@/components/footer/common-footer";
-import DefaulHeader from "@/components/header/DefaulHeader";
+import DefaulHeader2 from "@/components/header/DefaulHeader2";
 import MobileMenu from "@/components/header/MobileMenu";
 import RelatedJobs from "@/components/job-single-pages/related-jobs/RelatedJobs";
 import JobOverView from "@/components/job-single-pages/job-overview/JobOverView";
 import JobSkills from "@/components/job-single-pages/shared-components/JobSkills";
-import CompnayInfo from "@/components/job-single-pages/shared-components/CompanyInfo";
+import CompanyInfo from "@/components/job-single-pages/shared-components/CompanyInfo";
 import MapJobFinder from "@/components/job-listing-pages/components/MapJobFinder";
 import SocialTwo from "@/components/job-single-pages/social/SocialTwo";
 import JobDetailsDescriptions from "@/components/job-single-pages/shared-components/JobDetailsDescriptions";
 import ApplyJobModalContent from "@/components/job-single-pages/shared-components/ApplyJobModalContent";
-import Image from "next/image";
 
-export const metadata = {
-  title: "Job Single Dyanmic V1 || Superio - Job Borad React NextJS Template",
-  description: "Superio - Job Borad React NextJS Template",
+// Utility function to handle image paths
+const getImageUrl = (path) => {
+  if (!path) return '/images/default-company-logo.png';
+  
+  // 1. แปลง HTML entities
+  let cleanPath = path.replace(/&#x2F;/g, '/');
+  
+  // 2. ลบ prefix ออก หากมี
+  if (cleanPath.startsWith('/uploads/') || cleanPath.startsWith('/images/')) {
+    return cleanPath;
+  }
+  
+  // 3. เอาเฉพาะ filename
+  const filename = cleanPath.split('/').pop();
+  
+  // 4. สร้าง path ใหม่
+  return filename ? `/uploads/${filename}` : '/images/default-company-logo.png';
 };
 
 const JobSingleDynamicV1 = ({ params }) => {
-  const id = params.id;
-  const company = jobs.find((item) => item.id == id) || jobs[0];
+  const { data: session } = useSession();
+  const [jobPost, setJobPost] = useState(null);
+  const [profileData, setProfileData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobAndProfileData = async () => {
+      if (!session) return;
+
+      try {
+        // Fetch job post data
+        const jobResponse = await fetch(`/api/jobs/${params.id}`);
+        const jobData = await jobResponse.json();
+
+        // Fetch profile data of the job poster
+        const profileResponse = await fetch(`/api/profile/${jobData.user_id}`);
+        const profileData = await profileResponse.json();
+
+        setJobPost(jobData);
+        setProfileData(profileData);
+      } catch (error) {
+        console.error('Error fetching job and profile data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (session) {
+      fetchJobAndProfileData();
+    }
+  }, [session, params.id]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!jobPost || !profileData) {
+    return <div>Job not found</div>;
+  }
+
+  // Render company logo and information based on profile role
+  const renderCompanyInfo = () => {
+    let companyLogo, companyName, companyDetails;
+
+    if (profileData.role === 'employer') {
+      companyLogo = profileData.company_logo;
+      companyName = `${profileData.title} ${profileData.name}`;
+      companyDetails = [
+        { icon: 'flaticon-briefcase', text: profileData.department },
+        { icon: 'flaticon-map-locator', text: profileData.position },
+      ];
+    } else if (profileData.role === 'employeroutside') {
+      companyLogo = profileData.company_logo;
+      companyName = profileData.company_name;
+      companyDetails = [
+        { icon: 'flaticon-map-locator', text: profileData.company_address },
+        { icon: 'flaticon-phone', text: profileData.company_phone },
+      ];
+    } else {
+      companyLogo = null;
+      companyName = 'Unknown Employer';
+      companyDetails = [];
+    }
+
+    return (
+      <div className="content">
+        <span className="company-logo">
+          <Image
+            width={100}
+            height={98}
+            src={getImageUrl(companyLogo)}
+            alt="company logo"
+            unoptimized
+            className="object-cover"
+          />
+        </span>
+        <h4>{jobPost.title}</h4>
+
+        <ul className="job-info">
+          <li>
+            <span className="icon flaticon-briefcase"></span>
+            {companyName}
+          </li>
+          {companyDetails.map((detail, index) => (
+            <li key={index}>
+              <span className={`icon ${detail.icon}`}></span>
+              {detail.text}
+            </li>
+          ))}
+          <li>
+            <span className="icon flaticon-money"></span>
+            {jobPost.compensation_amount} {jobPost.compensation_period}
+          </li>
+        </ul>
+      </div>
+    );
+  };
 
   return (
     <>
-      {/* <!-- Header Span --> */}
       <span className="header-span"></span>
 
       <LoginPopup />
-      {/* End Login Popup Modal */}
-
-      <DefaulHeader />
-      {/* <!--End Main Header --> */}
-
+      <DefaulHeader2 />
       <MobileMenu />
-      {/* End MobileMenu */}
 
-      {/* <!-- Job Detail Section --> */}
       <section className="job-detail-section">
         <div className="upper-box">
           <div className="auto-container">
             <div className="job-block-seven">
               <div className="inner-box">
-                <div className="content">
-                  <span className="company-logo">
-                    <Image
-                      width={100}
-                      height={98}
-                      src={company?.logo}
-                      alt="logo"
-                    />
-                  </span>
-                  <h4>{company?.jobTitle}</h4>
-
-                  <ul className="job-info">
-                    <li>
-                      <span className="icon flaticon-briefcase"></span>
-                      {company?.company}
-                    </li>
-                    {/* compnay info */}
-                    <li>
-                      <span className="icon flaticon-map-locator"></span>
-                      {company?.location}
-                    </li>
-                    {/* location info */}
-                    <li>
-                      <span className="icon flaticon-clock-3"></span>{" "}
-                      {company?.time}
-                    </li>
-                    {/* time info */}
-                    <li>
-                      <span className="icon flaticon-money"></span>{" "}
-                      {company?.salary}
-                    </li>
-                    {/* salary info */}
-                  </ul>
-                  {/* End .job-info */}
-
-                  <ul className="job-other-info">
-                    {company?.jobType?.map((val, i) => (
-                      <li key={i} className={`${val.styleClass}`}>
-                        {val.type}
-                      </li>
-                    ))}
-                  </ul>
-                  {/* End .job-other-info */}
-                </div>
-                {/* End .content */}
+                {renderCompanyInfo()}
 
                 <div className="btn-box">
                   <a
@@ -102,9 +164,8 @@ const JobSingleDynamicV1 = ({ params }) => {
                     <i className="flaticon-bookmark"></i>
                   </button>
                 </div>
-                {/* End apply for job btn */}
 
-                {/* <!-- Modal --> */}
+                {/* Apply Job Modal */}
                 <div
                   className="modal fade"
                   id="applyJobModal"
@@ -122,28 +183,21 @@ const JobSingleDynamicV1 = ({ params }) => {
                           aria-label="Close"
                         ></button>
                       </div>
-                      {/* End modal-header */}
 
                       <ApplyJobModalContent />
-                      {/* End PrivateMessageBox */}
                     </div>
-                    {/* End .send-private-message-wrapper */}
                   </div>
                 </div>
-                {/* End .modal */}
               </div>
             </div>
-            {/* <!-- Job Block --> */}
           </div>
         </div>
-        {/* <!-- Upper Box --> */}
 
         <div className="job-detail-outer">
           <div className="auto-container">
             <div className="row">
               <div className="content-column col-lg-8 col-md-12 col-sm-12">
-                <JobDetailsDescriptions />
-                {/* End jobdetails content */}
+                <JobDetailsDescriptions jobPost={jobPost} />
 
                 <div className="other-options">
                   <div className="social-share">
@@ -151,7 +205,6 @@ const JobSingleDynamicV1 = ({ params }) => {
                     <SocialTwo />
                   </div>
                 </div>
-                {/* <!-- Other Options --> */}
 
                 <div className="related-jobs">
                   <div className="title-box">
@@ -160,39 +213,31 @@ const JobSingleDynamicV1 = ({ params }) => {
                       2020 jobs live - 293 added today.
                     </div>
                   </div>
-                  {/* End title box */}
 
                   <RelatedJobs />
                 </div>
-                {/* <!-- Related Jobs --> */}
               </div>
-              {/* End .content-column */}
 
               <div className="sidebar-column col-lg-4 col-md-12 col-sm-12">
                 <aside className="sidebar">
                   <div className="sidebar-widget">
-                    {/* <!-- Job Overview --> */}
                     <h4 className="widget-title">Job Overview</h4>
-                    <JobOverView />
+                    <JobOverView jobPost={jobPost} />
 
-                    {/* <!-- Map Widget --> */}
                     <h4 className="widget-title mt-5">Job Location</h4>
-                    <div className="widget-content">
+                    {/* <div className="widget-content">
                       <div className="map-outer">
                         <div style={{ height: "300px", width: "100%" }}>
-                          <MapJobFinder />
+                          <MapJobFinder location={jobPost.location} />
                         </div>
                       </div>
                     </div>
-                    {/* <!--  Map Widget --> */}
 
                     <h4 className="widget-title">Job Skills</h4>
                     <div className="widget-content">
                       <JobSkills />
-                    </div>
-                    {/* <!-- Job Skills --> */}
+                    </div> */}
                   </div>
-                  {/* End .sidebar-widget */}
 
                   <div className="sidebar-widget company-widget">
                     <div className="widget-content">
@@ -201,46 +246,33 @@ const JobSingleDynamicV1 = ({ params }) => {
                           <Image
                             width={54}
                             height={53}
-                            src={company.logo}
-                            alt="resource"
+                            src={getImageUrl(profileData.company_logo)}
+                            alt="company logo"
+                            unoptimized
+                            className="object-cover"
                           />
                         </div>
-                        <h5 className="company-name">{company.company}</h5>
+                        <h5 className="company-name">
+                          {profileData.role === 'employer' 
+                            ? `${profileData.title} ${profileData.name}` 
+                            : profileData.company_name}
+                        </h5>
                         <a href="#" className="profile-link">
                           View company profile
                         </a>
                       </div>
-                      {/* End company title */}
 
-                      <CompnayInfo />
-
-                      <div className="btn-box">
-                        <a
-                          href="#"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="theme-btn btn-style-three"
-                        >
-                          {company?.link}
-                        </a>
-                      </div>
-                      {/* End btn-box */}
+                      <CompanyInfo profileData={profileData} />
                     </div>
                   </div>
-                  {/* End .company-widget */}
                 </aside>
-                {/* End .sidebar */}
               </div>
-              {/* End .sidebar-column */}
             </div>
           </div>
         </div>
-        {/* <!-- job-detail-outer--> */}
       </section>
-      {/* <!-- End Job Detail Section --> */}
 
       <FooterDefault footerStyle="alternate5" />
-      {/* <!-- End Main Footer --> */}
     </>
   );
 };
