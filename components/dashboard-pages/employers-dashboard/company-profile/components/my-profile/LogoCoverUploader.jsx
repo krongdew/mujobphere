@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
 const LogoCoverUploader = () => {
   const { data: session } = useSession();
@@ -14,24 +14,22 @@ const LogoCoverUploader = () => {
   const [currentCover, setCurrentCover] = useState("");
 
   const getPublicPath = (path) => {
-    if (!path) return '';
-    
+    if (!path) return "";
+
     // แปลง HTML entities
-    let cleanPath = path.replace(/&#x2F;/g, '/');
-    
+    let cleanPath = path.replace(/&#x2F;/g, "/");
+
     // ตรวจสอบว่าเป็น path เต็มหรือไม่
-    if (cleanPath.startsWith('/images/uploads/')) {
+    if (cleanPath.startsWith("/images/uploads/")) {
       return cleanPath;
     }
-    
+
     // เอาเฉพาะส่วน filename
-    const filename = cleanPath.split('/').pop();
-    
+    const filename = cleanPath.split("/").pop();
+
     // สร้าง path ใหม่
     return `/images/uploads/${filename}`;
   };
-
-
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -43,17 +41,17 @@ const LogoCoverUploader = () => {
           throw new Error("Failed to fetch profile");
         }
         const data = await response.json();
-        console.log('Profile data:', data);
+        console.log("Profile data:", data);
 
         if (data.company_logo) {
           const logoPath = getPublicPath(data.company_logo);
-          console.log('Logo path:', logoPath);
+          console.log("Logo path:", logoPath);
           setCurrentLogo(logoPath);
         }
 
         if (data.company_cover) {
           const coverPath = getPublicPath(data.company_cover);
-          console.log('Cover path:', coverPath);
+          console.log("Cover path:", coverPath);
           setCurrentCover(coverPath);
         }
       } catch (error) {
@@ -65,19 +63,33 @@ const LogoCoverUploader = () => {
     fetchImages();
   }, [session?.user?.id]);
 
-// ฟังก์ชัน getImageUrl
-const getImageUrl = (path) => {
-  if (!path) return '';
-  
-  // ถ้าเป็น path เต็มแล้วให้ใช้เลย
-  if (path.startsWith('/images/uploads/')) {
-    return path;
-  }
-  
-  // ถ้าไม่ใช่ให้แปลงเป็น path ที่ถูกต้อง
-  return `/images/uploads/${path.split('/').pop()}`;
-};
+  // ฟังก์ชัน getImageUrl
+  const getImageUrl = (path) => {
+    if (!path) return "";
 
+    // แปลง HTML entities ทั้งหมด
+    const cleanPath = path
+      .replace(/&#x2F;/g, "/") // แปลง &#x2F; เป็น /
+      .replace(/&amp;/g, "&") // แปลง &amp; เป็น &
+      .replace(/&lt;/g, "<") // แปลง &lt; เป็น
+      .replace(/&gt;/g, ">") // แปลง &gt; เป็น >
+      .replace(/&quot;/g, '"') // แปลง &quot; เป็น "
+      .replace(/&#39;/g, "'"); // แปลง &#39; เป็น '
+
+    // ถ้าเป็น URL เต็ม (https://) ให้ใช้เลย
+    if (cleanPath.startsWith("http")) {
+      return cleanPath;
+    }
+
+    // ถ้าเริ่มด้วย /images/uploads ให้ใช้ path นั้น
+    if (cleanPath.startsWith("/images/uploads/")) {
+      return cleanPath;
+    }
+
+    // กรณีอื่นๆ ให้เติม prefix
+    const filename = cleanPath.split("/").pop();
+    return `/images/uploads/${filename}`;
+  };
   const uploadFile = async (file, type) => {
     if (!file) return;
 
@@ -122,16 +134,13 @@ const getImageUrl = (path) => {
     await uploadFile(file, "cover");
   };
 
-
-
-
   return (
     <>
       {error && <div className="alert alert-danger mb-4">{error}</div>}
-      
+
       {currentLogo && (
         <div className="mt-2">
-          <div className="text ml-2" style={{ marginBottom: '10px' }}>
+          <div className="text ml-2" style={{ marginBottom: "10px" }}>
             รูปโลโก้ / รูปโปรไฟล์ปัจจุบัน
           </div>
           {/* <div style={{ marginBottom: '5px' }}>Debug path: {getImageUrl(currentLogo)}</div> */}
@@ -141,16 +150,15 @@ const getImageUrl = (path) => {
             width={100}
             height={100}
             className="object-cover rounded"
-            style={{ marginBottom: '10px' }}
+            style={{ marginBottom: "10px" }}
             unoptimized
           />
         </div>
       )}
-  <div className="text ml-2" style={{ marginTop: '10px' }}>
-              อัพโหลดภาพปกใหม่
-            </div>
+      <div className="text ml-2" style={{ marginTop: "10px" }}>
+        อัพโหลดภาพปกใหม่
+      </div>
       <div className="uploading-outer">
-    
         <div className="uploadButton">
           <input
             className="uploadButton-input"
@@ -164,17 +172,15 @@ const getImageUrl = (path) => {
           <label className="uploadButton-button ripple-effect" htmlFor="upload">
             {loading ? "Uploading..." : "Browse Logo"}
           </label>
-       
-          
         </div>
-        <div className="text" style={{ marginLeft: '10px' }}>
-            Max file size is 1MB, Minimum dimension: 330x300 And Suitable files
-            are .jpg & .png
-          </div>
+        <div className="text" style={{ marginLeft: "10px" }}>
+          Max file size is 1MB, Minimum dimension: 330x300 And Suitable files
+          are .jpg & .png
+        </div>
       </div>
       {currentCover && (
         <div className="mt-2">
-          <div className="text ml-2" style={{ marginBottom: '10px' }}>
+          <div className="text ml-2" style={{ marginBottom: "10px" }}>
             รูปปกปัจจุบัน
           </div>
           {/* <div style={{ marginBottom: '5px' }}>Debug path: {getImageUrl(currentCover)}</div> */}
@@ -184,16 +190,18 @@ const getImageUrl = (path) => {
             width={200}
             height={100}
             className="object-cover rounded"
-            style={{ marginBottom: '10px' }}
+            style={{ marginBottom: "10px" }}
             unoptimized
           />
         </div>
       )}
 
-
-<div className="text ml-2" style={{ marginTop: '10px',marginBottom:'-10px' }}>
-              อัพโหลดภาพปกใหม่
-            </div>
+      <div
+        className="text ml-2"
+        style={{ marginTop: "10px", marginBottom: "-10px" }}
+      >
+        อัพโหลดภาพปกใหม่
+      </div>
       <div className="uploading-outer mt-4">
         <div className="uploadButton">
           <input
@@ -212,11 +220,10 @@ const getImageUrl = (path) => {
             {loading ? "Uploading..." : "Browse Cover"}
           </label>
         </div>
-        <div className="text" style={{ marginLeft: '10px' }}>
+        <div className="text" style={{ marginLeft: "10px" }}>
           Max file size is 1MB, Minimum dimension: 330x300 And Suitable files
           are .jpg & .png
         </div>
-        
       </div>
     </>
   );
