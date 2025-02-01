@@ -13,18 +13,23 @@ const LogoCoverUploader = () => {
   const [currentLogo, setCurrentLogo] = useState("");
   const [currentCover, setCurrentCover] = useState("");
 
-// ฟังก์ชัน getPublicPath
-const getPublicPath = (path) => {
-  if (!path) return '';
-  
-  // แปลง HTML entities
-  let cleanPath = path.replace(/&#x2F;/g, '/');
-  
-  // เอาเฉพาะส่วน filename
-  const filename = cleanPath.split('/').pop();
-  
-  return `/images/uploads/${filename}`;
-};
+  const getPublicPath = (path) => {
+    if (!path) return '';
+    
+    // แปลง HTML entities
+    let cleanPath = path.replace(/&#x2F;/g, '/');
+    
+    // ตรวจสอบว่าเป็น path เต็มหรือไม่
+    if (cleanPath.startsWith('/images/uploads/')) {
+      return cleanPath;
+    }
+    
+    // เอาเฉพาะส่วน filename
+    const filename = cleanPath.split('/').pop();
+    
+    // สร้าง path ใหม่
+    return `/images/uploads/${filename}`;
+  };
 
 
 

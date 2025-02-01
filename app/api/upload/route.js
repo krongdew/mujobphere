@@ -17,6 +17,17 @@ const generateSafeFileName = (originalName) => {
     return `${timestamp}_${randomString}.${ext}`;
   };
 
+// เพิ่มฟังก์ชันสำหรับจัดการ path
+const getUploadPath = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // สำหรับ Render
+    return '/opt/render/project/src/public';
+  }
+  // สำหรับ local development
+  return process.cwd();
+};
+
+
 export async function POST(request) {
   try {
     console.log('Starting file upload process');
@@ -56,8 +67,10 @@ export async function POST(request) {
       );
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadDir = join(process.cwd(), 'public', 'images', 'uploads');
+    // ปรับการสร้าง path
+    const basePath = getUploadPath();
+    const uploadDir = join(basePath, 'public', 'images', 'uploads');
+    
     try {
       await mkdir(uploadDir, { recursive: true });
     } catch (error) {
