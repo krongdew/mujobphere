@@ -85,6 +85,20 @@ const nextConfig = {
     formats: ['image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    domains: ['mujobphere.onrender.com'], // เพิ่ม domain ของ Render
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'mujobphere.onrender.com',
+        pathname: '/images/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/images/uploads/**', // แก้จาก /uploads เป็น /images/uploads
+      },
+    ],
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -93,16 +107,10 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   basePath: '',
-  // เพิ่มส่วนนี้
-  remotePatterns: [
-    {
-      protocol: 'http',
-      hostname: 'localhost',
-      port: '3000',
-      pathname: '/uploads/**',
-    },
-  ],
-  
+  // เพิ่ม assetPrefix สำหรับ production
+  assetPrefix: process.env.NODE_ENV === 'production' 
+    ? 'https://mujobphere.onrender.com' 
+    : '',
 };
 
 module.exports = withNextIntl(nextConfig);
