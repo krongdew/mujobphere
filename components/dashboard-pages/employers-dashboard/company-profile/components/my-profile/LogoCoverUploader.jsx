@@ -37,17 +37,17 @@ const LogoCoverUploader = () => {
           throw new Error("Failed to fetch profile");
         }
         const data = await response.json();
-        // console.log('Profile data:', data);
+        console.log('Profile data:', data);
 
         if (data.company_logo) {
           const logoPath = getPublicPath(data.company_logo);
-          // console.log('Logo path:', logoPath);
+          console.log('Logo path:', logoPath);
           setCurrentLogo(logoPath);
         }
 
         if (data.company_cover) {
           const coverPath = getPublicPath(data.company_cover);
-          // console.log('Cover path:', coverPath);
+          console.log('Cover path:', coverPath);
           setCurrentCover(coverPath);
         }
       } catch (error) {
