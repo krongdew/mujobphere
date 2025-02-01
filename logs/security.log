@@ -102,3 +102,6 @@
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-01-18T10:04:37.075Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-01-18T12:28:28.380Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-01-21T09:54:17.196Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-01T07:13:13.986Z","userId":20}}
+{"level":"info","message":{"event":"user_updated","role":"employeroutside","timestamp":"2025-02-01T07:13:41.673Z","userId":22}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-01T07:14:04.486Z","userId":19}}

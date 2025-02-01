@@ -24,7 +24,7 @@ const LogoCoverUploader = () => {
     const filename = cleanPath.split('/').pop();
     
     // 3. สร้าง path ใหม่
-    return `/uploads/${filename}`;
+    return `/images/uploads/${filename}`;
   };
 
   useEffect(() => {
