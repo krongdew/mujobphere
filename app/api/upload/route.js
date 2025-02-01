@@ -81,7 +81,13 @@ export async function POST(request) {
 
     // Important: Store the correct path in database
     // Make sure the path starts with a leading slash
-    const dbFilePath = `/uploads/${fileName}`;
+// เปลี่ยน path ที่จะเก็บในฐานข้อมูล
+const dbFilePath = `/images/uploads/${fileName}`;
+
+// เพิ่ม console.log เพื่อดูค่า
+console.log('File saved to:', filePath);
+console.log('Database path:', dbFilePath);
+
     let updateQuery;
 
     try {
@@ -94,16 +100,17 @@ export async function POST(request) {
           ? 'UPDATE employer_profiles SET company_logo = $1 WHERE user_id = $2 RETURNING *'
           : 'UPDATE employer_profiles SET company_cover = $1 WHERE user_id = $2 RETURNING *';
       }
-
+    
       const result = await query(updateQuery, [dbFilePath, session.user.id]);
       console.log('Database updated successfully:', result.rows[0]);
     } catch (error) {
       console.error('Database update error:', error);
       throw error;
     }
-
+    
+    // ปรับ response ให้ส่งกลับ path ที่ถูกต้อง
     return NextResponse.json({
-      url: dbFilePath,  // Return the correct path
+      url: dbFilePath,
       message: 'File uploaded successfully'
     });
 

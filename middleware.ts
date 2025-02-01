@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // '/((?!images/uploads|api|_next|_vercel|.*\\..*).*)'
-     '/((?!api|_next|_vercel|images/uploads|.*\\..*).*)'
+       '/((?!api|_next|_vercel|images|.*\\.[\\w]+$).*)'
   ]
 };
 

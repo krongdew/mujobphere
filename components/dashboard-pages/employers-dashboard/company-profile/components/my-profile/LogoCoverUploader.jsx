@@ -13,19 +13,20 @@ const LogoCoverUploader = () => {
   const [currentLogo, setCurrentLogo] = useState("");
   const [currentCover, setCurrentCover] = useState("");
 
-  // สร้างฟังก์ชันสำหรับจัดการ path
-  const getPublicPath = (path) => {
-    if (!path) return '';
-    
-    // 1. แปลง HTML entities
-    let cleanPath = path.replace(/&#x2F;/g, '/');
-    
-    // 2. เอาเฉพาะส่วน filename
-    const filename = cleanPath.split('/').pop();
-    
-    // 3. สร้าง path ใหม่
-    return `/images/uploads/${filename}`;
-  };
+// ฟังก์ชัน getPublicPath
+const getPublicPath = (path) => {
+  if (!path) return '';
+  
+  // แปลง HTML entities
+  let cleanPath = path.replace(/&#x2F;/g, '/');
+  
+  // เอาเฉพาะส่วน filename
+  const filename = cleanPath.split('/').pop();
+  
+  return `/images/uploads/${filename}`;
+};
+
+
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -59,13 +60,18 @@ const LogoCoverUploader = () => {
     fetchImages();
   }, [session?.user?.id]);
 
-  // สร้างฟังก์ชัน getImageUrl สำหรับสร้าง URL ที่ถูกต้อง
-  const getImageUrl = (path) => {
-    // ถ้า path เริ่มต้นด้วย / ให้ตัดออก
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    // สร้าง URL โดยไม่รวม locale path
-    return `/${cleanPath}`;
-  };
+// ฟังก์ชัน getImageUrl
+const getImageUrl = (path) => {
+  if (!path) return '';
+  
+  // ถ้าเป็น path เต็มแล้วให้ใช้เลย
+  if (path.startsWith('/images/uploads/')) {
+    return path;
+  }
+  
+  // ถ้าไม่ใช่ให้แปลงเป็น path ที่ถูกต้อง
+  return `/images/uploads/${path.split('/').pop()}`;
+};
 
   const uploadFile = async (file, type) => {
     if (!file) return;
