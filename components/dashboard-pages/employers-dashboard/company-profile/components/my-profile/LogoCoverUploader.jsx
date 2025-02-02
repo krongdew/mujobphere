@@ -1,3 +1,4 @@
+// components/dashboard-pages/employers-dashboard/company-profile/components/my-profile/LogoCoverUploader.jsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -63,33 +64,20 @@ const LogoCoverUploader = () => {
     fetchImages();
   }, [session?.user?.id]);
 
-  // ฟังก์ชัน getImageUrl
+  // แก้ไขฟังก์ชัน getImageUrl ให้เรียบง่ายขึ้น
   const getImageUrl = (path) => {
-    if (!path) return "";
-
-    // แปลง HTML entities ทั้งหมด
-    const cleanPath = path
-      .replace(/&#x2F;/g, "/") // แปลง &#x2F; เป็น /
-      .replace(/&amp;/g, "&") // แปลง &amp; เป็น &
-      .replace(/&lt;/g, "<") // แปลง &lt; เป็น
-      .replace(/&gt;/g, ">") // แปลง &gt; เป็น >
-      .replace(/&quot;/g, '"') // แปลง &quot; เป็น "
-      .replace(/&#39;/g, "'"); // แปลง &#39; เป็น '
-
-    // ถ้าเป็น URL เต็ม (https://) ให้ใช้เลย
-    if (cleanPath.startsWith("http")) {
-      return cleanPath;
-    }
-
-    // ถ้าเริ่มด้วย /images/uploads ให้ใช้ path นั้น
-    if (cleanPath.startsWith("/images/uploads/")) {
-      return cleanPath;
-    }
-
-    // กรณีอื่นๆ ให้เติม prefix
-    const filename = cleanPath.split("/").pop();
+    if (!path) return '';
+    
+    // แปลง HTML entities เป็น path ปกติ
+    const cleanPath = path.replace(/&#x2F;/g, '/');
+    
+    // เอาเฉพาะชื่อไฟล์
+    const filename = cleanPath.split('/').pop();
+    
+    // สร้าง path แบบเดียวกับรูปอื่นๆ ใน theme
     return `/images/uploads/${filename}`;
   };
+
   const uploadFile = async (file, type) => {
     if (!file) return;
 
@@ -153,6 +141,14 @@ const LogoCoverUploader = () => {
             style={{ marginBottom: "10px" }}
             unoptimized
           />
+           <Image
+    src="/images/uploads/1738412495214_b63a6bd1d8004c8b076a1ea7a9b2187a.jpeg"
+    alt="Test Image"
+    width={200}
+    height={100}
+    className="object-cover rounded"
+    unoptimized
+  />
         </div>
       )}
       <div className="text ml-2" style={{ marginTop: "10px" }}>
