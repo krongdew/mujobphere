@@ -18,7 +18,6 @@ import SocialTwo from "@/components/job-single-pages/social/SocialTwo";
 import JobDetailsDescriptions from "@/components/job-single-pages/shared-components/JobDetailsDescriptions";
 import ApplyJobModalContent from "@/components/job-single-pages/shared-components/ApplyJobModalContent";
 
-// Utility function to handle image paths
 const getImageUrl = (path) => {
   if (!path) return "/images/default-company-logo.png";
 
@@ -32,7 +31,7 @@ const getImageUrl = (path) => {
   if (!filename) return "/images/default-company-logo.png";
 
   // ส่งคืน path ที่ถูกต้อง
-  return `/images/uploads/${filename}`;
+  return `/uploads/${filename}`;  // แก้จาก /images/uploads เป็น /uploads
 };
 
 const JobSingleDynamicV1 = ({ params }) => {

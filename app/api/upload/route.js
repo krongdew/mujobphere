@@ -167,11 +167,11 @@ const generateSafeFileName = (originalName) => {
 
 // เพิ่มฟังก์ชันสำหรับจัดการ path
 const getUploadPath = () => {
-   if (process.env.NODE_ENV === 'production') {
-       return '/opt/render/project/src/public/images/uploads';
-   }
-   return join(process.cwd(), 'public', 'images', 'uploads');
-};
+    if (process.env.NODE_ENV === 'production') {
+        return '/opt/render/project/src/public/uploads';  // แก้จาก images/uploads เป็น uploads
+    }
+    return join(process.cwd(), 'public/uploads');  // แก้จาก images/uploads เป็น uploads
+ };
 
 export async function POST(request) {
     try {
@@ -243,11 +243,11 @@ export async function POST(request) {
  
             const result = await query(updateQuery, [fileName, session.user.id]);
             
-            // ส่งกลับ URL ที่ถูกต้อง
-            return NextResponse.json({
-                url: `/images/uploads/${fileName}`,  // เปลี่ยนเป็นส่ง path เต็ม
-                message: 'File uploaded successfully'
-            });
+           // ส่งกลับ URL ที่ถูกต้อง
+return NextResponse.json({
+    url: `/uploads/${fileName}`,  // แก้จาก /images/uploads เป็น /uploads
+    message: 'File uploaded successfully'
+});
  
         } catch (error) {
             console.error('Operation error:', error);

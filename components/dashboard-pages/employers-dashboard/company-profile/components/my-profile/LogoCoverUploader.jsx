@@ -21,21 +21,20 @@ const LogoCoverUploader = () => {
     let cleanPath = path.replace(/&#x2F;/g, "/");
 
     // ตรวจสอบว่าเป็น path เต็มหรือไม่
-    if (cleanPath.startsWith("/images/uploads/")) {
-      return cleanPath;
+    if (cleanPath.startsWith("/uploads/")) {  // แก้จาก /images/uploads เป็น /uploads
+        return cleanPath;
     }
 
     // เอาเฉพาะส่วน filename
     const filename = cleanPath.split("/").pop();
 
     // สร้าง path ใหม่
-    return `/images/uploads/${filename}`;
-  };
-  
-  const getImageUrl = (filename) => {
+    return `/uploads/${filename}`;  // แก้จาก /images/uploads เป็น /uploads
+};
+
+const getImageUrl = (filename) => {
     if (!filename) return '';
-    // เติม path เต็ม /images/uploads/
-    return `/images/uploads/${filename}`;
+    return `/uploads/${filename}`;  // แก้จาก /images/uploads เป็น /uploads
 };
 
 
