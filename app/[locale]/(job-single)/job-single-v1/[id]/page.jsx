@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -20,21 +20,19 @@ import ApplyJobModalContent from "@/components/job-single-pages/shared-component
 
 // Utility function to handle image paths
 const getImageUrl = (path) => {
-  if (!path) return '/images/default-company-logo.png';
-  
-  // 1. แปลง HTML entities
-  let cleanPath = path.replace(/&#x2F;/g, '/');
-  
-  // 2. ลบ prefix ออก หากมี
-  if (cleanPath.startsWith('/uploads/') || cleanPath.startsWith('/images/')) {
-    return cleanPath;
-  }
-  
-  // 3. เอาเฉพาะ filename
-  const filename = cleanPath.split('/').pop();
-  
-  // 4. สร้าง path ใหม่
-  return filename ? `/uploads/${filename}` : '/images/default-company-logo.png';
+  if (!path) return "/images/default-company-logo.png";
+
+  // แปลง HTML entities
+  let cleanPath = path.replace(/&#x2F;/g, "/");
+
+  // เอาเฉพาะชื่อไฟล์
+  const filename = cleanPath.split("/").pop();
+
+  // ถ้าไม่มีชื่อไฟล์ ใช้รูป default
+  if (!filename) return "/images/default-company-logo.png";
+
+  // ส่งคืน path ที่ถูกต้อง
+  return `/images/uploads/${filename}`;
 };
 
 const JobSingleDynamicV1 = ({ params }) => {
@@ -59,7 +57,7 @@ const JobSingleDynamicV1 = ({ params }) => {
         setJobPost(jobData);
         setProfileData(profileData);
       } catch (error) {
-        console.error('Error fetching job and profile data:', error);
+        console.error("Error fetching job and profile data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -82,23 +80,23 @@ const JobSingleDynamicV1 = ({ params }) => {
   const renderCompanyInfo = () => {
     let companyLogo, companyName, companyDetails;
 
-    if (profileData.role === 'employer') {
+    if (profileData.role === "employer") {
       companyLogo = profileData.company_logo;
       companyName = `${profileData.title} ${profileData.name}`;
       companyDetails = [
-        { icon: 'flaticon-briefcase', text: profileData.department },
-        { icon: 'flaticon-map-locator', text: profileData.position },
+        { icon: "flaticon-briefcase", text: profileData.department },
+        { icon: "flaticon-map-locator", text: profileData.position },
       ];
-    } else if (profileData.role === 'employeroutside') {
+    } else if (profileData.role === "employeroutside") {
       companyLogo = profileData.company_logo;
       companyName = profileData.company_name;
       companyDetails = [
-        { icon: 'flaticon-map-locator', text: profileData.company_address },
-        { icon: 'flaticon-phone', text: profileData.company_phone },
+        { icon: "flaticon-map-locator", text: profileData.company_address },
+        { icon: "flaticon-phone", text: profileData.company_phone },
       ];
     } else {
       companyLogo = null;
-      companyName = 'Unknown Employer';
+      companyName = "Unknown Employer";
       companyDetails = [];
     }
 
@@ -108,7 +106,7 @@ const JobSingleDynamicV1 = ({ params }) => {
           <Image
             width={100}
             height={98}
-            src={getImageUrl(companyLogo)}
+            src={getImageUrl(profileData.company_logo)}
             alt="company logo"
             unoptimized
             className="object-cover"
@@ -253,8 +251,8 @@ const JobSingleDynamicV1 = ({ params }) => {
                           />
                         </div>
                         <h5 className="company-name">
-                          {profileData.role === 'employer' 
-                            ? `${profileData.title} ${profileData.name}` 
+                          {profileData.role === "employer"
+                            ? `${profileData.title} ${profileData.name}`
                             : profileData.company_name}
                         </h5>
                         <a href="#" className="profile-link">
