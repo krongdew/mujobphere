@@ -100,7 +100,16 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: '/public/uploads/:path*',
+      },
+    ]
+  }
 };
+  
+
 
 module.exports = withNextIntl(nextConfig);
