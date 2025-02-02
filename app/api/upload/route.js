@@ -174,21 +174,21 @@ const getUploadPath = () => {
 };
 
 export async function POST(request) {
-   try {
-       console.log('Starting file upload process');
-
-       const session = await getServerSession(authOptions);
-       if (!session) {
-           return NextResponse.json(
-               { error: 'Unauthorized' },
-               { status: 401 }
-           );
-       }
-
-       const formData = await request.formData();
-       const file = formData.get('file');
-       const type = formData.get('type');
-
+    try {
+        console.log('Starting file upload process');
+ 
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+ 
+        const formData = await request.formData();
+        const file = formData.get('file');
+        const type = formData.get('type');
+ 
        console.log('Received file:', {
            fileName: file?.name,
            fileType: file?.type,
@@ -212,79 +212,58 @@ export async function POST(request) {
            );
        }
 
-       // ใช้งาน path
-       const uploadDir = getUploadPath();
-       console.log('Creating directory:', uploadDir);
+        // ใช้งาน path (ประกาศครั้งเดียว)
+        const uploadDir = getUploadPath();
+        console.log('Creating directory:', uploadDir);
+        try {
+            // สร้างโฟลเดอร์พร้อมกำหนดสิทธิ์
+            await mkdir(uploadDir, { recursive: true, mode: 0o755 });
+            console.log('Directory created with permissions 755');
+ 
+            // สร้างชื่อไฟล์
+            const fileName = generateSafeFileName(file.name);
+            const filePath = join(uploadDir, fileName);
+ 
+            // บันทึกไฟล์
+            const bytes = await file.arrayBuffer();
+            const buffer = Buffer.from(bytes);
+            await writeFile(filePath, buffer);
+            await chmod(filePath, 0o644);
+ 
+            let updateQuery;
+            if (session.user.role === 'employeroutside') {
+                updateQuery = type === 'logo'
+                    ? 'UPDATE employer_outside_profiles SET company_logo = $1 WHERE user_id = $2 RETURNING *'
+                    : 'UPDATE employer_outside_profiles SET company_cover = $1 WHERE user_id = $2 RETURNING *';
+            } else {
+                updateQuery = type === 'logo'
+                    ? 'UPDATE employer_profiles SET company_logo = $1 WHERE user_id = $2 RETURNING *'
+                    : 'UPDATE employer_profiles SET company_cover = $1 WHERE user_id = $2 RETURNING *';
+            }
+ 
+            const result = await query(updateQuery, [fileName, session.user.id]);
+            
+            // ส่งกลับ URL ที่ถูกต้อง
+            return NextResponse.json({
+                url: `/images/uploads/${fileName}`,  // เปลี่ยนเป็นส่ง path เต็ม
+                message: 'File uploaded successfully'
+            });
+ 
+        } catch (error) {
+            console.error('Operation error:', error);
+            throw error;
+        }
 
-       try {
-           // สร้างโฟลเดอร์พร้อมกำหนดสิทธิ์
-           await mkdir(uploadDir, { recursive: true, mode: 0o755 }); // rwxr-xr-x
-           console.log('Directory created with permissions 755');
-
-           // Generate safe filename
-           const fileName = generateSafeFileName(file.name);
-           const filePath = join(uploadDir, fileName);
-           console.log('Attempting to save file to:', filePath);
-
-           // บันทึกไฟล์
-           const bytes = await file.arrayBuffer();
-           const buffer = Buffer.from(bytes);
-           await writeFile(filePath, buffer);
-
-           // กำหนดสิทธิ์ไฟล์หลังจากบันทึก
-           await chmod(filePath, 0o644); // rw-r--r--
-           console.log('File saved and permissions set to 644');
-
-           // ตรวจสอบสิทธิ์
-           const stats = await stat(filePath);
-           console.log('File permissions:', stats.mode.toString(8));
-           console.log('File stats:', stats);
-
-           // เก็บ path ในฐานข้อมูล
-           const dbFilePath = `/images/uploads/${fileName}`;
-           console.log('File saved to:', filePath);
-           console.log('Database path:', dbFilePath);
-
-           let updateQuery;
-
-           try {
-               if (session.user.role === 'employeroutside') {
-                   updateQuery = type === 'logo'
-                       ? 'UPDATE employer_outside_profiles SET company_logo = $1 WHERE user_id = $2 RETURNING *'
-                       : 'UPDATE employer_outside_profiles SET company_cover = $1 WHERE user_id = $2 RETURNING *';
-               } else {
-                   updateQuery = type === 'logo'
-                       ? 'UPDATE employer_profiles SET company_logo = $1 WHERE user_id = $2 RETURNING *'
-                       : 'UPDATE employer_profiles SET company_cover = $1 WHERE user_id = $2 RETURNING *';
-               }
-
-               const result = await query(updateQuery, [dbFilePath, session.user.id]);
-               console.log('Database updated successfully:', result.rows[0]);
-
-               return NextResponse.json({
-                   url: dbFilePath,
-                   message: 'File uploaded successfully'
-               });
-
-           } catch (dbError) {
-               console.error('Database update error:', dbError);
-               throw dbError;
-           }
-
-       } catch (fileError) {
-           console.error('File operation error:', fileError);
-           throw fileError;
-       }
-
-   } catch (error) {
-       console.error('Upload process error:', error);
-       return NextResponse.json(
-           {
-               error: error.message,
-               stack: error.stack,
-               details: 'File upload failed'
-           },
-           { status: 500 }
-       );
-   }
-}
+ 
+    } catch (error) {
+        console.error('Upload process error:', error);
+        return NextResponse.json(
+            {
+                error: error.message,
+                stack: error.stack,
+                details: 'File upload failed'
+            },
+            { status: 500 }
+        );
+    }
+ }

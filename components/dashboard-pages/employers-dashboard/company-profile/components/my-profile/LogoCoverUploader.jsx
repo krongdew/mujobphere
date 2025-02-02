@@ -31,6 +31,13 @@ const LogoCoverUploader = () => {
     // สร้าง path ใหม่
     return `/images/uploads/${filename}`;
   };
+  
+  const getImageUrl = (filename) => {
+    if (!filename) return '';
+    // เติม path เต็ม /images/uploads/
+    return `/images/uploads/${filename}`;
+};
+
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -44,16 +51,13 @@ const LogoCoverUploader = () => {
         const data = await response.json();
         console.log("Profile data:", data);
 
+        // ใช้ชื่อไฟล์จากฐานข้อมูลโดยตรง
         if (data.company_logo) {
-          const logoPath = getPublicPath(data.company_logo);
-          console.log("Logo path:", logoPath);
-          setCurrentLogo(logoPath);
+          setCurrentLogo(data.company_logo);
         }
 
         if (data.company_cover) {
-          const coverPath = getPublicPath(data.company_cover);
-          console.log("Cover path:", coverPath);
-          setCurrentCover(coverPath);
+          setCurrentCover(data.company_cover);
         }
       } catch (error) {
         console.error("Error fetching images:", error);
@@ -63,21 +67,7 @@ const LogoCoverUploader = () => {
 
     fetchImages();
   }, [session?.user?.id]);
-
-  // แก้ไขฟังก์ชัน getImageUrl ให้เรียบง่ายขึ้น
-  const getImageUrl = (path) => {
-    if (!path) return '';
-    
-    // แปลง HTML entities เป็น path ปกติ
-    const cleanPath = path.replace(/&#x2F;/g, '/');
-    
-    // เอาเฉพาะชื่อไฟล์
-    const filename = cleanPath.split('/').pop();
-    
-    // สร้าง path แบบเดียวกับรูปอื่นๆ ใน theme
-    return `/images/uploads/${filename}`;
-  };
-
+ 
   const uploadFile = async (file, type) => {
     if (!file) return;
 
@@ -141,14 +131,7 @@ const LogoCoverUploader = () => {
             style={{ marginBottom: "10px" }}
             unoptimized
           />
-           <Image
-    src="/images/uploads/1738412495214_b63a6bd1d8004c8b076a1ea7a9b2187a.jpeg"
-    alt="Test Image"
-    width={200}
-    height={100}
-    className="object-cover rounded"
-    unoptimized
-  />
+          
         </div>
       )}
       <div className="text ml-2" style={{ marginTop: "10px" }}>
