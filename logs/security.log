@@ -105,3 +105,10 @@
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-01T07:13:13.986Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"employeroutside","timestamp":"2025-02-01T07:13:41.673Z","userId":22}}
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-01T07:14:04.486Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-05T09:03:59.904Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-06T04:28:58.290Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-08T04:14:57.091Z","userId":20}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-08T04:15:53.182Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"employeroutside","timestamp":"2025-02-08T11:18:32.598Z","userId":22}}
+{"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-08T11:19:50.298Z","userId":20}}
+{"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-08T11:24:49.985Z","userId":20}}

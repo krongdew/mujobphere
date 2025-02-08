@@ -54,16 +54,17 @@ export async function GET(request, { params }) {
       `;
     } else if (session.user.role === 'student') {
       profileQuery = `
-        SELECT 
-          id, user_id, student_id, first_name, last_name,
-          faculty, major, gpa, birth_date, student_card_image,
-          language_skills, programming_skills, cv_file, portfolio_file,
-          phone, address, 
-          created_at, updated_at
-        FROM student_profiles 
-        WHERE user_id = $1
+          SELECT 
+              id, user_id, student_id, first_name, last_name,
+              faculty, major, gpa, birth_date, 
+              img_student, student_card_image,  
+              language_skills, programming_skills, cv_file, portfolio_file,
+              phone, address, 
+              created_at, updated_at
+          FROM student_profiles 
+          WHERE user_id = $1
       `;
-    } else {
+  } else {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
@@ -74,15 +75,17 @@ export async function GET(request, { params }) {
       let createProfileQuery;
       if (session.user.role === 'student') {
         createProfileQuery = `
-          INSERT INTO student_profiles (
-            user_id,
-            phone,
-            address,
-            created_at
-          ) VALUES ($1, NULL, NULL, CURRENT_TIMESTAMP)
-          RETURNING *
+            INSERT INTO student_profiles (
+                user_id,
+                phone,
+                address,
+                img_student,        
+                student_card_image,
+                created_at
+            ) VALUES ($1, NULL, NULL, NULL, NULL, CURRENT_TIMESTAMP)
+            RETURNING *
         `;
-      } else if (session.user.role === 'employeroutside') {
+    } else if (session.user.role === 'employeroutside') {
         createProfileQuery = `
           INSERT INTO employer_outside_profiles (
             user_id,

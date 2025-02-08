@@ -14,27 +14,16 @@ const LogoCoverUploader = () => {
   const [currentLogo, setCurrentLogo] = useState("");
   const [currentCover, setCurrentCover] = useState("");
 
-  const getPublicPath = (path) => {
-    if (!path) return "";
 
-    // แปลง HTML entities
-    let cleanPath = path.replace(/&#x2F;/g, "/");
 
-    // ตรวจสอบว่าเป็น path เต็มหรือไม่
-    if (cleanPath.startsWith("/uploads/")) {  // แก้จาก /images/uploads เป็น /uploads
-        return cleanPath;
-    }
-
-    // เอาเฉพาะส่วน filename
-    const filename = cleanPath.split("/").pop();
-
-    // สร้าง path ใหม่
-    return `/uploads/${filename}`;  // แก้จาก /images/uploads เป็น /uploads
-};
-
-const getImageUrl = (filename) => {
+  const getImageUrl = (filename) => {
     if (!filename) return '';
-    return `/uploads/${filename}`;  // แก้จาก /images/uploads เป็น /uploads
+    
+    // เอาเฉพาะชื่อไฟล์
+    const justFileName = filename.split('/').pop();
+    
+    // เรียกผ่าน API
+    return `/api/image/${justFileName}`;
 };
 
 
@@ -122,14 +111,14 @@ const getImageUrl = (filename) => {
           </div>
           {/* <div style={{ marginBottom: '5px' }}>Debug path: {getImageUrl(currentLogo)}</div> */}
           <Image
-            src={getImageUrl(currentLogo)}
-            alt="Company Logo"
-            width={100}
-            height={100}
-            className="object-cover rounded"
-            style={{ marginBottom: "10px" }}
-            unoptimized
-          />
+          src={getImageUrl(currentLogo)}
+          alt="Company Logo"
+          width={100}
+          height={100}
+          className="object-cover rounded"
+          style={{ marginBottom: "10px" }}
+          unoptimized
+        />
           
         </div>
       )}

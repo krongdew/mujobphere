@@ -1,3 +1,4 @@
+//components/dashboard-pages/employers-dashboard/company-profile/components/my-profile/FormInfoBox.jsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
