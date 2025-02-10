@@ -22,7 +22,7 @@ const JobOverView = ({ jobPost }) => {
         <li>
           <i className="icon icon-map-marker"></i>
           <h5>Location:</h5>
-          <span>{jobPost.location}</span>
+          <span>{jobPost.is_online ? 'ออนไลน์' : jobPost.location}</span>
         </li>
         <li>
           <i className="icon icon-money"></i>

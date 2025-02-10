@@ -14,13 +14,13 @@ const CompanyInfo = ({ profileData }) => {
   // Prepare company information based on available data
   const companyInfo = [
     // Always include these if available
+    { label: 'Title', value: profileData.title },
     { label: 'Name', value: profileData.name },
     { label: 'Email', value: profileData.email },
     { label: 'Department', value: profileData.department },
     
     // Additional fields based on possible keys
     { label: 'Position', value: profileData.position },
-    { label: 'Title', value: profileData.title },
     { label: 'Company Name', value: profileData.company_name },
     { label: 'Company Address', value: profileData.company_address },
     { label: 'Phone', value: profileData.phone || profileData.company_phone },

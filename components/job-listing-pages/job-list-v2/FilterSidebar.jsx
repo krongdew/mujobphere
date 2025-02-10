@@ -4,6 +4,8 @@ import ExperienceLevel from "../components/ExperienceLevel";
 import JobType from "../components/JobType";
 import SalaryRangeSlider from "../components/SalaryRangeSlider";
 import Tag from "../components/Tag";
+import HireTypeFilter from "../components/HireTypeFilter";
+import EducationLevelFilter from "../components/EducationLevelFilter";
 
 const FilterSidebar = () => {
     return (
@@ -18,34 +20,39 @@ const FilterSidebar = () => {
                 {/* End .close filter */}
 
                 <div className="switchbox-outer">
-                    <h4>Job type</h4>
+                    <h4>ประเภทงาน</h4>
                     <JobType />
                 </div>
                 {/* <!-- Switchbox Outer --> */}
 
                 <div className="checkbox-outer">
-                    <h4>Date Posted</h4>
+                    <h4>วันที่ประกาศ</h4>
                     <DatePosted />
                 </div>
-                {/* <!-- Checkboxes Ouer --> */}
+                {/* <!-- Checkboxes Outer --> */}
 
-                <div className="checkbox-outer">
-                    <h4>Experience Level</h4>
-                    <ExperienceLevel />
-                </div>
-                {/* <!-- Checkboxes Ouer --> */}
+               
 
                 <div className="filter-block">
-                    <h4>Salary</h4>
-
+                    <h4>รายได้</h4>
                     <SalaryRangeSlider />
                 </div>
                 {/* <!-- Filter Block --> */}
 
-                <div className="filter-block">
+                {/* <div className="checkbox-outer">
+                   
+                    <HireTypeFilter />
+                </div> */}
+
+                {/* <div className="checkbox-outer">
+                    
+                    <EducationLevelFilter />
+                </div> */}
+
+                {/* <div className="filter-block">
                     <h4>Tags</h4>
                     <Tag />
-                </div>
+                </div> */}
                 {/* <!-- Filter Block --> */}
             </div>
             {/* Filter Outer */}

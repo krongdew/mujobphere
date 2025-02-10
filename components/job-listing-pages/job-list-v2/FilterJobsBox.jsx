@@ -1,308 +1,259 @@
+'use client';
 
-
-'use client'
-
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Link from "next/link";
-import jobs from "../../../data/job-featured";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addCategory,
-  addDatePosted,
-  addDestination,
-  addKeyword,
-  addLocation,
-  addPerPage,
-  addSalary,
-  addSort,
-  addTag,
-  clearExperience,
-  clearJobType,
-} from "../../../features/filter/filterSlice";
-import {
-  clearDatePostToggle,
-  clearExperienceToggle,
-  clearJobTypeToggle,
-} from "../../../features/job/jobSlice";
 import Image from "next/image";
 
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '';
+  }
+};
+
 const FilterJobsBox = () => {
-  const { jobList, jobSort } = useSelector((state) => state.filter);
+  const [jobs, setJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [jobTypes, setJobTypes] = useState([]);
+
+  // Get filters from Redux
   const {
     keyword,
     location,
-    destination,
     category,
     jobType,
     datePosted,
     experience,
     salary,
     tag,
-  } = jobList || {};
+    hireType,
+    educationLevel
+  } = useSelector((state) => state.filter.jobList);
 
-  const { sort, perPage } = jobSort;
+  // Fetch job types
+  useEffect(() => {
+    const fetchJobTypes = async () => {
+      try {
+        const hireTypes = ['personal', 'faculty'];
+        const allJobTypes = [];
 
-  const dispatch = useDispatch();
+        for (const hireType of hireTypes) {
+          const response = await fetch(`/api/job-types?hire_type=${hireType}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          allJobTypes.push(...data);
+        }
 
-  // keyword filter on title
-  const keywordFilter = (item) =>
-    keyword !== ""
-      ? item.jobTitle.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
-      : item;
+        // Group job types
+        const groupedJobTypes = allJobTypes.reduce((acc, type) => {
+          const existingType = acc.find(t => t.name === type.name);
+          
+          if (existingType) {
+            // Add hire type if not already present
+            if (!existingType.hire_types.includes(type.hire_type)) {
+              existingType.hire_types.push(type.hire_type);
+            }
+            // Add type ID if not already present
+            if (!existingType.type_ids.includes(type.id)) {
+              existingType.type_ids.push(type.id);
+            }
+          } else {
+            // Create new grouped type
+            acc.push({
+              name: type.name,
+              hire_types: [type.hire_type],
+              type_ids: [type.id]
+            });
+          }
+          
+          return acc;
+        }, []);
 
-  // location filter
-  const locationFilter = (item) =>
-    location !== ""
-      ? item?.location
-          ?.toLocaleLowerCase()
-          .includes(location?.toLocaleLowerCase())
-      : item;
+        setJobTypes(groupedJobTypes);
+      } catch (error) {
+        console.error('Error fetching job types:', error);
+      }
+    };
 
-  // location filter
-  const destinationFilter = (item) =>
-    item?.destination?.min >= destination?.min &&
-    item?.destination?.max <= destination?.max;
+    fetchJobTypes();
+  }, []);
 
-  // category filter
-  const categoryFilter = (item) =>
-    category !== ""
-      ? item?.category?.toLocaleLowerCase() === category?.toLocaleLowerCase()
-      : item;
+  // Fetch jobs
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch('/api/jobs/public');
+        if (!response.ok) throw new Error('Failed to fetch jobs');
+        const data = await response.json();
+        setJobs(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        setLoading(false);
+      }
+    };
 
-  // job-type filter
-  const jobTypeFilter = (item) =>
-    jobType?.length !== 0 && item?.jobType !== undefined
-      ? jobType?.includes(
-          item?.jobType[0]?.type.toLocaleLowerCase().split(" ").join("-")
-        )
-      : item;
+    fetchJobs();
+  }, []);
 
-  // date-posted filter
-  const datePostedFilter = (item) =>
-    datePosted !== "all" && datePosted !== ""
-      ? item?.created_at
-          ?.toLocaleLowerCase()
-          .split(" ")
-          .join("-")
-          .includes(datePosted)
-      : item;
+  // Apply filters
+  useEffect(() => {
+    let result = jobs;
 
-  // experience level filter
-  const experienceFilter = (item) =>
-    experience?.length !== 0
-      ? experience?.includes(
-          item?.experience?.split(" ").join("-").toLocaleLowerCase()
-        )
-      : item;
+    // Comprehensive Keyword filter
+    if (keyword) {
+      const lowercaseKeyword = keyword.toLowerCase();
+      result = result.filter(job => {
+        const title = job.title || '';
+        const location = job.location || '';
+        
+        return title.toLowerCase().includes(lowercaseKeyword) || 
+               location.toLowerCase().includes(lowercaseKeyword);
+      });
+    }
 
-  // salary filter
-  const salaryFilter = (item) =>
-    item?.totalSalary?.min >= salary?.min &&
-    item?.totalSalary?.max <= salary?.max;
+    // Category filter (Job Type)
+    if (category) {
+      result = result.filter(job => {
+        const matchingJobTypes = jobTypes.find(type => 
+          type.type_ids.includes(job.job_type_id) && 
+          type.type_ids.includes(Number(category))
+        );
+        
+        return !!matchingJobTypes;
+      });
+    }
 
-  // tag filter
-  const tagFilter = (item) => (tag !== "" ? item?.tag === tag : item);
+    // Job Type filter
+    if (jobType && jobType.length > 0) {
+      result = result.filter(job => {
+        const matchingJobTypes = jobTypes.find(type => 
+          type.type_ids.includes(job.job_type_id) && 
+          jobType.some(selectedTypeId => 
+            type.type_ids.includes(Number(selectedTypeId))
+          )
+        );
+        
+        return !!matchingJobTypes;
+      });
+    }
 
-  // sort filter
-  const sortFilter = (a, b) =>
-    sort === "des" ? a.id > b.id && -1 : a.id < b.id && -1;
+    // Salary filter
+    result = result.filter(job => 
+      job.compensation_amount >= salary.min && 
+      job.compensation_amount <= salary.max
+    );
 
-  let content = jobs
-    ?.filter(keywordFilter)
-    ?.filter(locationFilter)
-    ?.filter(destinationFilter)
-    ?.filter(categoryFilter)
-    ?.filter(jobTypeFilter)
-    ?.filter(datePostedFilter)
-    ?.filter(experienceFilter)
-    ?.filter(salaryFilter)
-    ?.filter(tagFilter)
-    ?.sort(sortFilter)
-    .slice(perPage.start, perPage.end !== 0 ? perPage.end : 11)
-    ?.map((item) => (
-      <div className="job-block" key={item.id}>
-        <div className="inner-box">
-          <div className="content">
-            <span className="company-logo">
-              <Image width={50} height={49} src={item.logo} alt="item brand" />
-            </span>
-            <h4>
-              <Link href={`/job-single-v1/${item.id}`}>{item.jobTitle}</Link>
-            </h4>
+    // Hire Type filter
+    if (hireType) {
+      result = result.filter(job => job.hire_type === hireType);
+    }
 
-            <ul className="job-info">
-              <li>
-                <span className="icon flaticon-briefcase"></span>
-                {item.company}
-              </li>
-              {/* compnay info */}
-              <li>
-                <span className="icon flaticon-map-locator"></span>
-                {item.location}
-              </li>
-              {/* location info */}
-              <li>
-                <span className="icon flaticon-clock-3"></span> {item.time}
-              </li>
-              {/* time info */}
-              <li>
-                <span className="icon flaticon-money"></span> {item.salary}
-              </li>
-              {/* salary info */}
-            </ul>
-            {/* End .job-info */}
+    // Education Level filter
+    if (educationLevel) {
+      result = result.filter(job => job.education_level === educationLevel);
+    }
 
-            <ul className="job-other-info">
-              {item?.jobType?.map((val, i) => (
-                <li key={i} className={`${val.styleClass}`}>
-                  {val.type}
-                </li>
-              ))}
-            </ul>
-            {/* End .job-other-info */}
-          </div>
-        </div>
-      </div>
-      // End all jobs
-    ));
+    // Location filter
+    if (location) {
+      if (location === 'online') {
+        result = result.filter(job => job.is_online === true);
+      } else if (location === 'onsite') {
+        result = result.filter(job => job.is_online === false);
+      }
+    }
 
-  // sort handler
-  const sortHandler = (e) => {
-    dispatch(addSort(e.target.value));
-  };
+    // Date Posted filter
+    if (datePosted && datePosted !== 'all') {
+      const now = new Date();
+      const filterDate = new Date();
+      
+      switch(datePosted) {
+        case 'last_24h':
+          filterDate.setHours(now.getHours() - 24);
+          break;
+        case 'last_3_days':
+          filterDate.setDate(now.getDate() - 3);
+          break;
+        case 'last_7_days':
+          filterDate.setDate(now.getDate() - 7);
+          break;
+        case 'last_14_days':
+          filterDate.setDate(now.getDate() - 14);
+          break;
+      }
 
-  // per page handler
-  const perPageHandler = (e) => {
-    const pageData = JSON.parse(e.target.value);
-    dispatch(addPerPage(pageData));
-  };
+      result = result.filter(job => 
+        new Date(job.created_at) >= filterDate
+      );
+    }
 
-  // clear all filters
-  const clearAll = () => {
-    dispatch(addKeyword(""));
-    dispatch(addLocation(""));
-    dispatch(addDestination({ min: 0, max: 100 }));
-    dispatch(addCategory(""));
-    dispatch(clearJobType());
-    dispatch(clearJobTypeToggle());
-    dispatch(addDatePosted(""));
-    dispatch(clearDatePostToggle());
-    dispatch(clearExperience());
-    dispatch(clearExperienceToggle());
-    dispatch(addSalary({ min: 0, max: 20000 }));
-    dispatch(addTag(""));
-    dispatch(addSort(""));
-    dispatch(addPerPage({ start: 0, end: 0 }));
-  };
+    setFilteredJobs(result);
+  }, [jobs, jobTypes, keyword, category, jobType, salary, hireType, educationLevel, location, datePosted]);
+
+  if (loading) {
+    return <div>กำลังโหลดข้อมูล...</div>;
+  }
 
   return (
-    <>
-      <div className="ls-switcher">
-        <div className="show-result">
-          <div className="show-1023">
-            <button
-              type="button"
-              className="theme-btn toggle-filters "
-              data-bs-toggle="offcanvas"
-              data-bs-target="#filter-sidebar"
-            >
-              <span className="icon icon-filter"></span> Filter
-            </button>
+    <div className="job-listing-section">
+      {/* Job Listings */}
+      <div className="job-listings">
+        {filteredJobs.slice(0, 20).map(job => (
+          <div key={job.id} className="job-block">
+            <div className="inner-box">
+              <div className="content">
+                <h4>
+                  <Link href={`/job-single-v1/${job.id}`}>{job.title}</Link>
+                </h4>
+                <ul className="job-info">
+                  <li>
+                    <span className="icon flaticon-briefcase"></span>
+                    {job.compensation_amount} บาท/{job.compensation_period}
+                  </li>
+                  <li>
+                    <span className="icon flaticon-map-locator"></span>
+                    {job.is_online ? 'ออนไลน์' : job.location}
+                  </li>
+                  <li>
+                    <span className="icon flaticon-clock-3"></span>
+                    {formatDate(job.application_start_date)} - {formatDate(job.application_end_date)}
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          {/* Collapsible sidebar button */}
-
-          <div className="text">
-            Show <strong>{content?.length}</strong> jobs
-          </div>
-        </div>
-        {/* End show-result */}
-
-        <div className="sort-by">
-          {keyword !== "" ||
-          location !== "" ||
-          destination?.min !== 0 ||
-          destination?.max !== 100 ||
-          category !== "" ||
-          jobType?.length !== 0 ||
-          datePosted !== "" ||
-          experience?.length !== 0 ||
-          salary?.min !== 0 ||
-          salary?.max !== 20000 ||
-          tag !== "" ||
-          sort !== "" ||
-          perPage.start !== 0 ||
-          perPage.end !== 0 ? (
-            <button
-              onClick={clearAll}
-              className="btn btn-danger text-nowrap me-2"
-              style={{ minHeight: "45px", marginBottom: "15px" }}
-            >
-              Clear All
-            </button>
-          ) : undefined}
-
-          <select
-            value={sort}
-            className="chosen-single form-select"
-            onChange={sortHandler}
-          >
-            <option value="">Sort by (default)</option>
-            <option value="asc">Newest</option>
-            <option value="des">Oldest</option>
-          </select>
-          {/* End select */}
-
-          <select
-            onChange={perPageHandler}
-            className="chosen-single form-select ms-3 "
-            value={JSON.stringify(perPage)}
-          >
-            <option
-              value={JSON.stringify({
-                start: 0,
-                end: 0,
-              })}
-            >
-              All
-            </option>
-            <option
-              value={JSON.stringify({
-                start: 0,
-                end: 15,
-              })}
-            >
-              15 per page
-            </option>
-            <option
-              value={JSON.stringify({
-                start: 0,
-                end: 20,
-              })}
-            >
-              20 per page
-            </option>
-            <option
-              value={JSON.stringify({
-                start: 0,
-                end: 30,
-              })}
-            >
-              30 per page
-            </option>
-          </select>
-          {/* End select */}
-        </div>
+        ))}
       </div>
-      {/* End top filter bar box */}
-      {content}
-      {/* <!-- List Show More --> */}
-      <div className="ls-show-more">
-        <p>Show 36 of 497 Jobs</p>
-        <div className="bar">
-          <span className="bar-inner" style={{ width: "40%" }}></span>
+
+      {/* Pagination or Load More */}
+      {filteredJobs.length > 20 && (
+        <div className="text-center mt-4">
+          <button className="btn btn-primary">โหลดเพิ่มเติม</button>
         </div>
-        <button className="show-more">Show More</button>
-      </div>
-    </>
+      )}
+
+      {/* No Results Message */}
+      {filteredJobs.length === 0 && (
+        <div className="text-center mt-4">
+          <p>ไม่พบข้อมูลงาน</p>
+        </div>
+      )}
+    </div>
   );
 };
 

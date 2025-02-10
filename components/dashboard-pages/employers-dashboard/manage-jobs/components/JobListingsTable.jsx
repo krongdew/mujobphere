@@ -139,7 +139,7 @@ const JobListingsTable = () => {
                   <td>
                     <div className="job-block">
                       <div className="inner-box">
-                        <div className="content">
+                        <div className="content" style={{paddingLeft:0}}>
                           <h4><Link href={`/job-single-v3/${job.id}`}>{job.title}</Link></h4>
                           <ul className="job-info">
                             <li><span className="icon flaticon-briefcase"></span>{job.compensation_amount} บาท/{job.compensation_period}</li>

@@ -9,13 +9,18 @@ import { addSalary } from "../../../features/filter/filterSlice";
 const SalaryRangeSlider = () => {
    const { jobList } = useSelector((state) => state.filter);
    const [salary, setSalary] = useState({
-       min: jobList.salary.min,
-       max: jobList.salary.max,
+       min: jobList?.salary?.min || 0,
+       max: jobList?.salary?.max || 20000,
    });
 
    const dispatch = useDispatch();
 
    const handleOnChange = (value) => {
+       setSalary({
+           min: value[0],
+           max: value[1]
+       });
+       
        dispatch(addSalary({
            min: value[0],
            max: value[1]
@@ -24,10 +29,10 @@ const SalaryRangeSlider = () => {
 
    useEffect(() => {
        setSalary({
-           min: jobList.salary.min,
-           max: jobList.salary.max,
+           min: jobList?.salary?.min || 0,
+           max: jobList?.salary?.max || 20000,
        });
-   }, [setSalary, jobList]);
+   }, [jobList]);
 
    return (
        <div className="range-slider-one salary-range">
@@ -67,8 +72,8 @@ const SalaryRangeSlider = () => {
            <div className="input-outer">
                <div className="amount-outer">
                    <span className="d-inline-flex align-items-center">
-                       <span className="min">${salary.min}</span>
-                       <span className="max ms-2">${salary.max}</span>
+                       <span className="min">{salary.min} บาท</span>
+                       <span className="max ms-2">{salary.max} บาท</span>
                    </span>
                </div>
            </div>

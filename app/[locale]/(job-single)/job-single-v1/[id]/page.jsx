@@ -30,8 +30,8 @@ const getImageUrl = (path) => {
   // ถ้าไม่มีชื่อไฟล์ ใช้รูป default
   if (!filename) return "/images/default-company-logo.png";
 
-  // ส่งคืน path ที่ถูกต้อง
-  return `/uploads/${filename}`;  // แก้จาก /images/uploads เป็น /uploads
+  // เรียกผ่าน API แทนการเข้าถึงไฟล์โดยตรง
+  return `/api/image/${filename}`;
 };
 
 const JobSingleDynamicV1 = ({ params }) => {
@@ -196,14 +196,14 @@ const JobSingleDynamicV1 = ({ params }) => {
               <div className="content-column col-lg-8 col-md-12 col-sm-12">
                 <JobDetailsDescriptions jobPost={jobPost} />
 
-                <div className="other-options">
+                {/* <div className="other-options">
                   <div className="social-share">
                     <h5>Share this job</h5>
                     <SocialTwo />
                   </div>
-                </div>
+                </div> */}
 
-                <div className="related-jobs">
+                {/* <div className="related-jobs">
                   <div className="title-box">
                     <h3>Related Jobs</h3>
                     <div className="text">
@@ -212,7 +212,7 @@ const JobSingleDynamicV1 = ({ params }) => {
                   </div>
 
                   <RelatedJobs />
-                </div>
+                </div> */}
               </div>
 
               <div className="sidebar-column col-lg-4 col-md-12 col-sm-12">
@@ -221,7 +221,7 @@ const JobSingleDynamicV1 = ({ params }) => {
                     <h4 className="widget-title">Job Overview</h4>
                     <JobOverView jobPost={jobPost} />
 
-                    <h4 className="widget-title mt-5">Job Location</h4>
+                    {/* <h4 className="widget-title mt-5">Job Location</h4> */}
                     {/* <div className="widget-content">
                       <div className="map-outer">
                         <div style={{ height: "300px", width: "100%" }}>

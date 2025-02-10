@@ -19,6 +19,8 @@ const initialState = {
             max: 20000,
         },
         tag: "",
+         hireType: '',
+      educationLevel: '',
     },
     jobSort: {
         sort: "",
@@ -95,6 +97,12 @@ export const filterSlice = createSlice({
             state.jobSort.perPage.start = payload.start;
             state.jobSort.perPage.end = payload.end;
         },
+        addHireType: (state, action) => {
+            state.jobList.hireType = action.payload;
+          },
+          addEducationLevel: (state, action) => {
+            state.jobList.educationLevel = action.payload;
+          }
     },
 });
 
@@ -114,5 +122,7 @@ export const {
     addTag,
     addSort,
     addPerPage,
+    addHireType, 
+  addEducationLevel ,
 } = filterSlice.actions;
 export default filterSlice.reducer;
