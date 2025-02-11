@@ -49,7 +49,7 @@ const JobDetailsDescriptions = ({ jobPost }) => {
           <strong>Hire Type:</strong> {HIRETYPE[jobPost.hire_type]}
         </li>
         <li>
-          <strong>Location:</strong> {jobPost.location}
+          <strong>Location:</strong> {jobPost.is_online ? 'ออนไลน์' : jobPost.location}
         </li>
         <li>
           <strong>Compensation:</strong> {jobPost.compensation_amount} {jobPost.compensation_period}
@@ -82,7 +82,25 @@ const JobDetailsDescriptions = ({ jobPost }) => {
           <p>{jobPost.additional_requirements}</p>
         </>
       )}
-      
+
+      {jobPost.has_interview && (
+        <>
+          <h4>มีการสัมภาษณ์งาน</h4>
+          <p>{jobPost.has_interview === true ? 'มี' : 'ไม่มี'}</p>
+          <h4>รายละเอียดการสัมภาษณ์</h4>
+          <p>{jobPost.interview_details}</p>
+        </>
+      )}
+
+      {jobPost.work_start_date && (
+        <>
+          <h4>วันที่เริ่มปฏิบัติงาน</h4>
+          <p>{formatDate(jobPost.work_start_date)}</p>
+          <h4>วันที่สิ้นสุดการปฏิบัติงาน</h4>
+          <p>  {jobPost.work_end_indefinite ? 'ไม่มีกำหนด' : formatDate(jobPost.work_end_date)}</p>
+        </>
+      )}
+
       {jobPost.compensation_amount && (
         <>
           <h4>Salary</h4>

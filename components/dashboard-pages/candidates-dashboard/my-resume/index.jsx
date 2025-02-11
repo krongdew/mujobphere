@@ -1,3 +1,6 @@
+"use client";
+import { useSession } from "next-auth/react";
+import { useParams } from 'next/navigation';
 import MobileMenu from "../../../header/MobileMenu";
 import LoginPopup from "../../../common/form/login/LoginPopup";
 import DashboardCandidatesSidebar from "../../../header/DashboardCandidatesSidebar";
@@ -6,8 +9,13 @@ import CopyrightFooter from "../../CopyrightFooter";
 import Resume from "./components";
 import DashboardCandidatesHeader from "../../../header/DashboardCandidatesHeader";
 import MenuToggler from "../../MenuToggler";
+import Link from "next/link";
 
 const index = () => {
+  const { data: session } = useSession();
+  const params = useParams();
+  const locale = params.locale;
+
   return (
     <div className="page-wrapper dashboard">
       <span className="header-span"></span>
@@ -40,6 +48,14 @@ const index = () => {
                 <div className="tabs-box">
                   <div className="widget-title">
                     <h4>My Profile</h4>
+                    {session?.user?.id && (
+                      <Link 
+                        href={`/${locale}/candidates-single-v1/${session.user.id}`}
+                        className="theme-btn btn-style-one"
+                      >
+                        คลิกเพื่อดูหน้า Profile
+                      </Link>
+                    )}
                   </div>
                   {/* End widget-title */}
 
