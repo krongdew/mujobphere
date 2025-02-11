@@ -9,103 +9,135 @@ import LoginPopup from "@/components/common/form/login/LoginPopup";
 import FooterDefault from "@/components/footer/common-footer";
 import DefaulHeader2 from "@/components/header/DefaulHeader2";
 import MobileMenu from "@/components/header/MobileMenu";
-import RelatedJobs from "@/components/job-single-pages/related-jobs/RelatedJobs";
 import JobOverView from "@/components/job-single-pages/job-overview/JobOverView";
-import JobSkills from "@/components/job-single-pages/shared-components/JobSkills";
 import CompanyInfo from "@/components/job-single-pages/shared-components/CompanyInfo";
-import MapJobFinder from "@/components/job-listing-pages/components/MapJobFinder";
-import SocialTwo from "@/components/job-single-pages/social/SocialTwo";
 import JobDetailsDescriptions from "@/components/job-single-pages/shared-components/JobDetailsDescriptions";
 import ApplyJobModalContent from "@/components/job-single-pages/shared-components/ApplyJobModalContent";
 
 const getImageUrl = (path) => {
   if (!path) return "/images/default-company-logo.png";
-
-  // แปลง HTML entities
   let cleanPath = path.replace(/&#x2F;/g, "/");
-
-  // เอาเฉพาะชื่อไฟล์
   const filename = cleanPath.split("/").pop();
-
-  // ถ้าไม่มีชื่อไฟล์ ใช้รูป default
   if (!filename) return "/images/default-company-logo.png";
-
-  // เรียกผ่าน API แทนการเข้าถึงไฟล์โดยตรง
   return `/api/image/${filename}`;
 };
+
+const COMPENSATION = {
+  per_time: 'ต่อครั้ง',
+  per_hour: 'ต่อชั่วโมง',
+  per_day: 'ต่อวัน',
+  per_project: 'ต่อโครงการ',
+  other: 'อื่น ๆ',
+}
 
 const JobSingleDynamicV1 = ({ params }) => {
   const { data: session } = useSession();
   const [jobPost, setJobPost] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchJobAndProfileData = async () => {
-      if (!session) return;
+      if (!session) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         // Fetch job post data
-        const jobResponse = await fetch(`/api/jobs/${params.id}`);
+        const jobResponse = await fetch(`/api/jobs/${params.id}`, {
+          headers: {
+            'Authorization': `Bearer ${session.accessToken}`
+          }
+        });
+        
+        if (!jobResponse.ok) {
+          throw new Error('Failed to fetch job data');
+        }
+        
         const jobData = await jobResponse.json();
 
         // Fetch profile data of the job poster
-        const profileResponse = await fetch(`/api/profile/${jobData.user_id}`);
+        const profileResponse = await fetch(`/api/profile/public/${jobData.user_id}`, {
+          headers: {
+            'Authorization': `Bearer ${session.accessToken}`
+          }
+        });
+
+        if (!profileResponse.ok) {
+          throw new Error('Failed to fetch profile data');
+        }
+
         const profileData = await profileResponse.json();
 
         setJobPost(jobData);
         setProfileData(profileData);
       } catch (error) {
-        console.error("Error fetching job and profile data:", error);
+        console.error("Error fetching data:", error);
+        setError(error.message);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (session) {
-      fetchJobAndProfileData();
-    }
+    fetchJobAndProfileData();
   }, [session, params.id]);
 
+  if (!session) {
+    return (
+      <div className="text-center py-10">
+        <h2>Please login to view job details</h2>
+        <LoginPopup />
+      </div>
+    );
+  }
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="text-center py-10">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-10">Error: {error}</div>;
   }
 
   if (!jobPost || !profileData) {
-    return <div>Job not found</div>;
+    return <div className="text-center py-10">Job not found</div>;
   }
 
-  // Render company logo and information based on profile role
   const renderCompanyInfo = () => {
-    let companyLogo, companyName, companyDetails;
+    const companyLogo = profileData.company_logo;
+    const companyName = profileData.role === "employer" 
+      ? profileData.name 
+      : profileData.company_name;
 
-    if (profileData.role === "employer") {
-      companyLogo = profileData.company_logo;
-      companyName = `${profileData.title} ${profileData.name}`;
-      companyDetails = [
-        { icon: "flaticon-briefcase", text: profileData.department },
-        { icon: "flaticon-map-locator", text: profileData.position },
-      ];
-    } else if (profileData.role === "employeroutside") {
-      companyLogo = profileData.company_logo;
-      companyName = profileData.company_name;
-      companyDetails = [
-        { icon: "flaticon-map-locator", text: profileData.company_address },
-        { icon: "flaticon-phone", text: profileData.company_phone },
-      ];
-    } else {
-      companyLogo = null;
-      companyName = "Unknown Employer";
-      companyDetails = [];
+    const companyDetails = [
+      {
+        icon: "flaticon-briefcase",
+        text: jobPost.is_online ? 'ออนไลน์' : 'onsite'
+      },
+      {
+        icon: "flaticon-map-locator",
+        text: profileData.role === "employer" 
+          ? profileData.department 
+          : profileData.company_address
+      }
+    ];
+
+    if (jobPost.compensation_amount) {
+      companyDetails.push({
+        icon: "flaticon-money",
+        text: `${jobPost.compensation_amount} ${COMPENSATION[jobPost.compensation_period]}`
+      });
     }
-
+    
     return (
       <div className="content">
         <span className="company-logo">
           <Image
             width={100}
             height={98}
-            src={getImageUrl(profileData.company_logo)}
+            src={getImageUrl(companyLogo)}
             alt="company logo"
             unoptimized
             className="object-cover"
@@ -114,20 +146,12 @@ const JobSingleDynamicV1 = ({ params }) => {
         <h4>{jobPost.title}</h4>
 
         <ul className="job-info">
-          <li>
-            <span className="icon flaticon-briefcase"></span>
-            {companyName}
-          </li>
           {companyDetails.map((detail, index) => (
             <li key={index}>
               <span className={`icon ${detail.icon}`}></span>
               {detail.text}
             </li>
           ))}
-          <li>
-            <span className="icon flaticon-money"></span>
-            {jobPost.compensation_amount} {jobPost.compensation_period}
-          </li>
         </ul>
       </div>
     );
@@ -162,7 +186,6 @@ const JobSingleDynamicV1 = ({ params }) => {
                   </button>
                 </div>
 
-                {/* Apply Job Modal */}
                 <div
                   className="modal fade"
                   id="applyJobModal"
@@ -180,7 +203,6 @@ const JobSingleDynamicV1 = ({ params }) => {
                           aria-label="Close"
                         ></button>
                       </div>
-
                       <ApplyJobModalContent />
                     </div>
                   </div>
@@ -195,24 +217,6 @@ const JobSingleDynamicV1 = ({ params }) => {
             <div className="row">
               <div className="content-column col-lg-8 col-md-12 col-sm-12">
                 <JobDetailsDescriptions jobPost={jobPost} />
-
-                {/* <div className="other-options">
-                  <div className="social-share">
-                    <h5>Share this job</h5>
-                    <SocialTwo />
-                  </div>
-                </div> */}
-
-                {/* <div className="related-jobs">
-                  <div className="title-box">
-                    <h3>Related Jobs</h3>
-                    <div className="text">
-                      2020 jobs live - 293 added today.
-                    </div>
-                  </div>
-
-                  <RelatedJobs />
-                </div> */}
               </div>
 
               <div className="sidebar-column col-lg-4 col-md-12 col-sm-12">
@@ -220,20 +224,6 @@ const JobSingleDynamicV1 = ({ params }) => {
                   <div className="sidebar-widget">
                     <h4 className="widget-title">Job Overview</h4>
                     <JobOverView jobPost={jobPost} />
-
-                    {/* <h4 className="widget-title mt-5">Job Location</h4> */}
-                    {/* <div className="widget-content">
-                      <div className="map-outer">
-                        <div style={{ height: "300px", width: "100%" }}>
-                          <MapJobFinder location={jobPost.location} />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h4 className="widget-title">Job Skills</h4>
-                    <div className="widget-content">
-                      <JobSkills />
-                    </div> */}
                   </div>
 
                   <div className="sidebar-widget company-widget">
@@ -254,11 +244,7 @@ const JobSingleDynamicV1 = ({ params }) => {
                             ? `${profileData.title} ${profileData.name}`
                             : profileData.company_name}
                         </h5>
-                        <a href="#" className="profile-link">
-                          View company profile
-                        </a>
                       </div>
-
                       <CompanyInfo profileData={profileData} />
                     </div>
                   </div>

@@ -5,6 +5,26 @@ const JobOverView = ({ jobPost }) => {
   const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMMM dd, yyyy');
   };
+  
+  const PAYMENT_TYPE_MAP = {
+    single: 'จ่ายครั้งเดียว',
+    before_start: 'ก่อนเริ่มงาน',
+    after_complete: 'เมื่อจบงาน',
+    installment: 'จ่ายเป็นงวด'
+  };
+  
+  const COMPENSATION = {
+    per_time: 'ต่อครั้ง',
+    per_hour: 'ต่อชั่วโมง',
+    per_day: 'ต่อวัน',
+    per_project: 'ต่อโครงการ',
+    other: 'อื่น ๆ',
+  }
+  
+  const HIRETYPE = {
+    faculty: 'จ้างในนามคณะ/ส่วนงาน',
+    personal: '>จ้างส่วนบุคคล (จ้างส่วนตัว)'
+  }
 
   return (
     <div className="widget-content">
@@ -17,19 +37,19 @@ const JobOverView = ({ jobPost }) => {
         <li>
           <i className="icon icon-clock"></i>
           <h5>Job Type:</h5>
-          <span>{jobPost.hire_type}</span>
+          <span>{HIRETYPE[jobPost.hire_type]}</span>
         </li>
         <li>
-          <i className="icon icon-map-marker"></i>
+          <i className="icon flaticon-map-locator" style={{color:'#578FCA',fontSize: "23px"}}></i>
           <h5>Location:</h5>
           <span>{jobPost.is_online ? 'ออนไลน์' : jobPost.location}</span>
         </li>
         <li>
-          <i className="icon icon-money"></i>
+          <i className="icon flaticon-money" style={{color:'#578FCA',fontSize: "23px"}}></i>
           <h5>Salary:</h5>
           <span>
-            {jobPost.compensation_amount} {jobPost.compensation_period}
-            {jobPost.payment_type === 'installment' ? ' (Installment)' : ''}
+            {jobPost.compensation_amount} {COMPENSATION[jobPost.compensation_period]} 
+             / {PAYMENT_TYPE_MAP[jobPost.payment_type] || ''}
           </span>
         </li>
         <li>

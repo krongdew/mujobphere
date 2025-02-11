@@ -1,3 +1,4 @@
+//app\api\jobs\[id]\route.js
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/queries';
 import { getServerSession } from 'next-auth/next';
@@ -24,9 +25,10 @@ export async function GET(request, { params }) {
 
     const jobId = params.id;
     
+    // Modified to allow any authenticated user to view the job post
     const jobResult = await query(
-      'SELECT * FROM job_posts WHERE id = $1 AND user_id = $2',
-      [jobId, session.user.id]
+      'SELECT * FROM job_posts WHERE id = $1',
+      [jobId]
     );
 
     if (!jobResult.rows.length) {

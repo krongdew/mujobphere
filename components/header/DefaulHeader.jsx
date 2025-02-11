@@ -52,21 +52,37 @@ const DefaulHeader = () => {
         {/* End .nav-outer */}
 
         <div className="outer-box">
-          {/* <!-- Login/Register --> */}
           <div className="btn-box">
-            <a
-              href="#"
-              className="theme-btn btn-style-three call-modal"
-              data-bs-toggle="modal"
-              data-bs-target="#loginPopupModal"
-            >
-              Login / Register
-            </a>
+            {status === "loading" ? (
+              // แสดง loading state
+              <span>Loading...</span>
+            ) : session?.user ? (
+              <>
+                <span className="theme-btn btn-style-three me-3">
+                  {session.user?.name || 'User'} {/* เพิ่ม fallback value */}
+                </span>
+                <button
+                  onClick={handleSignOut}
+                  className="theme-btn btn-style-three"
+                >
+                  {t('Logout')}
+                </button>
+              </>
+            ) : (
+              <a
+                href="#"
+                className="theme-btn btn-style-three call-modal"
+                data-bs-toggle="modal"
+                data-bs-target="#loginPopupModal"
+              >
+                {t('Login / Register')}
+              </a>
+            )}
             <Link
               href="/employers-dashboard/post-jobs"
               className="theme-btn btn-style-one"
             >
-              Job Post
+              {t('Job Post')}
             </Link>
           </div>
         </div>

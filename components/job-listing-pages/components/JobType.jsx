@@ -1,57 +1,33 @@
 'use client'
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addJobType } from "../../../features/filter/filterSlice";
 import { jobTypeCheck } from "../../../features/job/jobSlice";
 
 const JobType = () => {
     const [jobTypes, setJobTypes] = useState([]);
-    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
 
-    // Fetch job types for both hire types sequentially
     useEffect(() => {
         const fetchJobTypes = async () => {
             try {
-                const hireTypes = ['personal', 'faculty'];
-                const allJobTypes = [];
-
-                for (const hireType of hireTypes) {
-                    const response = await fetch(`/api/job-types?hire_type=${hireType}`);
-                    
-                    if (!response.ok) {
-                        // Try to get error details from response
-                        const errorText = await response.text();
-                        console.error(`Error response for ${hireType}:`, errorText);
-                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                    }
-                    
-                    const data = await response.json();
-                    allJobTypes.push(...data);
-                }
+                // เรียก API เพียงครั้งเดียว
+                const response = await fetch('/api/job-types-all');
+                if (!response.ok) throw new Error('Failed to fetch job types');
+                const data = await response.json();
                 
-                console.log('Received job types data:', allJobTypes);
-
-                // Validate and transform data
-                if (!Array.isArray(allJobTypes)) {
-                    throw new Error('Unexpected response format: not an array');
-                }
-                
-                // Group job types by name
-                const groupedJobTypes = allJobTypes.reduce((acc, type) => {
+                // Group และจัดการข้อมูลใน memory
+                const groupedTypes = data.reduce((acc, type) => {
                     const existingType = acc.find(t => t.name === type.name);
-                    
                     if (existingType) {
-                        // Add hire type if not already present
                         if (!existingType.hire_types.includes(type.hire_type)) {
                             existingType.hire_types.push(type.hire_type);
                         }
-                        // Add type ID if not already present
                         if (!existingType.type_ids.includes(type.id)) {
                             existingType.type_ids.push(type.id);
                         }
                     } else {
-                        // Create new grouped type
                         acc.push({
                             name: type.name,
                             hire_types: [type.hire_type],
@@ -61,56 +37,39 @@ const JobType = () => {
                             isChecked: false
                         });
                     }
-                    
                     return acc;
                 }, []);
 
-                setJobTypes(groupedJobTypes);
-                setError(null);
+                setJobTypes(groupedTypes);
             } catch (error) {
-                console.error('Full error details:', {
-                    message: error.message,
-                    name: error.name,
-                    stack: error.stack
-                });
-                setError(error.message);
-                setJobTypes([]);
+                console.error('Error loading job types:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchJobTypes();
     }, []);
 
-    // dispatch job-type
     const jobTypeHandler = (e, id) => {
         const value = e.target.value;
-        
-        // Update local state
-        const updatedJobTypes = jobTypes.map(item => 
-            item.id === id 
-                ? { ...item, isChecked: !item.isChecked }
-                : item
+        setJobTypes(prev => 
+            prev.map(item => 
+                item.id === id 
+                    ? { ...item, isChecked: !item.isChecked }
+                    : item
+            )
         );
-        setJobTypes(updatedJobTypes);
-
-        // Dispatch to redux
         dispatch(addJobType(value));
         dispatch(jobTypeCheck(id));
     };
 
-    // Render error state
-    if (error) {
-        return (
-            <div className="alert alert-danger">
-                เกิดข้อผิดพลาดในการโหลดประเภทงาน: {error}
-                <pre>{error}</pre>
-            </div>
-        );
+    if (isLoading) {
+        return <div className="animate-pulse">กำลังโหลดประเภทงาน...</div>;
     }
 
-    // Render empty state
     if (jobTypes.length === 0) {
-        return <div>กำลังโหลดประเภทงาน...</div>;
+        return <div>ไม่พบประเภทงาน</div>;
     }
 
     return (

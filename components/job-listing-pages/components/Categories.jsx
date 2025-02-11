@@ -7,59 +7,61 @@ import { addCategory } from "../../../features/filter/filterSlice";
 const Categories = () => {
     const { jobList } = useSelector((state) => state.filter) || {};
     const [categories, setCategories] = useState([]);
-    const [getCategory, setCategory] = useState(jobList.category);
-
+    const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
 
-    // Fetch job types as categories
+    // Fetch categories once
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const hireTypes = ['personal', 'faculty'];
-                const allCategories = [];
+                const response = await fetch('/api/job-types-all');
+                if (!response.ok) throw new Error('Failed to fetch categories');
+                
+                const data = await response.json();
 
-                for (const hireType of hireTypes) {
-                    const response = await fetch(`/api/job-types?hire_type=${hireType}`);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    allCategories.push(...data);
-                }
-
-                // Group categories and remove duplicates
-                const uniqueCategories = allCategories.reduce((acc, category) => {
-                    if (!acc.some(existingCat => existingCat.name === category.name)) {
-                        acc.push(category);
-                    }
-                    return acc;
-                }, []);
+                // Remove duplicates while preserving the first occurrence
+                const uniqueCategories = Object.values(
+                    data.reduce((acc, category) => {
+                        // Use name as key to ensure uniqueness
+                        if (!acc[category.name]) {
+                            acc[category.name] = {
+                                id: category.id,
+                                name: category.name,
+                                hire_type: category.hire_type
+                            };
+                        }
+                        return acc;
+                    }, {})
+                );
 
                 setCategories(uniqueCategories);
             } catch (error) {
                 console.error('Error fetching categories:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchCategories();
     }, []);
 
-    // category handler
     const categoryHandler = (e) => {
         dispatch(addCategory(e.target.value));
     };
 
-    useEffect(() => {
-        setCategory(jobList.category);
-    }, [setCategory, jobList]);
+    if (isLoading) {
+        return (
+            <div className="form-select animate-pulse">
+                กำลังโหลดประเภทงาน...
+            </div>
+        );
+    }
 
     return (
         <>
             <select
                 className="form-select"
-                value={jobList.category}
+                value={jobList?.category || ""}
                 onChange={categoryHandler}
             >
                 <option value="">เลือกประเภทงาน</option>

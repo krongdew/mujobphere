@@ -5,7 +5,32 @@ const JobDetailsDescriptions = ({ jobPost }) => {
   const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMMM dd, yyyy');
   };
-
+  
+  const AMOUNT_TYPE_MAP = {
+    percentage: 'เปอร์เซ็นต์ (%)',
+    fixed: 'บาท'
+  };
+  
+  const PAYMENT_TYPE_MAP = {
+    single: 'จ่ายครั้งเดียว',
+    before_start: 'ก่อนเริ่มงาน',
+    after_complete: 'เมื่อจบงาน',
+    installment: 'จ่ายเป็นงวด'
+  };
+  
+  const COMPENSATION = {
+    per_time: 'ต่อครั้ง',
+    per_hour: 'ต่อชั่วโมง',
+    per_day: 'ต่อวัน',
+    per_project: 'ต่อโครงการ',
+    other: 'อื่น ๆ',
+  }
+  
+  const HIRETYPE = {
+    faculty: 'จ้างในนามคณะ/ส่วนงาน',
+    personal: '>จ้างส่วนบุคคล (จ้างส่วนตัว)'
+  }
+  
   return (
     <div className="job-detail">
       <h4>Job Description</h4>
@@ -21,7 +46,7 @@ const JobDetailsDescriptions = ({ jobPost }) => {
       <h4>Job Details</h4>
       <ul className="list-style-three">
         <li>
-          <strong>Hire Type:</strong> {jobPost.hire_type}
+          <strong>Hire Type:</strong> {HIRETYPE[jobPost.hire_type]}
         </li>
         <li>
           <strong>Location:</strong> {jobPost.location}
@@ -57,6 +82,48 @@ const JobDetailsDescriptions = ({ jobPost }) => {
           <p>{jobPost.additional_requirements}</p>
         </>
       )}
+      
+      {jobPost.compensation_amount && (
+        <>
+          <h4>Salary</h4>
+          <p> {jobPost.compensation_amount} {COMPENSATION[jobPost.compensation_period]}</p>
+        </>
+      )}
+      
+      {jobPost.payment_type && (
+        <>
+          <h4>รูปแบบการจ่ายเงิน</h4>
+          <p>{PAYMENT_TYPE_MAP[jobPost.payment_type] || ''}</p>
+        </>
+      )}
+      
+      {jobPost.payment_type === 'installment' && (
+          <>
+            <div className="form-group col-lg-12 col-md-12">
+              <label>จำนวนงวด *</label>
+              <p>{jobPost.installment_count}</p>
+              
+            </div>
+
+            {Array.from({ length: jobPost.installment_count }, (_, index) => (
+              <div key={index} className="row mx-0 bg-light p-3 mb-3">
+                <div className="col-12">
+                  <h4>งวดที่ {index + 1}</h4>
+                </div>
+                <div className="form-group col-lg-6 col-md-12">
+                  <label>จำนวน *</label>
+                  <p>{jobPost.payment_installments[index]?.amount || ''}</p>
+                  
+                </div>
+                <div className="form-group col-lg-6 col-md-12">
+                  <label>หน่วย *</label>
+                  <p>{AMOUNT_TYPE_MAP[jobPost.payment_installments[index]?.amount_type] || ''}</p>
+                 
+                </div>
+              </div>
+            ))}
+          </>
+        )}
     </div>
   );
 };
