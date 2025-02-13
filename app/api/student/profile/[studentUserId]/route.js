@@ -14,25 +14,26 @@ export async function GET(request, { params }) {
     const studentUserId = params.studentUserId;
     console.log('Fetching profile for student ID:', studentUserId);
 
-    // Get user and profile data
-    const result = await query(`
-      SELECT 
-        u.id, u.name, u.email, u.profile_image, u.department, u.faculty,
-        sp.id as profile_id, sp.student_id, sp.first_name, sp.last_name,
-        sp.faculty as student_faculty, sp.major, sp.gpa, sp.birth_date,
-        sp.img_student, sp.description, sp.cv_file,
-        sp.language_skills, sp.programming_skills, sp.other_skills,
-        sp.phone, sp.address
-      FROM users u
-      LEFT JOIN student_profiles sp ON u.id = sp.user_id
-      WHERE u.id = $1 AND u.role = 'student'
-    `, [studentUserId]);
+ // Get user and profile data
+ const result = await query(`
+  SELECT 
+    u.id, u.name, u.email, u.profile_image, u.department,
+    sp.id as profile_id, sp.student_id, sp.first_name, sp.last_name,
+    sp.faculty, 
+    sp.major, sp.gpa, sp.birth_date,
+    sp.img_student, sp.description, sp.cv_file,
+    sp.language_skills, sp.programming_skills, sp.other_skills,
+    sp.phone, sp.address
+  FROM users u
+  LEFT JOIN student_profiles sp ON u.id = sp.user_id
+  WHERE u.id = $1 AND u.role = 'student'
+`, [studentUserId]);
 
-    if (result.rows.length === 0) {
-      return NextResponse.json({ error: 'Student not found' }, { status: 404 });
-    }
+if (result.rows.length === 0) {
+  return NextResponse.json({ error: 'Student not found' }, { status: 404 });
+}
 
-    const studentData = result.rows[0];
+const studentData = result.rows[0];
 
     // Get education history
     const educationResult = await query(`
@@ -61,37 +62,35 @@ export async function GET(request, { params }) {
       ORDER BY date_received DESC
     `, [studentData.profile_id]);
 
-    // Format the response
-    const response = {
-      id: studentData.id,
-      name: studentData.name,
-      email: studentData.email,
-      department: studentData.department,
-      faculty: studentData.faculty,
-      profile: {
-        id: studentData.profile_id,
-        student_id: studentData.student_id,
-        first_name: studentData.first_name,
-        last_name: studentData.last_name,
-        faculty: studentData.student_faculty,
-        major: studentData.major,
-        gpa: studentData.gpa,
-        birth_date: studentData.birth_date,
-        img_student: studentData.img_student,
-        description: studentData.description,
-        cv_file: studentData.cv_file,
-        language_skills: studentData.language_skills,
-        programming_skills: studentData.programming_skills,
-        other_skills: studentData.other_skills,
-        phone: studentData.phone,
-        address: studentData.address
-      },
+  // Format the response
+  const response = {
+    id: studentData.id,
+    name: studentData.name,
+    email: studentData.email,
+    department: studentData.department,
+    faculty: studentData.faculty, // ใช้ชื่อคณะโดยตรงจาก faculty
+    profile: {
+      id: studentData.profile_id,
+      student_id: studentData.student_id,
+      first_name: studentData.first_name,
+      last_name: studentData.last_name,
+      faculty: studentData.faculty, // ใช้ชื่อคณะโดยตรงจาก faculty
+      major: studentData.major,
+      gpa: studentData.gpa,
+      birth_date: studentData.birth_date,
+      img_student: studentData.img_student,
+      description: studentData.description,
+      cv_file: studentData.cv_file,
+      language_skills: studentData.language_skills,
+      programming_skills: studentData.programming_skills,
+      other_skills: studentData.other_skills,
+      phone: studentData.phone,
+      address: studentData.address
+    },
       education: educationResult.rows,
       experience: experienceResult.rows,
       awards: awardsResult.rows
     };
-
-    console.log('Returning student data:', response); // Debug log
 
     return NextResponse.json(response);
 

@@ -115,10 +115,7 @@ const CandidateSingleDynamicV1 = ({ params }) => {
                       <span className="icon flaticon-map-locator"></span>
                       {studentData.faculty}
                     </li>
-                    <li>
-                      <span className="icon flaticon-money"></span>
-                      GPA: {studentData.profile?.gpa || 'N/A'}
-                    </li>
+                   
                   </ul>
                 </div>
               </div>
