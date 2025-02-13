@@ -22,6 +22,16 @@ const formatDate = (dateString) => {
   }
 };
 
+const decodeHtmlEntity = (text) => {
+  if (!text) return text;
+  return text.replace(/&#x27;/g, "'")
+             .replace(/&quot;/g, '"')
+             .replace(/&amp;/g, '&')
+             .replace(/&lt;/g, '<')
+             .replace(/&gt;/g, '>')
+             .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
+};
+
 const JobListingsTable = () => {
   const router = useRouter();
   const [jobs, setJobs] = useState([]);
@@ -49,27 +59,33 @@ const JobListingsTable = () => {
       const response = await fetch(`/api/jobs/employer?period=${period}`);
       if (!response.ok) throw new Error('Failed to fetch jobs');
       const data = await response.json();
-
+  
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const localToday = new Date(
         today.getTime() + (today.getTimezoneOffset() * 60 + 7 * 60) * 1000
       );
-
+  
       const updatedJobs = data.map(job => {
+        // Decode HTML entities ในชื่องาน
+        const decodedJob = {
+          ...job,
+          title: decodeHtmlEntity(job.title)
+        };
+  
         const endDate = new Date(job.application_end_date);
         const localEndDate = new Date(
           endDate.getTime() + (endDate.getTimezoneOffset() * 60 + 7 * 60) * 1000
         );
         localEndDate.setHours(23, 59, 59, 999);
-
+  
         if (job.status === 'published' && localEndDate < localToday) {
           handleStatusChange(job.id, 'closed');
-          return { ...job, status: 'closed' };
+          return { ...decodedJob, status: 'closed' };
         }
-        return job;
+        return decodedJob;
       });
-
+  
       setJobs(updatedJobs);
       setLoading(false);
     } catch (error) {
