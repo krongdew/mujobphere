@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { query } from "@/lib/db/queries";
-import { encrypt, decrypt } from "@/lib/security/encryption";
+import { encrypt } from "@/lib/security/encryption";
 
 export async function POST(request) {
   try {
@@ -36,6 +36,12 @@ export async function POST(request) {
     let queryParams;
 
     if (role === 'employeroutside') {
+      // เข้ารหัสข้อมูลที่จำเป็นสำหรับ employeroutside
+      const sensitiveData = {
+        company_phone: otherData.company_phone ? encrypt(otherData.company_phone) : null,
+        contact_phone: otherData.contact_phone ? encrypt(otherData.contact_phone) : null
+      };
+
       updateProfileQuery = `
         UPDATE employer_outside_profiles 
         SET 
@@ -56,15 +62,22 @@ export async function POST(request) {
         otherData.company_name,
         otherData.company_address,
         otherData.company_description || null,
-        otherData.company_phone ? encrypt(otherData.company_phone) : null,
+        sensitiveData.company_phone,
         otherData.contact_first_name,
         otherData.contact_last_name,
-        otherData.contact_phone ? encrypt(otherData.contact_phone) : null,
+        sensitiveData.contact_phone,
         otherData.company_email,
         otherData.company_benefits || null,
         userId
       ];
+
     } else if (role === 'employer') {
+      // เข้ารหัสข้อมูลที่จำเป็นสำหรับ employer
+      const sensitiveData = {
+        phone: otherData.phone ? encrypt(otherData.phone) : null,
+        mobile_phone: otherData.mobile_phone ? encrypt(otherData.mobile_phone) : null
+      };
+
       updateProfileQuery = `
         UPDATE employer_profiles 
         SET 
@@ -83,11 +96,19 @@ export async function POST(request) {
         otherData.department,
         otherData.faculty,
         otherData.position,
-        otherData.phone ? encrypt(otherData.phone) : null,
-        otherData.mobile_phone ? encrypt(otherData.mobile_phone) : null,
+        sensitiveData.phone,
+        sensitiveData.mobile_phone,
         userId
       ];
+
     } else if (role === 'student') {
+      // เข้ารหัสข้อมูลที่จำเป็นสำหรับ student
+      const sensitiveData = {
+        phone: otherData.phone ? encrypt(otherData.phone) : null,
+        address: otherData.address ? encrypt(otherData.address) : null,
+        birth_date: otherData.birth_date ? encrypt(otherData.birth_date) : null
+      };
+
       updateProfileQuery = `
         UPDATE student_profiles 
         SET 
@@ -114,18 +135,19 @@ export async function POST(request) {
         otherData.faculty,
         otherData.major,
         otherData.gpa || null,
-        otherData.birth_date,
+        sensitiveData.birth_date,
         otherData.student_card_image || null,
         otherData.language_skills || null,
         otherData.programming_skills || null,
-        otherData.phone || null,
-        otherData.address || null,
+        sensitiveData.phone,
+        sensitiveData.address,
         userId
       ];
     } else {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
+    console.log('Executing query with params:', queryParams);
     const profileResult = await query(updateProfileQuery, queryParams);
     
     if (!profileResult.rows.length) {
@@ -135,44 +157,18 @@ export async function POST(request) {
       );
     }
 
-    // Decrypt phone numbers before sending response
-    const profileData = { ...profileResult.rows[0] };
-    if (profileData.mobile_phone) {
-      try {
-        profileData.mobile_phone = decrypt(profileData.mobile_phone);
-      } catch (error) {
-        console.error('Failed to decrypt mobile_phone:', error);
-      }
-    }
-    if (profileData.phone) {
-      try {
-        profileData.phone = decrypt(profileData.phone);
-      } catch (error) {
-        console.error('Failed to decrypt phone:', error);
-      }
-    }
-    if (profileData.company_phone) {
-      try {
-        profileData.company_phone = decrypt(profileData.company_phone);
-      } catch (error) {
-        console.error('Failed to decrypt company_phone:', error);
-      }
-    }
-    if (profileData.contact_phone) {
-      try {
-        profileData.contact_phone = decrypt(profileData.contact_phone);
-      } catch (error) {
-        console.error('Failed to decrypt contact_phone:', error);
-      }
-    }
-
+    // ส่งข้อมูลดิบกลับไป
     return NextResponse.json({
       ...userResult.rows[0],
-      ...profileData
+      ...otherData,  // ใช้ข้อมูลดิบที่ยังไม่ได้เข้ารหัส
+      id: profileResult.rows[0].id,
+      user_id: profileResult.rows[0].user_id,
+      created_at: profileResult.rows[0].created_at,
+      updated_at: profileResult.rows[0].updated_at
     });
+
   } catch (error) {
     console.error('Profile update error:', error);
-    // Log full error details
     console.error('Full error:', {
       message: error.message,
       stack: error.stack

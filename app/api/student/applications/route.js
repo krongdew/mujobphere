@@ -30,7 +30,11 @@ export async function GET(request) {
         jp.user_id as employer_id,
         u.department,
         u.role as employer_role,
-        COALESCE(eop.company_name, u.department) as company_name,
+        CASE 
+          WHEN u.role = 'employer' THEN u.name
+          WHEN u.role = 'employeroutside' THEN eop.company_name
+          ELSE u.department
+        END as company_name,
         COALESCE(eop.company_logo, ep.company_logo) as company_logo
       FROM job_applications ja
       JOIN job_posts jp ON ja.job_post_id = jp.id
@@ -41,7 +45,7 @@ export async function GET(request) {
       ORDER BY ja.applied_at DESC
     `, [profileResult.rows[0].id]);
 
-    console.log('Applications found:', applications.rows); // Debug log
+    console.log('Applications found:', applications.rows);
 
     return NextResponse.json(applications.rows);
 
@@ -53,4 +57,3 @@ export async function GET(request) {
     );
   }
 }
-

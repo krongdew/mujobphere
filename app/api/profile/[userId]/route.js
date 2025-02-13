@@ -64,7 +64,7 @@ export async function GET(request, { params }) {
           FROM student_profiles 
           WHERE user_id = $1
       `;
-  } else {
+    } else {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
@@ -85,7 +85,7 @@ export async function GET(request, { params }) {
             ) VALUES ($1, NULL, NULL, NULL, NULL, CURRENT_TIMESTAMP)
             RETURNING *
         `;
-    } else if (session.user.role === 'employeroutside') {
+      } else if (session.user.role === 'employeroutside') {
         createProfileQuery = `
           INSERT INTO employer_outside_profiles (
             user_id,
@@ -111,26 +111,19 @@ export async function GET(request, { params }) {
       });
     }
 
-    // แยกฟังก์ชันสำหรับถอดรหัส
-    const decryptPhoneNumber = (encrypted) => {
-      if (!encrypted) return null;
-      try {
-        return decrypt(encrypted);
-      } catch (error) {
-        console.error('Decryption error:', error);
-        return null;
-      }
-    };
-
     const profileData = { ...profileResult.rows[0] };
 
     // ถอดรหัสตาม role
     if (session.user.role === 'employeroutside') {
-      profileData.company_phone = decryptPhoneNumber(profileData.company_phone);
-      profileData.contact_phone = decryptPhoneNumber(profileData.contact_phone);
+      profileData.company_phone = decrypt(profileData.company_phone);
+      profileData.contact_phone = decrypt(profileData.contact_phone);
+    } else if (session.user.role === 'student') {
+      profileData.phone = decrypt(profileData.phone);
+      profileData.address = decrypt(profileData.address);
+      profileData.birth_date = decrypt(profileData.birth_date);
     } else {
-      profileData.phone = decryptPhoneNumber(profileData.phone);
-      profileData.mobile_phone = decryptPhoneNumber(profileData.mobile_phone);
+      profileData.phone = decrypt(profileData.phone);
+      profileData.mobile_phone = decrypt(profileData.mobile_phone);
     }
 
     return NextResponse.json({
