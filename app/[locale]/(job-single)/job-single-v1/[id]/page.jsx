@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-
 import LoginPopup from "@/components/common/form/login/LoginPopup";
 import FooterDefault from "@/components/footer/common-footer";
 import DefaulHeader2 from "@/components/header/DefaulHeader2";
@@ -36,6 +35,7 @@ const JobSingleDynamicV1 = ({ params }) => {
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasApplied, setHasApplied] = useState(false);
 
   useEffect(() => {
     const fetchJobAndProfileData = async () => {
@@ -46,30 +46,29 @@ const JobSingleDynamicV1 = ({ params }) => {
 
       try {
         // Fetch job post data
-        const jobResponse = await fetch(`/api/jobs/${params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${session.accessToken}`
-          }
-        });
-        
+        const jobResponse = await fetch(`/api/jobs/${params.id}`);
         if (!jobResponse.ok) {
           throw new Error('Failed to fetch job data');
         }
-        
         const jobData = await jobResponse.json();
 
-        // Fetch profile data of the job poster
-        const profileResponse = await fetch(`/api/profile/public/${jobData.user_id}`, {
-          headers: {
-            'Authorization': `Bearer ${session.accessToken}`
-          }
-        });
-
+        // Fetch profile data
+        const profileResponse = await fetch(`/api/profile/public/${jobData.user_id}`);
         if (!profileResponse.ok) {
           throw new Error('Failed to fetch profile data');
         }
-
         const profileData = await profileResponse.json();
+
+        // Check if user has already applied (for students only)
+        if (session.user.role === 'student') {
+          const applicationResponse = await fetch(
+            `/api/job-applications/check/${params.id}`
+          );
+          if (applicationResponse.ok) {
+            const { hasApplied } = await applicationResponse.json();
+            setHasApplied(hasApplied);
+          }
+        }
 
         setJobPost(jobData);
         setProfileData(profileData);
@@ -105,7 +104,7 @@ const JobSingleDynamicV1 = ({ params }) => {
     return <div className="text-center py-10">Job not found</div>;
   }
 
-  const renderCompanyInfo = () => {
+  const CompanySection = () => {
     const companyLogo = profileData.company_logo;
     const companyName = profileData.role === "employer" 
       ? profileData.name 
@@ -157,6 +156,42 @@ const JobSingleDynamicV1 = ({ params }) => {
     );
   };
 
+  const renderApplyButton = () => {
+    if (!session) {
+      return (
+        <button
+          className="theme-btn btn-style-one"
+          data-bs-toggle="modal"
+          data-bs-target="#loginModal"
+        >
+          Login to Apply
+        </button>
+      );
+    }
+
+    if (session.user.role !== 'student') {
+      return null;
+    }
+
+    if (hasApplied) {
+      return (
+        <button className="theme-btn btn-style-one disabled" disabled>
+          Already Applied
+        </button>
+      );
+    }
+
+    return (
+      <button
+        className="theme-btn btn-style-one"
+        data-bs-toggle="modal"
+        data-bs-target="#applyJobModal"
+      >
+        Apply For Job
+      </button>
+    );
+  };
+
   return (
     <>
       <span className="header-span"></span>
@@ -170,22 +205,16 @@ const JobSingleDynamicV1 = ({ params }) => {
           <div className="auto-container">
             <div className="job-block-seven">
               <div className="inner-box">
-                {renderCompanyInfo()}
+                <CompanySection />
 
                 <div className="btn-box">
-                  <a
-                    href="#"
-                    className="theme-btn btn-style-one"
-                    data-bs-toggle="modal"
-                    data-bs-target="#applyJobModal"
-                  >
-                    Apply For Job
-                  </a>
+                  {renderApplyButton()}
                   <button className="bookmark-btn">
                     <i className="flaticon-bookmark"></i>
                   </button>
                 </div>
 
+                {/* Apply Job Modal */}
                 <div
                   className="modal fade"
                   id="applyJobModal"
@@ -203,7 +232,9 @@ const JobSingleDynamicV1 = ({ params }) => {
                           aria-label="Close"
                         ></button>
                       </div>
-                      <ApplyJobModalContent />
+                      {jobPost && (
+                        <ApplyJobModalContent jobId={jobPost.id} />
+                      )}
                     </div>
                   </div>
                 </div>

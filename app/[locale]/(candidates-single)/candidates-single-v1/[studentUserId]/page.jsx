@@ -1,4 +1,3 @@
-// app/[locale]/(candidates-single)/candidates-single-v1/[id]/page.jsx
 'use client';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -27,28 +26,65 @@ const CandidateSingleDynamicV1 = ({ params }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchStudentData = async () => {
+    const fetchData = async () => {
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch(`/api/student/profile/${params.id}`);
-        if (!response.ok) throw new Error('Failed to fetch student data');
+        console.log('Fetching student data for ID:', params.studentUserId);
+        const response = await fetch(`/api/student/profile/${params.studentUserId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch student data');
+        }
         const data = await response.json();
+        console.log('Received student data:', data);
         setStudentData(data);
-      } catch (err) {
-        console.error('Error fetching student data:', err);
-        setError('Failed to load student data');
+      } catch (error) {
+        console.error('Error fetching student data:', error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
     };
 
-    if (session) {
-      fetchStudentData();
-    }
-  }, [session, params.id]);
+    fetchData();
+  }, [session, params.studentUserId]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!studentData) return <div>No data found</div>;
+  if (!session) {
+    return (
+      <div className="text-center py-10">
+        <h2>Please login to view profile</h2>
+        <LoginPopup />
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-10">
+        <div className="spinner"></div>
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-10 text-red-500">
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+
+  if (!studentData) {
+    return (
+      <div className="text-center py-10">
+        <p>No profile data found</p>
+      </div>
+    );
+  }
 
   return (
     <>

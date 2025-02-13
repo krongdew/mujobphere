@@ -137,3 +137,6 @@
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-11T12:33:57.254Z","userId":19}}
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-11T12:47:16.727Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-11T13:08:11.125Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-13T03:34:17.105Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-13T04:04:19.989Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-13T04:04:44.464Z","userId":20}}

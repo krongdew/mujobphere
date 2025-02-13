@@ -1,4 +1,4 @@
-// app/api/student/profile/[id]/route.js
+// app/api/student/profile/public/[id]/route.js
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -11,34 +11,26 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const studentId = params.id;
+    const studentProfileId = params.id;
 
-    // Get base user data
-    const userResult = await query(
-      `SELECT u.id, u.name, u.email, u.profile_image, u.department, u.faculty 
-       FROM users u 
-       WHERE u.id = $1 AND u.role = 'student'`,
-      [studentId]
-    );
-
-    if (!userResult.rows.length) {
-      return NextResponse.json({ error: 'Student not found' }, { status: 404 });
-    }
-
-    // Get student profile data
+    // Get student profile data with user information
     const profileResult = await query(
       `SELECT 
-        sp.id, sp.student_id, sp.first_name, sp.last_name,
+        sp.id, sp.user_id, sp.student_id, sp.first_name, sp.last_name,
         sp.faculty, sp.major, sp.gpa, sp.birth_date,
         sp.img_student, sp.description, sp.cv_file,
         sp.language_skills, sp.programming_skills, sp.other_skills,
-        sp.phone, sp.address,  
-        u.email  
+        sp.phone, sp.address,
+        u.email, u.name, u.profile_image, u.department, u.faculty as user_faculty
       FROM student_profiles sp
       JOIN users u ON sp.user_id = u.id
-      WHERE sp.user_id = $1`,
-      [studentId]
+      WHERE sp.id = $1`,
+      [studentProfileId]
     );
+
+    if (!profileResult.rows.length) {
+      return NextResponse.json({ error: 'Student not found' }, { status: 404 });
+    }
 
     // Get education history
     const educationResult = await query(
@@ -48,7 +40,7 @@ export async function GET(request, { params }) {
       FROM student_educations
       WHERE student_profile_id = $1
       ORDER BY start_date DESC`,
-      [profileResult.rows[0]?.id]
+      [studentProfileId]
     );
 
     // Get experience history
@@ -59,7 +51,7 @@ export async function GET(request, { params }) {
       FROM student_experiences
       WHERE student_profile_id = $1
       ORDER BY start_date DESC`,
-      [profileResult.rows[0]?.id]
+      [studentProfileId]
     );
 
     // Get awards
@@ -70,12 +62,11 @@ export async function GET(request, { params }) {
       FROM student_awards
       WHERE student_profile_id = $1
       ORDER BY date_received DESC`,
-      [profileResult.rows[0]?.id]
+      [studentProfileId]
     );
 
     return NextResponse.json({
-      ...userResult.rows[0],
-      profile: profileResult.rows[0] || null,
+      ...profileResult.rows[0],
       education: educationResult.rows,
       experience: experienceResult.rows,
       awards: awardsResult.rows
@@ -88,4 +79,3 @@ export async function GET(request, { params }) {
     );
   }
 }
-
