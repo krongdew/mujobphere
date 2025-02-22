@@ -113,18 +113,32 @@ export async function GET(request, { params }) {
 
     const profileData = { ...profileResult.rows[0] };
 
-    // ถอดรหัสตาม role
-    if (session.user.role === 'employeroutside') {
-      profileData.company_phone = decrypt(profileData.company_phone);
-      profileData.contact_phone = decrypt(profileData.contact_phone);
-    } else if (session.user.role === 'student') {
-      profileData.phone = decrypt(profileData.phone);
-      profileData.address = decrypt(profileData.address);
-      profileData.birth_date = decrypt(profileData.birth_date);
-    } else {
-      profileData.phone = decrypt(profileData.phone);
-      profileData.mobile_phone = decrypt(profileData.mobile_phone);
-    }
+// แก้ไขส่วนการถอดรหัสให้มีการตรวจสอบก่อน
+if (session.user.role === 'employeroutside') {
+  if (profileData.company_phone) {
+    profileData.company_phone = decrypt(profileData.company_phone);
+  }
+  if (profileData.contact_phone) {
+    profileData.contact_phone = decrypt(profileData.contact_phone);
+  }
+} else if (session.user.role === 'student') {
+  if (profileData.phone) {
+    profileData.phone = decrypt(profileData.phone);
+  }
+  if (profileData.address) {
+    profileData.address = decrypt(profileData.address);
+  }
+  if (profileData.birth_date) {
+    profileData.birth_date = decrypt(profileData.birth_date);
+  }
+} else if (session.user.role === 'employer') {
+  if (profileData.phone) {
+    profileData.phone = decrypt(profileData.phone);
+  }
+  if (profileData.mobile_phone) {
+    profileData.mobile_phone = decrypt(profileData.mobile_phone);
+  }
+}
 
     return NextResponse.json({
       ...userData,
@@ -133,8 +147,14 @@ export async function GET(request, { params }) {
 
   } catch (error) {
     console.error('Profile fetch error:', error);
+    console.error('User role:', session.user.role);
+    console.error('Profile data:', JSON.stringify(profileData, null, 2));
+    
     return NextResponse.json(
-      { error: 'Failed to fetch profile' },
+      { 
+        error: 'Failed to fetch profile',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     );
   }

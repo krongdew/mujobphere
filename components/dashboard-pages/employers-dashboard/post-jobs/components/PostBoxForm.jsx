@@ -494,12 +494,13 @@ useEffect(() => {
           <label>ระดับการศึกษา *</label>
           <select
             name="education_level"
-            value={formData.education_level}
+            value={formData.education_level }
             onChange={handleInputChange}
             required
             className="form-select"
           >
             <option value="">เลือกระดับการศึกษา</option>
+            <option value="none">ไม่จำกัด</option>
             <option value="bachelor">ปริญญาตรี</option>
             <option value="master">ปริญญาโท</option>
             <option value="phd">ปริญญาเอก</option>

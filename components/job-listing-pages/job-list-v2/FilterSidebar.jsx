@@ -20,7 +20,14 @@ const FilterSidebar = () => {
                 {/* End .close filter */}
 
                 <div className="switchbox-outer">
+                    <h4>ประเภทการจ้าง</h4>
+                    
+                </div>
+
+                <div className="switchbox-outer">
                     <h4>ประเภทงาน</h4>
+                    <p>(faculty, personal) : งานที่มีการจ้างทั้งในนามคณะและในนามส่วนตัว</p>
+                    <br></br>
                     <JobType />
                 </div>
                 {/* <!-- Switchbox Outer --> */}

@@ -11,6 +11,22 @@ const CompanyInfo = ({ profileData }) => {
     return null;
   }
 
+  // Helper function to format phone info based on role
+  const getPhoneInfo = (data) => {
+    if (data.role === 'employeroutside') {
+      return [
+        { label: 'Company Phone', value: data.company_phone },
+        { label: 'Contact Phone', value: data.contact_phone }
+      ].filter(item => item.value);
+    } else if (data.role === 'employer') {
+      return [
+        { label: 'Phone', value: data.phone },
+        { label: 'Mobile', value: data.mobile_phone }
+      ].filter(item => item.value);
+    }
+    return [];
+  };
+
   // Prepare company information based on available data
   const companyInfo = [
     // Always include these if available
@@ -23,7 +39,9 @@ const CompanyInfo = ({ profileData }) => {
     { label: 'Position', value: profileData.position },
     { label: 'Company Name', value: profileData.company_name },
     { label: 'Company Address', value: profileData.company_address },
-    { label: 'Phone', value: profileData.phone || profileData.company_phone },
+    
+    // Add phone numbers
+    ...getPhoneInfo(profileData)
   ];
 
   // Filter out items with no value

@@ -10,14 +10,14 @@ const FormContent = () => {
       <h3>{t('Login to JobSphere')}</h3>
 
       {/* <!--Login Form--> */}
-      <form method="post">
+      {/* <form method="post">
         <div className="form-group">
           <label>{t('Email')}</label>
           <input type="email" name="email" placeholder={t('Email')} required />
-        </div>
+        </div> */}
         {/* name */}
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label>{t('Password')}</label>
           <input
             type="password"
@@ -25,25 +25,25 @@ const FormContent = () => {
             placeholder={t('Password')}
             required
           />
-        </div>
+        </div> */}
         {/* password */}
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <div className="field-outer">
             <div className="input-group checkboxes square">
-              <input type="checkbox" name="remember-me" id="remember" />
+              <input type="checkbox" name="remember-me" id="remember" /> */}
               {/* <label htmlFor="remember" className="remember">
                 <span className="custom-checkbox"></span> Remember me
               </label> */}
-            </div>
+            {/* </div>
             <a href="#" className="pwd">
             {t('Forgot password')}
             </a>
           </div>
-        </div>
+        </div> */}
         {/* forgot password */}
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <button
             className="theme-btn btn-style-one"
             type="submit"
@@ -51,13 +51,13 @@ const FormContent = () => {
           >
             {t('LogIn')}
           </button>
-        </div>
+        </div> */}
         {/* login */}
-      </form>
+      {/* </form> */}
       {/* End form */}
 
       <div className="bottom-box">
-        <div className="text">
+        {/* <div className="text">
         {t('Dont have an account')}{" "}
           <Link
             href="#"
@@ -71,7 +71,7 @@ const FormContent = () => {
 
         <div className="divider">
           <span>{t('or')}</span>
-        </div>
+        </div> */}
 
         <LoginWithSocial />
       </div>
