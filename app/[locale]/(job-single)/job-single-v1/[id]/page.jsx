@@ -100,9 +100,9 @@ const JobSingleDynamicV1 = ({ params }) => {
     return <div className="text-center py-10">Error: {error}</div>;
   }
 
-  if (!jobPost || !profileData) {
-    return <div className="text-center py-10">Job not found</div>;
-  }
+  // if (!jobPost || !profileData) {
+  //   return <div className="text-center py-10">Job not found</div>;
+  // }
 
   const CompanySection = () => {
     const companyLogo = profileData.company_logo;
