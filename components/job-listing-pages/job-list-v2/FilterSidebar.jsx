@@ -64,7 +64,7 @@ const FilterSidebar = () => {
             </div>
             {/* Filter Outer */}
 
-            <CallToActions />
+           
             {/* <!-- End Call To Action --> */}
         </div>
     );

@@ -2,6 +2,7 @@
 
 import { Suspense, lazy } from 'react';
 import { useSession } from 'next-auth/react';
+import CvUploader from '../../cv-manager/components/CvUploader';
 
 // Custom loading components with skeleton UI
 const LoadingSkeleton = () => (
@@ -32,6 +33,7 @@ const Education = lazy(() => {
 const Experiences = lazy(() => import('./Experiences'));
 const Awards = lazy(() => import('./Awards'));
 const SkillsMultiple = lazy(() => import('./SkillsMultiple'));
+
 
 const Index = () => {
   const { data: session } = useSession();
@@ -65,6 +67,10 @@ const Index = () => {
           <Suspense fallback={<LoadingSkeleton />}>
             <SkillsMultiple />
           </Suspense>
+        </div>
+
+        <div className="form-group col-lg-12 col-md-12">
+          <CvUploader />
         </div>
       </div>
     </div>

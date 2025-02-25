@@ -67,7 +67,7 @@ const CvUploader = () => {
                             types are (.doc, .docx, .pdf)
                         </span>
                         <span className="theme-btn btn-style-one">
-                            Upload Resume
+                            Upload Resume เพิ่มเติม
                         </span>
                         {getError !== "" ? (
                             <p className="ui-danger mb-0">{getError}</p>
