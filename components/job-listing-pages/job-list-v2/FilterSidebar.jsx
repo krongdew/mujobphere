@@ -6,8 +6,11 @@ import SalaryRangeSlider from "../components/SalaryRangeSlider";
 import Tag from "../components/Tag";
 import HireTypeFilter from "../components/HireTypeFilter";
 import EducationLevelFilter from "../components/EducationLevelFilter";
+import { useTranslations } from "next-intl";
 
 const FilterSidebar = () => {
+     const t = useTranslations("JobSearchForm");
+    
     return (
         <div className="inner-column">
             <div className="filters-outer">
@@ -20,20 +23,20 @@ const FilterSidebar = () => {
                 {/* End .close filter */}
 
                 <div className="switchbox-outer">
-                    <h4>ประเภทการจ้าง</h4>
+                    <h4> {t('Select Job type')} </h4>
                     
                 </div>
 
                 <div className="switchbox-outer">
-                    <h4>ประเภทงาน</h4>
-                    <p>(faculty, personal) : งานที่มีการจ้างทั้งในนามคณะและในนามส่วนตัว</p>
+                    <h4> {t('Job type')}  </h4>
+                    <p> {t('Job type Des')} </p>
                     <br></br>
                     <JobType />
                 </div>
                 {/* <!-- Switchbox Outer --> */}
 
                 <div className="checkbox-outer">
-                    <h4>วันที่ประกาศ</h4>
+                    <h4> {t('Date post')}</h4>
                     <DatePosted />
                 </div>
                 {/* <!-- Checkboxes Outer --> */}
@@ -41,7 +44,7 @@ const FilterSidebar = () => {
                
 
                 <div className="filter-block">
-                    <h4>รายได้</h4>
+                    <h4>{t('Income')}</h4>
                     <SalaryRangeSlider />
                 </div>
                 {/* <!-- Filter Block --> */}

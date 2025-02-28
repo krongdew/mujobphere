@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addKeyword } from "../../../features/filter/filterSlice";
+import { useTranslations } from "next-intl";
 
 const SearchBox = () => {
     const { jobList } = useSelector((state) => state.filter);
     const [getKeyWord, setkeyWord] = useState(jobList.keyword);
     const dispatch = useDispatch();
+    const t = useTranslations("JobSearchForm");
 
     // keyword handler
     const keywordHandler = (e) => {
@@ -23,7 +25,7 @@ const SearchBox = () => {
             <input
                 type="text"
                 name="listing-search"
-                placeholder="ค้นหางาน ชื่อบริษัท หรือคำสำคัญ"
+                placeholder={t('Search jobs word')}
                 value={getKeyWord}
                 onChange={keywordHandler}
             />

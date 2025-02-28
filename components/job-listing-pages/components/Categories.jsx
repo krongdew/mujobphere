@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCategory } from "../../../features/filter/filterSlice";
+import { useTranslations } from "next-intl";
 
 const Categories = () => {
+     const t = useTranslations("JobSearchForm");
     const { jobList } = useSelector((state) => state.filter) || {};
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +54,7 @@ const Categories = () => {
     if (isLoading) {
         return (
             <div className="form-select animate-pulse">
-                กำลังโหลดประเภทงาน...
+                {t('Job type loading')} 
             </div>
         );
     }
@@ -64,7 +66,7 @@ const Categories = () => {
                 value={jobList?.category || ""}
                 onChange={categoryHandler}
             >
-                <option value="">เลือกประเภทงาน</option>
+                <option value=""> {t('Select Job type')}</option>
                 {categories.map((category) => (
                     <option 
                         key={category.id} 

@@ -1,6 +1,7 @@
 {
   "Common" : {
   "Home": "Home",
+  "Waiting for Approve":"Waiting for Approve",
   "Find Jobs": "Find Jobs",
   "Employers": "Employers",
   "Candidates": "Candidates",
@@ -13,7 +14,12 @@
   "Logout": "Sign out",
   "Job Post": "Job Post",
   "About SGDs": "About SGDs",
-  "MU JobSphere Description": "MU JobSphere Promote and drive sustainable development goals"
+  "MU JobSphere Description": "MU JobSphere Promote and drive sustainable development goals",
+  "Popular Job Categories":"Popular Job Categories",
+  "Urgent Jobs":"Urgent Jobs",
+  "Urgent Jobs Description":"Urgent Jobs Description",
+  "Make a Difference" : "Make a Difference with Your Online Resume!",
+  "Make a Difference Des" : "Your resume in minutes with JobHunt resume assistant is ready!"
   },
   "LanguageSwitcher": {
     "thai": "Thai",
@@ -54,7 +60,10 @@
     "5": {
       "feedback": "สร้างความสัมพันธ์อันดี",
       "feedbackText": "สร้างความสัมพันธ์อันดีกับภาคธุรกิจ และส่งเสริมอัตราการจ้างงานเต็มเวลาเมื่อนักศึกษาจบการศึกษาต่อไป"
-    } 
+    },
+    "Get a question?":"Get a question?",
+    "Check out our FAQs" : "We are here to help. Check out our FAQs, send us an email or call us at 1 " ,
+    "Get Started" : "เว็บไซต์ของกองวิเทศสัมพันธ์"
   },
   "Login":{
       "Login to JobSphere": "Login to JobSphere",
@@ -76,5 +85,18 @@
         "item3": "ส่งเสริมความเป็นหนึ่งเดียวกันด้วยการมีส่วนร่วมระหว่างนักศึกษาและบุคลากร ตลอดจนสร้างสภาพแวดล้อมที่สนับสนุนต่อการเติบโตของคนในชุมชน"
       },
       "employersCount": "300k+ Employers"
+    },
+    "JobSearchForm" : {
+      "Find Jobs" : "Find Jobs",
+      "Search jobs word" : "Search jobs, company name,job words",
+      "Select location" : "Select location type",
+      "online" : "online",
+      "onsite" : "onsite",
+      "Job type loading" : "Job type loading..",
+      "Select Job type" : "Select Job type",
+      "Job type" : "Job type",
+      "Job type Des" : "(faculty, personal) : Work that is hired both on behalf of the group and on behalf of individuals",
+      "Date post" : "Date post",
+      "Income" : "Income"
     }
 }

@@ -12,6 +12,7 @@ import JobOverView from "@/components/job-single-pages/job-overview/JobOverView"
 import CompanyInfo from "@/components/job-single-pages/shared-components/CompanyInfo";
 import JobDetailsDescriptions from "@/components/job-single-pages/shared-components/JobDetailsDescriptions";
 import ApplyJobModalContent from "@/components/job-single-pages/shared-components/ApplyJobModalContent";
+import { COMPENSATION } from '@/data/unit';
 
 const getImageUrl = (path) => {
   if (!path) return "/images/default-company-logo.png";
@@ -21,13 +22,6 @@ const getImageUrl = (path) => {
   return `/api/image/${filename}`;
 };
 
-const COMPENSATION = {
-  per_time: 'ต่อครั้ง',
-  per_hour: 'ต่อชั่วโมง',
-  per_day: 'ต่อวัน',
-  per_project: 'ต่อโครงการ',
-  other: 'อื่น ๆ',
-}
 
 const JobSingleDynamicV1 = ({ params }) => {
   const { data: session } = useSession();
@@ -100,33 +94,35 @@ const JobSingleDynamicV1 = ({ params }) => {
     return <div className="text-center py-10">Error: {error}</div>;
   }
 
-  // if (!jobPost || !profileData) {
-  //   return <div className="text-center py-10">Job not found</div>;
-  // }
+  if (!jobPost || !profileData) {
+    return <div className="text-center py-10">Job information not available. Please try again.</div>;
+  }
 
   const CompanySection = () => {
-    const companyLogo = profileData.company_logo;
+    if (!profileData) return <div>Loading company information...</div>;
+    
+    const companyLogo = profileData.company_logo || "";
     const companyName = profileData.role === "employer" 
       ? profileData.name 
-      : profileData.company_name;
+      : profileData.company_name || "";
 
     const companyDetails = [
       {
         icon: "flaticon-briefcase",
-        text: jobPost.is_online ? 'ออนไลน์' : 'onsite'
+        text: jobPost && jobPost.is_online ? 'ออนไลน์' : 'onsite'
       },
       {
         icon: "flaticon-map-locator",
         text: profileData.role === "employer" 
-          ? profileData.department 
-          : profileData.company_address
+          ? (profileData.department || "")
+          : (profileData.company_address || "")
       }
     ];
 
-    if (jobPost.compensation_amount) {
+    if (jobPost && jobPost.compensation_amount) {
       companyDetails.push({
         icon: "flaticon-money",
-        text: `${jobPost.compensation_amount} ${COMPENSATION[jobPost.compensation_period]}`
+        text: `${jobPost.compensation_amount} ${COMPENSATION[jobPost.compensation_period] || ""}`
       });
     }
     
@@ -142,7 +138,7 @@ const JobSingleDynamicV1 = ({ params }) => {
             className="object-cover"
           />
         </span>
-        <h4>{jobPost.title}</h4>
+        <h4>{jobPost ? jobPost.title : "Job Title"}</h4>
 
         <ul className="job-info">
           {companyDetails.map((detail, index) => (
@@ -254,31 +250,33 @@ const JobSingleDynamicV1 = ({ params }) => {
                 <aside className="sidebar">
                   <div className="sidebar-widget">
                     <h4 className="widget-title">Job Overview</h4>
-                    <JobOverView jobPost={jobPost} />
+                    {jobPost && <JobOverView jobPost={jobPost} />}
                   </div>
 
-                  <div className="sidebar-widget company-widget">
-                    <div className="widget-content">
-                      <div className="company-title">
-                        <div className="company-logo">
-                          <Image
-                            width={54}
-                            height={53}
-                            src={getImageUrl(profileData.company_logo)}
-                            alt="company logo"
-                            unoptimized
-                            className="object-cover"
-                          />
+                  {profileData && (
+                    <div className="sidebar-widget company-widget">
+                      <div className="widget-content">
+                        <div className="company-title">
+                          <div className="company-logo">
+                            <Image
+                              width={54}
+                              height={53}
+                              src={getImageUrl(profileData.company_logo || "")}
+                              alt="company logo"
+                              unoptimized
+                              className="object-cover"
+                            />
+                          </div>
+                          <h5 className="company-name">
+                            {profileData.role === "employer"
+                              ? `${profileData.title || ""} ${profileData.name || ""}`
+                              : (profileData.company_name || "")}
+                          </h5>
                         </div>
-                        <h5 className="company-name">
-                          {profileData.role === "employer"
-                            ? `${profileData.title} ${profileData.name}`
-                            : profileData.company_name}
-                        </h5>
+                        <CompanyInfo profileData={profileData} />
                       </div>
-                      <CompanyInfo profileData={profileData} />
                     </div>
-                  </div>
+                  )}
                 </aside>
               </div>
             </div>

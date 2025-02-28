@@ -35,9 +35,10 @@ const index = () => {
       <section className="job-section">
         <div className="auto-container wow fadeInUp">
           <div className="sec-title text-center">
-            <h2>Featured Jobs</h2>
+            <h2>{t('Urgent Jobs')}</h2>
             <div className="text">
-              Know your worth and find the job that qualify your life
+            {t('Urgent Jobs Description')}
+              
             </div>
           </div>
           <div className="job-carousel gap-x25" data-aos="fade-up">
@@ -56,8 +57,8 @@ const index = () => {
       <section className="job-categories">
         <div className="auto-container">
           <div className="sec-title text-center">
-            <h2>Popular Job Categories</h2>
-            <div className="text">2020 jobs live - 293 added today.</div>
+            <h2>{t('Popular Job Categories')}</h2>
+            {/* <div className="text">2020 jobs live - 293 added today.</div> */}
           </div>
 
           <div

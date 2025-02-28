@@ -1,23 +1,28 @@
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 
 const CallToAction6 = () => {
+
+  const t = useTranslations('testimonials');
+
   return (
     <section className="call-to-action-three style-two" style={{backgroundColor:"#ffbe0b"}}>
       <div className="auto-container">
         <div className="outer-box">
           <div className="sec-title light">
-            <h2>Gat a question?</h2>
+            <h2> {t(`Get a question?`)} </h2>
             <div className="text">
-              We are here to help. Check out our FAQs, send us an email or call
-              us at 1 <br />
-              <a href="#">(900) 777-7777.</a>
+            {t(`Check out our FAQs`)}
+             <br />
+              <a href="#">66 (0) 2849-6519</a>
             </div>
           </div>
           {/* End sec-title */}
 
           <div className="btn-box">
-            <Link href="/faq" className="theme-btn btn-style-three">
-              Get Started
+            <Link href="https://op.mahidol.ac.th/ir/th/" className="theme-btn btn-style-three">
+            {t(`Get Started`)}
+              
             </Link>
           </div>
         </div>

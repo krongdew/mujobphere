@@ -1,6 +1,10 @@
 import Link from "next/link";
+import LoginPopup from "../common/form/login/LoginPopup";
+import { useTranslations } from "next-intl";
 
 const CallToAction7 = () => {
+    const t = useTranslations("Common");
+
   return (
     <section
       className="call-to-action-two"
@@ -8,17 +12,21 @@ const CallToAction7 = () => {
     >
       <div className="auto-container" data-aos="fade-up">
         <div className="sec-title light text-center">
-          <h2>Make a Difference with Your Online Resume!</h2>
+          <h2>{t("Make a Difference")} </h2>
           <div className="text">
-            Your resume in minutes with JobHunt resume assistant is ready!
+          {t("Make a Difference Des")}
           </div>
         </div>
         {/* End sec-title */}
 
         <div className="btn-box">
-          <Link href="/register" className="theme-btn btn-style-three">
-            Create an Account
-          </Link>
+        <button
+                    className="theme-btn btn-style-six call-modal"
+                    data-bs-toggle="modal"
+                    data-bs-target="#loginPopupModal"
+                  >
+                    {t("Login / Register")}
+                  </button>
         </div>
       </div>
     </section>

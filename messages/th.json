@@ -1,6 +1,7 @@
   {
     "Common": {
       "Home": "หน้าหลัก",
+      "Waiting for Approve":"รออนุมัติ",
       "Find Jobs": "ค้นหางาน",
       "Employers": "นายจ้าง",
       "Candidates": "ผู้สมัครงาน",
@@ -13,7 +14,12 @@
       "Logout": "ออกจากระบบ",
       "Job Post": "ลงประกาศงาน",
       "About SGDs": "เกี่ยวกับ SDGs",
-      "MU JobSphere Description": "MU JobSphere ส่งเสริมและผลักดันเป้าหมายการพัฒนาอย่างยั่งยืน"
+      "MU JobSphere Description": "MU JobSphere ส่งเสริมและผลักดันเป้าหมายการพัฒนาอย่างยั่งยืน",
+      "Popular Job Categories":"หมวดหมู่งานยอดนิยม",
+      "Urgent Jobs":"งานด่วน",
+      "Urgent Jobs Description":"คำอธิบายงานด่วน",
+       "Make a Difference" : "Make a Difference with Your Online Resume!",
+  "Make a Difference Des" : "Your resume in minutes with JobHunt resume assistant is ready!"
     },
   "LanguageSwitcher": {
     "thai": "ภาษาไทย",
@@ -55,7 +61,10 @@
       "5": {
         "feedback": "สร้างความสัมพันธ์อันดี",
         "feedbackText": "สร้างความสัมพันธ์อันดีกับภาคธุรกิจ และส่งเสริมอัตราการจ้างงานเต็มเวลาเมื่อนักศึกษาจบการศึกษาต่อไป"
-      }
+      },
+      "Get a question?":"Get a question?",
+      "Check out our FAQs" : "We are here to help. Check out our FAQs, send us an email or call us at 1 " ,
+      "Get Started" : "เว็บไซต์ของกองวิเทศสัมพันธ์"
       
     },
     "Login":{
@@ -79,6 +88,19 @@
         "item3": "ส่งเสริมความเป็นหนึ่งเดียวกันด้วยการมีส่วนร่วมระหว่างนักศึกษาและบุคลากร ตลอดจนสร้างสภาพแวดล้อมที่สนับสนุนต่อการเติบโตของคนในชุมชน"
       },
       "employersCount": "300k+ Employers"
+    },
+    "JobSearchForm" : {
+      "Find Jobs" : "ค้นหางาน",
+      "Search jobs word" : "ค้นหางาน ชื่อบริษัท หรือคำสำคัญ",
+      "Select location" : "เลือกประเภทสถานที่ทำงาน",
+      "online" : "ออนไลน์",
+      "onsite" : "ออนไซต์",
+      "Job type loading" : "กำลังโหลดประเภทงาน...",
+      "Select Job type" : "เลือกประเภทงาน",
+      "Job type" : "ประเภทงาน",
+      "Job type Des" : "(faculty, personal) : งานที่มีการจ้างทั้งในนามคณะและในนามส่วนตัว",
+      "Date post" : "วันที่ประกาศ",
+      "Income" : "รายได้"
     }
     
   

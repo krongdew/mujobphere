@@ -1,9 +1,8 @@
 const Social = () => {
   const socialContent = [
-    { id: 1, icon: "fa-facebook-f", link: "https://www.facebook.com/" },
-    { id: 2, icon: "fa-twitter", link: "https://www.twitter.com/" },
-    { id: 3, icon: "fa-instagram", link: "https://www.instagram.com/" },
-    { id: 4, icon: "fa-linkedin-in", link: "https://www.linkedin.com/" },
+    { id: 1, icon: "fa-facebook-f", link: "https://www.facebook.com/MahidolGlobal" },
+    { id: 2, icon: "fa-twitter", link: "https://x.com/i/flow/login?redirect_after_login=%2FMahidolGlobal" },
+
   ];
   return (
     <>

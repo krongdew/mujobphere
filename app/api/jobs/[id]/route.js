@@ -144,38 +144,38 @@ export async function PUT(request, { params }) {
   }
 }
 
-// Backend: app/api/jobs/[id]/status/route.js
-export async function PATCH(request, { params }) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+// // Backend: app/api/jobs/[id]/status/route.js
+// export async function PATCH(request, { params }) {
+//   try {
+//     const session = await getServerSession(authOptions);
+//     if (!session) {
+//       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+//     }
 
-    const { id } = params;
-    const { status } = await request.json();
+//     const { id } = params;
+//     const { status } = await request.json();
 
-    // Verify job belongs to user
-    const jobResult = await query(
-      'SELECT user_id FROM job_posts WHERE id = $1',
-      [id]
-    );
+//     // Verify job belongs to user
+//     const jobResult = await query(
+//       'SELECT user_id FROM job_posts WHERE id = $1',
+//       [id]
+//     );
 
-    if (!jobResult.rows.length || jobResult.rows[0].user_id !== session.user.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-    }
+//     if (!jobResult.rows.length || jobResult.rows[0].user_id !== session.user.id) {
+//       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+//     }
 
-    await query(
-      'UPDATE job_posts SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-      [status, id]
-    );
+//     await query(
+//       'UPDATE job_posts SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+//       [status, id]
+//     );
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error updating job status:', error);
-    return NextResponse.json(
-      { error: 'Failed to update job status' },
-      { status: 500 }
-    );
-  }
-}
+//     return NextResponse.json({ success: true });
+//   } catch (error) {
+//     console.error('Error updating job status:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to update job status' },
+//       { status: 500 }
+//     );
+//   }
+// }

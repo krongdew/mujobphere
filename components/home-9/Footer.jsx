@@ -24,13 +24,13 @@ const Footer = () => {
                 </div>
                 <p className="phone-num">
                   <span>Call us </span>
-                  <a href="thebeehost@support.com">123 456 7890</a>
+                  <a href="thebeehost@support.com">66 (0) 2849-6231-3</a>
                 </p>
                 <p className="address">
-                  329 Queensberry Street, North Melbourne VIC
-                  <br /> 3051, Australia. <br />
+                999 ถ.พุทธมณฑลสาย 4 ต.ศาลายา อ.พุทธมณฑล 
+                  <br /> จ.นครปฐม 73170 <br />
                   <a href="mailto:support@superio.com" className="email">
-                    support@superio.com
+                  opinter@mahidol.ac.th
                   </a>
                 </p>
               </div>
@@ -39,7 +39,7 @@ const Footer = () => {
 
             <div className="big-column col-xl-9 col-lg-9 col-md-12">
               <div className="row">
-                <FooterContent4 />
+                {/* <FooterContent4 /> */}
               </div>
             </div>
             {/* End col-xl-8 */}

@@ -82,7 +82,7 @@ const Header = () => {
                     
                     {session.user.role === "waituser" ? (
                       <span className="badge bg-warning text-dark me-3">
-                        รอการอนุมัติ
+                        {t('Waiting for Approve')}
                       </span>
                     ) : (
                       // แสดงปุ่ม Job Post เฉพาะสำหรับ employer ที่ได้รับการอนุมัติแล้ว

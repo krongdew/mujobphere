@@ -151,3 +151,7 @@
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-23T13:47:30.842Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-23T13:47:49.544Z","userId":19}}
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-23T13:48:04.163Z","userId":20}}
+{"level":"info","message":{"event":"user_created","role":"waituser","timestamp":"2025-02-27T11:04:26.060Z","userId":23}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-27T11:25:11.585Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-28T09:46:27.647Z","userId":20}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-28T09:46:47.523Z","userId":19}}
