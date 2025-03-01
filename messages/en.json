@@ -98,5 +98,16 @@
       "Job type Des" : "(faculty, personal) : Work that is hired both on behalf of the group and on behalf of individuals",
       "Date post" : "Date post",
       "Income" : "Income"
+    },
+    "Profile" : {
+      "Logo image" : "รูปโลโก้ / รูปโปรไฟล์ปัจจุบัน",
+      "cover image" : "ภาพปกปัจจุบัน",
+      "Upload image" : "อัพโหลดภาพใหม่",
+      "condition upload" : "Max file size is 2MB, Minimum dimension: 330x300 And Suitable files are .jpg & .png"
+    },
+    "JobPost" : {
+      "Write Job Detail" : "Write Job Detail",
+      "Confirmation" : "Confirmation",
+      "Approve and open" : "Approve and open"
     }
 }

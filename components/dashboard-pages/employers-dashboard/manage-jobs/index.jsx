@@ -7,6 +7,7 @@ import CopyrightFooter from "../../CopyrightFooter";
 import JobListingsTable from "./components/JobListingsTable";
 import MenuToggler from "../../MenuToggler";
 
+
 const index = () => {
   return (
     <div className="page-wrapper dashboard">
@@ -38,6 +39,7 @@ const index = () => {
             <div className="col-lg-12">
               {/* <!-- Ls widget --> */}
               <div className="ls-widget">
+                
                 <JobListingsTable />
               </div>
             </div>

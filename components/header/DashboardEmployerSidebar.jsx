@@ -14,6 +14,7 @@ const DashboardEmployerSidebar = () => {
     const dispatch = useDispatch();
     const { data: session, status } = useSession(); // เพิ่ม status
     const [navbar, setNavbar] = useState(false);
+    
 
     // menu toggle handler
     const menuToggleHandler = () => {

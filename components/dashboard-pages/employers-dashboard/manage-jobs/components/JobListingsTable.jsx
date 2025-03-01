@@ -3,24 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    const bangkokDate = new Date(
-      date.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
-    );
-    return bangkokDate.toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  } catch (error) {
-    console.error('Error formatting date:', error);
-    return '';
-  }
-};
+import { COMPENSATION } from "@/data/unit";
 
 const decodeHtmlEntity = (text) => {
   if (!text) return text;
@@ -37,6 +20,11 @@ const JobListingsTable = () => {
   const [jobs, setJobs] = useState([]);
   const [period, setPeriod] = useState('6');
   const [loading, setLoading] = useState(true);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   const handleStatusChange = async (jobId, newStatus) => {
     try {
@@ -54,9 +42,27 @@ const JobListingsTable = () => {
     }
   };
 
+  const handleDeleteJob = async (jobId) => {
+    if (!confirm('คุณต้องการลบประกาศรับสมัครงานนี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถเรียกคืนได้')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete job');
+      await fetchJobs(); // Refetch the job data after deleting
+    } catch (error) {
+      console.error('Error:', error);
+      alert('ไม่สามารถลบประกาศรับสมัครงานได้');
+    }
+  };
+
   const fetchJobs = async () => {
     try {
-      const response = await fetch(`/api/jobs/employer?period=${period}`);
+      const response = await fetch(`/api/jobs/employer?period=${period}&page=${currentPage}&limit=${itemsPerPage}`);
       if (!response.ok) throw new Error('Failed to fetch jobs');
       const data = await response.json();
   
@@ -66,7 +72,7 @@ const JobListingsTable = () => {
         today.getTime() + (today.getTimezoneOffset() * 60 + 7 * 60) * 1000
       );
   
-      const updatedJobs = data.map(job => {
+      const updatedJobs = data.jobs.map(job => {
         // Decode HTML entities ในชื่องาน
         const decodedJob = {
           ...job,
@@ -87,6 +93,7 @@ const JobListingsTable = () => {
       });
   
       setJobs(updatedJobs);
+      setTotalPages(Math.ceil(data.total / itemsPerPage));
       setLoading(false);
     } catch (error) {
       console.error('Error:', error);
@@ -96,24 +103,120 @@ const JobListingsTable = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [period]);
-  // const formatDate = (dateString) => {
-  //   if (!dateString) return '';
-  //   try {
-  //     const date = new Date(dateString);
-  //     const bangkokDate = new Date(
-  //       date.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
-  //     );
-  //     return bangkokDate.toLocaleDateString('th-TH', {
-  //       year: 'numeric',
-  //       month: 'long',
-  //       day: 'numeric'
-  //     });
-  //   } catch (error) {
-  //     console.error('Error formatting date:', error);
-  //     return '';
-  //   }
-  // };
+  }, [period, currentPage, itemsPerPage]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      const bangkokDate = new Date(
+        date.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+      );
+      return bangkokDate.toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <nav className="pagination-wrap">
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <button 
+              className="page-link" 
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <span className="la la-angle-left"></span>
+            </button>
+          </li>
+          
+          {startPage > 1 && (
+            <>
+              <li className="page-item">
+                <button 
+                  className="page-link" 
+                  onClick={() => handlePageChange(1)}
+                >
+                  1
+                </button>
+              </li>
+              {startPage > 2 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+            </>
+          )}
+          
+          {pageNumbers.map(number => (
+            <li key={number} className={`page-item ${number === currentPage ? 'active' : ''}`}>
+              <button 
+                className="page-link" 
+                onClick={() => handlePageChange(number)}
+              >
+                {number}
+              </button>
+            </li>
+          ))}
+          
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+              <li className="page-item">
+                <button 
+                  className="page-link" 
+                  onClick={() => handlePageChange(totalPages)}
+                >
+                  {totalPages}
+                </button>
+              </li>
+            </>
+          )}
+          
+          <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button 
+              className="page-link" 
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <span className="la la-angle-right"></span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
+  };
 
   if (loading) {
     return <div>กำลังโหลดข้อมูล...</div>;
@@ -125,20 +228,31 @@ const JobListingsTable = () => {
         <h4>รายการประกาศรับสมัครงาน</h4>
 
         <div className="chosen-outer">
-          <select 
-            className="chosen-single form-select"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-          >
-            <option value="6">6 เดือนล่าสุด</option>
-            <option value="12">12 เดือนล่าสุด</option>
-            <option value="24">24 เดือนล่าสุด</option>
-          </select>
-        </div>
-      </div>
+            <select 
+              className="form-select" 
+              style={{ width: '100px', display: 'inline-block' }}
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1); // Reset to first page when items per page changes
+              }}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span className="ml-2" style={{marginLeft:5}}>รายการต่อหน้า</span>
+          </div>
+          </div>
 
       <div className="widget-content">
         <div className="table-outer">
+          <h6> เมื่อท่านได้ทำการโพสต์งานแล้ว งานจะอยู่ในสถานะ "แบบร่าง" ซึ่งจะยังไม่ถูกโพสต์บนระบบ กรุณาตรวจสอบรายละเอียดงานอีกครั้งและคลิกที่เครื่องหมายถูก <span className="la la-check"></span> เพื่อเปลี่ยนเป็นสถานะ "เปิดรับสมัคร" </h6>
+          <br/>
+          
+         
+          
           <table className="default-table manage-job-table">
             <thead>
               <tr>
@@ -158,7 +272,7 @@ const JobListingsTable = () => {
                         <div className="content" style={{paddingLeft:0}}>
                           <h4><Link href={`/job-single-v3/${job.id}`}>{job.title}</Link></h4>
                           <ul className="job-info">
-                            <li><span className="icon flaticon-briefcase"></span>{job.compensation_amount} บาท/{job.compensation_period}</li>
+                            <li><span className="icon flaticon-briefcase"></span>{job.compensation_amount} บาท/{COMPENSATION[job.compensation_period]}</li>
                             <li><span className="icon flaticon-map-locator"></span>{job.is_online ? 'ออนไลน์' : job.location}</li>
                           </ul>
                         </div>
@@ -190,6 +304,9 @@ const JobListingsTable = () => {
                         {job.status === 'closed' && (
                           <li><button onClick={() => handleStatusChange(job.id, 'published')} data-text="เปิดรับสมัครอีกครั้ง"><span className="la la-refresh"></span></button></li>
                         )}
+                        {job.status === 'closed' && (
+                          <li><button onClick={() => handleDeleteJob(job.id)} data-text="ลบประกาศ"><span className="la la-trash"></span></button></li>
+                        )}
                       </ul>
                     </div>
                   </td>
@@ -202,6 +319,8 @@ const JobListingsTable = () => {
               )}
             </tbody>
           </table>
+          
+          {renderPagination()}
         </div>
       </div>
     </div>

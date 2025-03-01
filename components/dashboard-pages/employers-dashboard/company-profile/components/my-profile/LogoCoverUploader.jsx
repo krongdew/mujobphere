@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+
 
 const LogoCoverUploader = () => {
   const { data: session } = useSession();
@@ -13,6 +15,7 @@ const LogoCoverUploader = () => {
   const [error, setError] = useState(null);
   const [currentLogo, setCurrentLogo] = useState("");
   const [currentCover, setCurrentCover] = useState("");
+  const t = useTranslations("Profile");
 
 
 
@@ -107,7 +110,7 @@ const LogoCoverUploader = () => {
       {currentLogo && (
         <div className="mt-2">
           <div className="text ml-2" style={{ marginBottom: "10px" }}>
-            รูปโลโก้ / รูปโปรไฟล์ปัจจุบัน
+          
           </div>
           {/* <div style={{ marginBottom: '5px' }}>Debug path: {getImageUrl(currentLogo)}</div> */}
           <Image
@@ -123,7 +126,8 @@ const LogoCoverUploader = () => {
         </div>
       )}
       <div className="text ml-2" style={{ marginTop: "10px" }}>
-        อัพโหลดภาพปกใหม่
+      {t('Upload image')} 
+       
       </div>
       <div className="uploading-outer">
         <div className="uploadButton">
@@ -141,14 +145,13 @@ const LogoCoverUploader = () => {
           </label>
         </div>
         <div className="text" style={{ marginLeft: "10px" }}>
-          Max file size is 1MB, Minimum dimension: 330x300 And Suitable files
-          are .jpg & .png
+        {t('condition upload')}
         </div>
       </div>
       {currentCover && (
         <div className="mt-2">
           <div className="text ml-2" style={{ marginBottom: "10px" }}>
-            รูปปกปัจจุบัน
+          {t('cover image')} 
           </div>
           {/* <div style={{ marginBottom: '5px' }}>Debug path: {getImageUrl(currentCover)}</div> */}
           <Image
@@ -167,7 +170,7 @@ const LogoCoverUploader = () => {
         className="text ml-2"
         style={{ marginTop: "10px", marginBottom: "-10px" }}
       >
-        อัพโหลดภาพปกใหม่
+         {t('Upload image')} 
       </div>
       <div className="uploading-outer mt-4">
         <div className="uploadButton">
@@ -188,8 +191,7 @@ const LogoCoverUploader = () => {
           </label>
         </div>
         <div className="text" style={{ marginLeft: "10px" }}>
-          Max file size is 1MB, Minimum dimension: 330x300 And Suitable files
-          are .jpg & .png
+        {t('condition upload')}
         </div>
       </div>
     </>

@@ -144,6 +144,66 @@ export async function PUT(request, { params }) {
   }
 }
 
+export async function DELETE(request, { params }) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const jobId = params.id;
+
+    // Verify job belongs to user and check its status
+    const jobResult = await query(
+      'SELECT user_id, status FROM job_posts WHERE id = $1',
+      [jobId]
+    );
+
+    if (!jobResult.rows.length) {
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+    }
+
+    if (jobResult.rows[0].user_id !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Option 1: Only allow deleting closed jobs
+    if (jobResult.rows[0].status !== 'closed') {
+      return NextResponse.json({ 
+        error: 'ไม่สามารถลบประกาศที่ไม่ได้อยู่ในสถานะปิดรับสมัคร' 
+      }, { status: 400 });
+    }
+
+    // First delete related data to maintain referential integrity
+    
+    // Delete payment installments if they exist
+    await query(
+      'DELETE FROM job_payment_installments WHERE job_post_id = $1',
+      [jobId]
+    );
+
+    // Delete job applications
+    await query(
+      'DELETE FROM job_applications WHERE job_post_id = $1',
+      [jobId]
+    );
+
+    // Finally delete the job post
+    await query(
+      'DELETE FROM job_posts WHERE id = $1 AND user_id = $2',
+      [jobId, session.user.id]
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting job:', error);
+    return NextResponse.json(
+      { error: 'ไม่สามารถลบประกาศรับสมัครงาน โปรดลองอีกครั้งในภายหลัง' },
+      { status: 500 }
+    );
+  }
+}
+
 // // Backend: app/api/jobs/[id]/status/route.js
 // export async function PATCH(request, { params }) {
 //   try {

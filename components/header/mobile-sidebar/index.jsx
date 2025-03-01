@@ -15,6 +15,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 
+
 // Dynamic import for LanguageSwitcher
 const LanguageSwitcher = dynamic(() => import('../../LanguageSwitcher'), {
   ssr: false
@@ -76,6 +77,8 @@ const Index = () => {
             </MenuItem>
           )}
         </Menu>
+
+    
       </Sidebar>
 
       <SidebarFooter />

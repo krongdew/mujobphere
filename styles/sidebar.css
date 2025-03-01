@@ -1,0 +1,26 @@
+/* CSS สำหรับการแสดงผล Sidebar บนขนาดหน้าจอ iPad */
+
+/* ซ่อน sidebar บนหน้าจอขนาด iPad */
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* ซ่อน sidebar โดยปกติ */
+    .user-sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    /* แสดง sidebar เมื่อมีคลาส sidebar_open */
+    .user-sidebar.sidebar_open {
+      transform: translateX(0);
+    }
+    
+    /* ให้แน่ใจว่าปุ่ม toggle มองเห็นได้บน iPad */
+    .dashboard .menu-toggler {
+      display: block !important;
+    }
+    
+    /* ปรับพื้นที่ dashboard เมื่อ sidebar ถูกซ่อน */
+    .dashboard-outer {
+      padding-left: 20px;
+      width: 100%;
+    }
+  }

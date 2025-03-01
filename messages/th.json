@@ -101,6 +101,17 @@
       "Job type Des" : "(faculty, personal) : งานที่มีการจ้างทั้งในนามคณะและในนามส่วนตัว",
       "Date post" : "วันที่ประกาศ",
       "Income" : "รายได้"
+    },
+    "Profile" : {
+      "Logo image" : "รูปโลโก้ / รูปโปรไฟล์ปัจจุบัน",
+      "cover image" : "ภาพปกปัจจุบัน",
+      "Upload image" : "อัพโหลดภาพใหม่",
+      "condition upload" : "ขนาดไฟล์อัพโหลดไม่เกิน 2MB, ขนาดขั้นต่ำ 330x300px และเป็นไฟล์ .jpg & .png เท่านั้น"
+    },
+    "JobPost" : {
+      "Write Job Detail" : "ลงรายละเอียดงาน",
+      "Confirmation" : "ตรวจสอบและยืนยันความถูกต้อง",
+      "Approve and open" : "กดเปิดรับสมัครงาน"
     }
     
   

@@ -155,3 +155,8 @@
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-27T11:25:11.585Z","userId":19}}
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-02-28T09:46:27.647Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-02-28T09:46:47.523Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-03-01T07:58:07.206Z","userId":20}}
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.ac.th","error":"duplicate key value violates unique constraint \"users_google_id_key\"","event":"user_error","timestamp":"2025-03-01T07:59:24.668Z"}}
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.ac.th","error":"duplicate key value violates unique constraint \"users_google_id_key\"","event":"user_error","timestamp":"2025-03-01T07:59:40.196Z"}}
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.ac.th","error":"duplicate key value violates unique constraint \"users_google_id_key\"","event":"user_error","timestamp":"2025-03-01T08:00:13.581Z"}}
+{"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-03-01T08:06:09.680Z","userId":19}}
