@@ -174,7 +174,7 @@ const FilterJobsBox = () => {
     fetchJobs();
   }, [createQueryString]);
 
-  // ดึงข้อมูลโปรไฟล์เมื่อมีข้อมูลงาน
+  // ดึงข้อมูลโปรไฟล์เมื่อมีข้อมูลงาน - เปลี่ยนมาใช้ API endpoint แบบไม่ต้องการ authentication
   useEffect(() => {
     const fetchProfiles = async () => {
       if (!jobs || jobs.length === 0) return;
@@ -194,7 +194,8 @@ const FilterJobsBox = () => {
         // ดึงข้อมูลโปรไฟล์แบบทีละรายการ (ไม่ใช้ Promise.all)
         for (const userId of userIds) {
           try {
-            const response = await fetch(`/api/profile/public/${userId}`);
+            // เปลี่ยนเส้นทาง API เป็น public endpoint ที่ไม่ต้องการ authentication
+            const response = await fetch(`/api/profile/public-noauth/${userId}`);
             if (response.ok) {
               const data = await response.json();
               profiles[userId] = data;
@@ -271,7 +272,7 @@ const FilterJobsBox = () => {
               : profile.company_name || "บริษัทไม่เปิดเผยชื่อ";
             
             return (
-              <div key={job.id} className="job-block">
+              <div key={job.id} className="job-block-three mb-0">
                 <div className="inner-box">
                   <div className="content">
                     <div className="company-logo me-3">

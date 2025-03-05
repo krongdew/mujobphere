@@ -100,6 +100,7 @@ const PostBoxForm = () => {
 }, [isEditMode, session?.user?.role]);
   // Fetch existing job data for edit mode
   // ในส่วน useEffect ที่ดึงข้อมูลงาน
+// ในส่วน useEffect ที่ดึงข้อมูลงาน
 useEffect(() => {
   const fetchJobData = async () => {
     if (!editId) return;
@@ -114,6 +115,9 @@ useEffect(() => {
       jobData.application_end_date = formatDateForDateInput(jobData.application_end_date);
       jobData.work_start_date = formatDateForDateInput(jobData.work_start_date);
       jobData.work_end_date = formatDateForDateInput(jobData.work_end_date);
+      
+      // ไม่ต้องปรับค่า job_type_id ที่เป็น null เพราะเราได้จัดการใน JSX แล้ว
+      // โดยมีการตรวจสอบ formData.job_type_id || 'other' ในส่วน value ของ select
 
       setFormData(jobData);
     } catch (error) {
@@ -126,13 +130,32 @@ useEffect(() => {
   fetchJobData();
 }, [editId]);
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+const handleInputChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  
+  // กรณีพิเศษสำหรับ job_type_id
+  if (name === 'job_type_id') {
+    if (value === 'other') {
+      // เมื่อเลือก "อื่นๆ" ให้กำหนดค่าเป็น null
+      setFormData(prev => ({
+        ...prev,
+        [name]: null
+      }));
+    } else {
+      // กรณีอื่นๆ ใช้ค่าปกติ
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  } else {
+    // สำหรับ field อื่นๆ ทำงานปกติ
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-  };
+  }
+};
 
   const handleInstallmentChange = (index, field, value) => {
     const newInstallments = [...formData.payment_installments];
@@ -212,40 +235,40 @@ useEffect(() => {
           </div>
         )}
 
-        {/* Job Type Selection */}
-        <div className="form-group col-lg-12 col-md-12">
-          <label>ประเภทของงาน *</label>
-          <select
-            name="job_type_id"
-            value={formData.job_type_id}
-            onChange={handleInputChange}
-            required
-            className="form-select"
-          >
-            <option value="">เลือกประเภทของงาน</option>
-            {jobTypes.map(type => (
-              <option key={type.id} value={type.id}>
-                {type.name}
-              </option>
-            ))}
-            <option value="other">อื่นๆ (ระบุ)</option>
-          </select>
-        </div>
+  {/* Job Type Selection */}
+<div className="form-group col-lg-12 col-md-12">
+  <label>ประเภทของงาน *</label>
+  <select
+    name="job_type_id"
+    value={formData.job_type_id || 'other'} /* ถ้าค่าเป็น null ให้แสดงตัวเลือก "อื่นๆ" */
+    onChange={handleInputChange}
+    required
+    className="form-select"
+  >
+    <option value="">เลือกประเภทของงาน</option>
+    {jobTypes.map(type => (
+      <option key={type.id} value={type.id}>
+        {type.name}
+      </option>
+    ))}
+    <option value="other">อื่นๆ (ระบุ)</option>
+  </select>
+</div>
 
-        {/* Other Job Type Input */}
-        {formData.job_type_id === 'other' && (
-          <div className="form-group col-lg-12 col-md-12">
-            <label>ระบุประเภทของงานอื่นๆ *</label>
-            <input
-              type="text"
-              name="other_job_type"
-              value={formData.other_job_type}
-              onChange={handleInputChange}
-              required
-              className="form-control"
-            />
-          </div>
-        )}
+{/* Other Job Type Input */}
+{(formData.job_type_id === 'other' || formData.job_type_id === null) && (
+  <div className="form-group col-lg-12 col-md-12">
+    <label>ระบุประเภทของงานอื่นๆ *</label>
+    <input
+      type="text"
+      name="other_job_type"
+      value={formData.other_job_type || ''}
+      onChange={handleInputChange}
+      required
+      className="form-control"
+    />
+  </div>
+)}
 
         {/* Job Title */}
         <div className="form-group col-lg-12 col-md-12">
@@ -426,7 +449,7 @@ useEffect(() => {
             onChange={handleInputChange}
             required
             min="0"
-            step="0.01"
+            step="1" // เปลี่ยนจาก step="0.01" เป็น step="1"
             className="form-control"
           />
         </div>
@@ -581,35 +604,46 @@ useEffect(() => {
             </div>
 
             {Array.from({ length: formData.installment_count }, (_, index) => (
-              <div key={index} className="row mx-0 bg-light p-3 mb-3">
-                <div className="col-12">
-                  <h4>งวดที่ {index + 1}</h4>
-                </div>
-                <div className="form-group col-lg-6 col-md-12">
-                  <label>จำนวน *</label>
-                  <input
-                    type="number"
-                    value={formData.payment_installments[index]?.amount || ''}
-                    onChange={e => handleInstallmentChange(index, 'amount', e.target.value)}
-                    required
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group col-lg-6 col-md-12">
-                  <label>หน่วย *</label>
-                  <select
-                    value={formData.payment_installments[index]?.amount_type || ''}
-                    onChange={e => handleInstallmentChange(index, 'amount_type', e.target.value)}
-                    required
-                    className="form-select"
-                  >
-                    <option value="">เลือกหน่วย</option>
-                    <option value="percentage">เปอร์เซ็นต์ (%)</option>
-                    <option value="fixed">บาท</option>
-                  </select>
-                </div>
-              </div>
-            ))}
+  <div key={index} className="row mx-0 bg-light p-3 mb-3">
+    <div className="col-12">
+      <h4>งวดที่ {index + 1}</h4>
+    </div>
+    <div className="form-group col-lg-6 col-md-12">
+      <label>จำนวน *</label>
+      <input
+        type="number"
+        value={formData.payment_installments[index]?.amount || ''}
+        onChange={e => handleInstallmentChange(index, 'amount', e.target.value)}
+        required
+        min="0"
+        step={formData.payment_installments[index]?.amount_type === 'percentage' ? '0.01' : '1'} 
+        className="form-control"
+      />
+    </div>
+    <div className="form-group col-lg-6 col-md-12">
+      <label>หน่วย *</label>
+      <select
+        value={formData.payment_installments[index]?.amount_type || ''}
+        onChange={e => {
+          handleInstallmentChange(index, 'amount_type', e.target.value);
+          // ถ้าเปลี่ยนหน่วย อาจต้องปรับค่า amount ด้วย
+          const currentAmount = formData.payment_installments[index]?.amount || '';
+          if (currentAmount) {
+            // ถ้ามีค่าอยู่แล้ว ให้ปัดเศษเป็นจำนวนเต็มถ้าเป็นเงินบาท
+            const newAmount = e.target.value === 'fixed' ? Math.round(parseFloat(currentAmount)) : currentAmount;
+            handleInstallmentChange(index, 'amount', newAmount.toString());
+          }
+        }}
+        required
+        className="form-select"
+      >
+        <option value="">เลือกหน่วย</option>
+        <option value="percentage">เปอร์เซ็นต์ (%)</option>
+        <option value="fixed">บาท</option>
+      </select>
+    </div>
+  </div>
+))}
           </>
         )}
 

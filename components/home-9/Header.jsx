@@ -76,6 +76,15 @@ const Header = () => {
                         className="theme-btn btn-style-six me-3"
                         href="/candidates-dashboard/my-profile"
                       >
+                    
+                        {session.user.name}
+                      </Link>
+                    ) : session?.user.role === "admin" ? (
+                      <Link 
+                        className="theme-btn btn-style-six me-3"
+                        href="/admin-dashboard/dashboard"
+                      >
+
                         {session.user.name}
                       </Link>
                     ) : null}

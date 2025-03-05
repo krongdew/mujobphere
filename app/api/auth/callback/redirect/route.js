@@ -9,6 +9,8 @@ export async function GET() {
     return NextResponse.redirect(new URL('/candidates-dashboard/my-profile', process.env.NEXTAUTH_URL));
   } else if (session?.user?.role === 'employer' || session?.user?.role === 'employeroutside') {
     return NextResponse.redirect(new URL('/employers-dashboard/company-profile', process.env.NEXTAUTH_URL));
+  } else if (session?.user?.role === 'admin') {
+    return NextResponse.redirect(new URL('/admin-dashboard/dashboard', process.env.NEXTAUTH_URL));
   }
   
   return NextResponse.redirect(new URL('/', process.env.NEXTAUTH_URL));

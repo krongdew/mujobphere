@@ -280,7 +280,7 @@ const JobListingsTable = () => {
                     </div>
                   </td>
                   <td className="applied">
-                    <Link href={`/employers-dashboard/applicants/${job.id}`}>
+                    <Link href={`/employers-dashboard/all-applicants`}>
                       {job.application_count || 0} คน
                     </Link>
                   </td>

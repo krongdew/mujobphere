@@ -16,8 +16,6 @@ const getImageUrl = (path) => {
   return `/api/image/${filename}`;
 };
 
-
-
 const fetcher = (...args) => fetch(...args).then(res => res.json());
 
 const JobFeatured12 = () => {
@@ -45,7 +43,8 @@ const JobFeatured12 = () => {
       
       try {
         await Promise.all(uniqueUserIds.map(async (userId) => {
-          const response = await fetch(`/api/profile/public/${userId}`);
+          // เปลี่ยนเส้นทาง API เป็น public endpoint ที่ไม่ต้องการ authentication
+          const response = await fetch(`/api/profile/public-noauth/${userId}`);
           if (response.ok) {
             const data = await response.json();
             profiles[userId] = data;

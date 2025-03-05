@@ -1,4 +1,4 @@
-//app\api\jobs\[id]\route.js
+//app/api/jobs/[id]/route.js
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/queries';
 import { getServerSession } from 'next-auth/next';
@@ -72,6 +72,11 @@ export async function PUT(request, { params }) {
 
     const jobId = params.id;
     const data = await request.json();
+    
+    // แก้ไขเพิ่มเติมตรงนี้: ตรวจสอบและแก้ไขค่า job_type_id เมื่อเป็น "other"
+    if (data.job_type_id === 'other') {
+      data.job_type_id = null;
+    }
     
     data.application_start_date = formatDateForDatabase(data.application_start_date);
     data.application_end_date = formatDateForDatabase(data.application_end_date);
@@ -203,39 +208,3 @@ export async function DELETE(request, { params }) {
     );
   }
 }
-
-// // Backend: app/api/jobs/[id]/status/route.js
-// export async function PATCH(request, { params }) {
-//   try {
-//     const session = await getServerSession(authOptions);
-//     if (!session) {
-//       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-//     }
-
-//     const { id } = params;
-//     const { status } = await request.json();
-
-//     // Verify job belongs to user
-//     const jobResult = await query(
-//       'SELECT user_id FROM job_posts WHERE id = $1',
-//       [id]
-//     );
-
-//     if (!jobResult.rows.length || jobResult.rows[0].user_id !== session.user.id) {
-//       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-//     }
-
-//     await query(
-//       'UPDATE job_posts SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-//       [status, id]
-//     );
-
-//     return NextResponse.json({ success: true });
-//   } catch (error) {
-//     console.error('Error updating job status:', error);
-//     return NextResponse.json(
-//       { error: 'Failed to update job status' },
-//       { status: 500 }
-//     );
-//   }
-// }

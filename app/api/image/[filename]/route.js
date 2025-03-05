@@ -1,3 +1,4 @@
+// app/api/image/[filename]/route.js
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
@@ -28,6 +29,21 @@ export async function GET(request, { params }) {
         });
     } catch (error) {
         console.error('Error reading image:', error);
-        return new NextResponse('Image not found', { status: 404 });
+        
+        // ถ้าไม่พบไฟล์ ให้ส่งไฟล์ default กลับไป
+        try {
+            const defaultFilePath = join(process.cwd(), 'public', 'images', 'default-company-logo.png');
+            const defaultFile = await readFile(defaultFilePath);
+            
+            return new NextResponse(defaultFile, {
+                headers: {
+                    'Content-Type': 'image/png',
+                    'Cache-Control': 'public, max-age=31536000'
+                }
+            });
+        } catch (defaultError) {
+            console.error('Error reading default image:', defaultError);
+            return new NextResponse('Image not found', { status: 404 });
+        }
     }
 }

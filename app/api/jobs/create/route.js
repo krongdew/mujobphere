@@ -1,3 +1,4 @@
+// app/api/jobs/create/route.js
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/queries';
 import { getServerSession } from 'next-auth/next';
@@ -32,6 +33,12 @@ const sanitizeData = (data) => {
       sanitized[key] = null;
     }
   });
+  
+  // เพิ่มตรงนี้: กำหนดให้ job_type_id เป็น null เมื่อมีค่าเป็น "other"
+  if (sanitized.job_type_id === 'other') {
+    sanitized.job_type_id = null;
+  }
+  
   return sanitized;
 };
 
@@ -40,6 +47,12 @@ const validateJobPostData = (data) => {
   if (!data.title) errors.push('หัวข้องานต้องไม่เป็นค่าว่าง');
   if (!data.hire_type) errors.push('ประเภทการจ้างต้องระบุ');
   if (!data.job_description) errors.push('รายละเอียดงานต้องไม่เป็นค่าว่าง');
+  
+  // เพิ่มตรงนี้: ตรวจสอบว่าถ้าเลือก "other" ต้องระบุ other_job_type
+  if (data.job_type_id === 'other' && !data.other_job_type) {
+    errors.push('กรุณาระบุประเภทงานอื่นๆ');
+  }
+  
   return errors;
 };
 
