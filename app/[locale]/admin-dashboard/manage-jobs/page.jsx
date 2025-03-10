@@ -1,6 +1,6 @@
 "use client";
 
-import ManageJobs from "@/components/dashboard-pages/employers-dashboard/manage-jobs";
+import ManageJobs from "@/components/dashboard-pages/admin-dashboard/manage-jobs";
 import withRoleProtection from "@/components/auth/withRoleProtection";
 
 const EmManageJobs = () => {
@@ -11,4 +11,4 @@ const EmManageJobs = () => {
   );
 };
 
-export default withRoleProtection(EmManageJobs, ['employer', 'employeroutside', 'admin']);
+export default withRoleProtection(EmManageJobs, ['admin']);

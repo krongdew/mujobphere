@@ -1,7 +1,9 @@
+
 import MobileMenu from "../../../header/MobileMenu";
 import DashboardHeader from "../../../header/DashboardHeader";
 import LoginPopup from "../../../common/form/login/LoginPopup";
 import DashboardEmployerSidebar from "../../../header/DashboardEmployerSidebar";
+
 import BreadCrumb from "../../BreadCrumb";
 import CopyrightFooter from "../../CopyrightFooter";
 import JobListingsTable from "./components/JobListingsTable";
@@ -9,6 +11,8 @@ import MenuToggler from "../../MenuToggler";
 
 
 const index = () => {
+
+
   return (
     <div className="page-wrapper dashboard">
       <span className="header-span"></span>

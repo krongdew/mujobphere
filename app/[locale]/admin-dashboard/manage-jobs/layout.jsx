@@ -1,7 +1,7 @@
-// app/[locale]/employers-dashboard/company-profile/layout.jsx
+// app/[locale]/admin-dashboard/company-profile/layout.jsx
 export const metadata = {
-    title: "Employer Manage Jobs",
-    description: "Employer Manage Jobs - MUJobPhere",
+    title: "Admin Manage Jobs",
+    description: "Admin Manage Jobs - MUJobPhere",
   };
   
   export default function Layout({ children }) {
