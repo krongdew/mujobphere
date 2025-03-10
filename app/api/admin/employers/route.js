@@ -1,4 +1,11 @@
 // app/api/admin/employers/route.js
+import { getServerSession } from "next-auth/next";
+import { NextResponse } from "next/server";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { query } from "@/lib/db/queries";
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
