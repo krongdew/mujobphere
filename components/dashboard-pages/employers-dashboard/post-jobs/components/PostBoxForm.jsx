@@ -218,22 +218,24 @@ const handleInputChange = (e) => {
     <form className="default-form" onSubmit={handleSubmit}>
       <div className="row">
         {/* Hire Type Selection - Only for employer role */}
-        {session?.user?.role === 'employer' || 'admin' && (
-          <div className="form-group col-lg-12 col-md-12">
-            <label>ประเภทการจ้าง *</label>
-            <select
-              name="hire_type"
-              value={formData.hire_type}
-              onChange={handleInputChange}
-              required
-              className="form-select"
-            >
-              <option value="">เลือกประเภทการจ้าง</option>
-              <option value="faculty">จ้างในนามคณะ / วิทยาลัย / สถาบัน / ศูนย์</option>
-              <option value="personal">จ้างส่วนบุคคล (จ้างส่วนตัว)</option>
-            </select>
-          </div>
-        )}
+       
+{(session?.user?.role === 'employer' || session?.user?.role === 'admin') && (
+  <div className="form-group col-lg-12 col-md-12">
+    <label>ประเภทการจ้าง *</label>
+    <select
+      name="hire_type"
+      value={formData.hire_type}
+      onChange={handleInputChange}
+      required
+      className="form-select"
+    >
+      <option value="">เลือกประเภทการจ้าง</option>
+      <option value="faculty">จ้างในนามคณะ / วิทยาลัย / สถาบัน / ศูนย์</option>
+      <option value="personal">จ้างส่วนบุคคล (จ้างส่วนตัว)</option>
+    </select>
+  </div>
+)}
+
 
   {/* Job Type Selection */}
 <div className="form-group col-lg-12 col-md-12">
