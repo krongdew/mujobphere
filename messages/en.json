@@ -109,5 +109,8 @@
       "Write Job Detail" : "Write Job Detail",
       "Confirmation" : "Confirmation",
       "Approve and open" : "Approve and open"
+    },
+    "ApplyJob" : {
+      "PDPA" : "By confirming to submit this form, I acknowledge that I consent to the collection and retention of my information. My contact details, including full name, position, academic title, telephone number, fax number, email, and workplace address, will be stored in the database. If I wish to withdraw my consent, I may contact opinter@mahidol.ac.th directly. For more details on data management and protection practices, please refer to the Privacy Policy at.."
     }
 }

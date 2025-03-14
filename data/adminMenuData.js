@@ -42,16 +42,10 @@ module.exports = [
         routePath: "/admin-dashboard/mdepartments",
         active: "",
     },
-    {
-        id: 7,
-        name: "Post Jobs",
-        icon: "la-file-invoice",
-        routePath: "/admin-dashboard/post-jobs",
-        active: "",
-    },
+
    
     {
-      id: 8,
+      id: 7,
       name: "Logout",
       icon: "la-sign-out",
       routePath: "/login",

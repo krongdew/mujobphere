@@ -10,6 +10,7 @@ import Contact from "@/components/candidates-single-pages/shared-components/Cont
 import Social from "@/components/candidates-single-pages/social/Social";
 import JobSkills from "@/components/candidates-single-pages/shared-components/JobSkills";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 const getImageUrl = (path) => {
   if (!path) return "/images/default-company-logo.png";
@@ -22,6 +23,7 @@ const getImageUrl = (path) => {
 const CandidateSingleDynamicV1 = ({ params }) => {
   const { data: session } = useSession();
   const [studentData, setStudentData] = useState(null);
+  const [userCVs, setUserCVs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -41,6 +43,14 @@ const CandidateSingleDynamicV1 = ({ params }) => {
         const data = await response.json();
         console.log('Received student data:', data);
         setStudentData(data);
+      // ดึงข้อมูล CV ของนักศึกษา
+        // ให้เจ้าของโปรไฟล์, admin และบริษัทสามารถเห็น CV ได้
+        const cvResponse = await fetch(`/api/student/cv/user/${params.studentUserId}`);
+        if (cvResponse.ok) {
+          const cvData = await cvResponse.json();
+          setUserCVs(cvData);
+          console.log('Received CV data:', cvData);
+        }
       } catch (error) {
         console.error('Error fetching student data:', error);
         setError(error.message);
@@ -49,8 +59,37 @@ const CandidateSingleDynamicV1 = ({ params }) => {
       }
     };
 
+
     fetchData();
   }, [session, params.studentUserId]);
+
+  // ฟังก์ชันดาวน์โหลด CV
+  const handleDownloadCV = async (cvId, filename) => {
+    try {
+      const response = await fetch(`/api/student/cv/${cvId}/download`);
+      if (!response.ok) {
+        throw new Error('Failed to download CV');
+      }
+      
+      // สร้าง blob จากข้อมูลที่ได้รับ
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // สร้าง element a และกำหนดค่าเพื่อดาวน์โหลด
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      
+      // ทำความสะอาด
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading CV:', error);
+      toast.error('ไม่สามารถดาวน์โหลดไฟล์ได้');
+    }
+  };
 
   if (!session) {
     return (
@@ -257,46 +296,54 @@ const CandidateSingleDynamicV1 = ({ params }) => {
                   </div>
 
                   <div className="sidebar-widget contact-widget">
-  <h4 className="widget-title">Contact Information</h4>
-  <div className="widget-content">
-    <div className="default-form">
-      <div className="form-group">
-        <label><i className="icon icon-envelope"></i> Email:</label>
-        <div className="field-text">
-          {studentData.email || 'N/A'}
-        </div>
-      </div>
-      
-      <div className="form-group">
-        <label><i className="icon icon-phone"></i> Phone:</label>
-        <div className="field-text">
-          {studentData.profile?.phone || 'N/A'}
-        </div>
-      </div>
-      
-      <div className="form-group">
-        <label><i className="icon icon-map-pin"></i> Address:</label>
-        <div className="field-text">
-          {studentData.profile?.address || 'N/A'}
-        </div>
-      </div>
+                    <h4 className="widget-title">Contact Information</h4>
+                    <div className="widget-content">
+                      <div className="default-form">
+                        <div className="form-group">
+                          <label><i className="icon icon-envelope"></i> Email:</label>
+                          <div className="field-text">
+                            {studentData.email || 'N/A'}
+                          </div>
+                        </div>
+                        
+                        <div className="form-group">
+                          <label><i className="icon icon-phone"></i> Phone:</label>
+                          <div className="field-text">
+                            {studentData.profile?.phone || 'N/A'}
+                          </div>
+                        </div>
+                        
+                        <div className="form-group">
+                          <label><i className="icon icon-map-pin"></i> Address:</label>
+                          <div className="field-text">
+                            {studentData.profile?.address || 'N/A'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-      {/* ถ้ามี CV file ให้แสดงปุ่มดาวน์โหลด */}
-      {studentData.profile?.cv_file && (
-        <div className="form-group">
-          <a 
-            href={`/api/file/${studentData.profile.cv_file}`}
-            className="theme-btn btn-style-one w-100 text-center"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <i className="icon icon-download"></i> Download CV
-          </a>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
+                  {/* CV Section */}
+                  {userCVs.length > 0 && (
+                    <div className="sidebar-widget">
+                      <h4 className="widget-title">Resume / CV</h4>
+                      <div className="widget-content">
+                        <div className="default-form">
+                          {userCVs.map((cv) => (
+                            <div key={cv.id} className="form-group">
+                              <button 
+                                onClick={() => handleDownloadCV(cv.id, cv.filename)}
+                                className="theme-btn btn-style-one w-100 text-center"
+                              >
+                                <i className="icon icon-download mr-2"></i> 
+                                Download CV
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </aside>
               </div>
             </div>
