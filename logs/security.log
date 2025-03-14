@@ -181,3 +181,4 @@
 {"level":"info","message":{"event":"user_updated","role":"admin","timestamp":"2025-03-10T12:32:04.649Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"admin","timestamp":"2025-03-10T12:34:37.946Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"employer","timestamp":"2025-03-14T17:37:50.865Z","userId":19}}
+{"level":"info","message":{"event":"user_updated","role":"admin","timestamp":"2025-03-14T18:10:15.417Z","userId":20}}

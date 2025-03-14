@@ -1,13 +1,12 @@
-// app/admin-dashboard/faculties/page.js
 "use client";
 
-import Faculties from "@/components/dashboard-pages/admin-dashboard/faculties";
+import Departments from "@/components/dashboard-pages/admin-dashboard/departments";
 import withRoleProtection from "@/components/auth/withRoleProtection";
 
-const AdminFacultiesPage = () => {
+const AdminDepartmentsPage = () => {
   return (
-    <Faculties />
+    <Departments />
   );
 };
 
-export default withRoleProtection(AdminFacultiesPage, ['admin']);
+export default withRoleProtection(AdminDepartmentsPage, ['admin']);
