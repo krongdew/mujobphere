@@ -40,7 +40,7 @@ export async function GET(req, { params }) {
     // 1. เจ้าของ CV
     // 2. Admin
     // 3. บริษัท (company role)
-    if (userId !== cvOwnerUserId && userRole !== 'admin' && userRole !== 'company') {
+    if (userId !== cvOwnerUserId && userRole !== 'admin' &&  userRole !== 'employer' && userRole !== 'employeroutside') {
       return NextResponse.json(
         { error: "Unauthorized to download this CV" },
         { status: 403 }
