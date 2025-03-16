@@ -4,18 +4,17 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Image from 'next/image';
 
+// แก้ไขสำหรับ PostBoxForm.js (ฝั่ง client)
 const formatDateForDateInput = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return null;
 
   try {
+    // สร้าง Date โดยไม่มีการปรับ timezone
     const date = new Date(dateString);
-    // ปรับเวลาให้เป็น local timezone
-    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-
-    return date.toISOString().split('T')[0]; // คืนค่า YYYY-MM-DD
+    return date;
   } catch (error) {
-    console.error('Error formatting date:', error);
-    return '';
+    console.error('เกิดข้อผิดพลาดในการจัดรูปแบบวันที่:', error);
+    return null;
   }
 };
 

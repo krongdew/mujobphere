@@ -6,16 +6,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
+// แก้ไขสำหรับ PostBoxForm.js (ฝั่ง client)
 const formatDateForDateInput = (dateString) => {
   if (!dateString) return null;
 
   try {
+    // สร้าง Date โดยไม่มีการปรับ timezone
     const date = new Date(dateString);
-    // ปรับเวลาให้เป็น local timezone
-    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     return date;
   } catch (error) {
-    console.error('Error formatting date:', error);
+    console.error('เกิดข้อผิดพลาดในการจัดรูปแบบวันที่:', error);
     return null;
   }
 };
@@ -297,6 +297,7 @@ const handleInputChange = (e) => {
             className="form-control"
             dateFormat="dd/MM/yyyy"
             minDate={new Date()}
+            showTimeSelect={false} // เพิ่มบรรทัดนี้
             required
           />
         </div>
@@ -312,6 +313,7 @@ const handleInputChange = (e) => {
             className="form-control"
             dateFormat="dd/MM/yyyy"
             minDate={formData.application_start_date}
+            showTimeSelect={false} // เพิ่มบรรทัดนี้
             required
           />
         </div>
@@ -356,6 +358,7 @@ const handleInputChange = (e) => {
             className="form-control"
             dateFormat="dd/MM/yyyy"
             minDate={formData.application_end_date}
+            showTimeSelect={false} // เพิ่มบรรทัดนี้
             required
           />
         </div>
@@ -382,6 +385,7 @@ const handleInputChange = (e) => {
               className="form-control"
               dateFormat="dd/MM/yyyy"
               minDate={formData.work_start_date}
+              showTimeSelect={false} // เพิ่มบรรทัดนี้
               required={!formData.work_end_indefinite}
             />
           )}
