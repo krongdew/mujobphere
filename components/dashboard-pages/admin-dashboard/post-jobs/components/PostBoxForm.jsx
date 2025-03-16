@@ -176,19 +176,26 @@ const handleInputChange = (e) => {
         alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
         return;
       }
-
-      // Format dates to ISO string
+  
+      // แก้ไขการจัดการวันที่ให้ถูกต้อง โดยส่งเป็น string format YYYY-MM-DD
+      const formatDateToYYYYMMDD = (date) => {
+        if (!date) return null;
+        const d = new Date(date);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      };
+  
+      // Format dates ให้เป็น YYYY-MM-DD string ไม่ใช้ ISO string
       const formattedData = {
         ...formData,
-        application_start_date: formData.application_start_date?.toISOString(),
-        application_end_date: formData.application_end_date?.toISOString(),
-        work_start_date: formData.work_start_date?.toISOString(),
-        work_end_date: formData.work_end_indefinite ? null : formData.work_end_date?.toISOString()
+        application_start_date: formatDateToYYYYMMDD(formData.application_start_date),
+        application_end_date: formatDateToYYYYMMDD(formData.application_end_date),
+        work_start_date: formatDateToYYYYMMDD(formData.work_start_date),
+        work_end_date: formData.work_end_indefinite ? null : formatDateToYYYYMMDD(formData.work_end_date)
       };
-
+  
       const url = isEditMode ? `/api/jobs/${editId}` : '/api/jobs/create';
       const method = isEditMode ? 'PUT' : 'POST';
-
+  
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -196,12 +203,12 @@ const handleInputChange = (e) => {
         },
         body: JSON.stringify(formattedData),
       });
-
+  
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Failed to save job post');
       }
-
+  
       alert(isEditMode ? 'แก้ไขข้อมูลสำเร็จ' : 'บันทึกข้อมูลสำเร็จ');
       router.push('/employers-dashboard/manage-jobs');
     } catch (error) {
@@ -209,6 +216,7 @@ const handleInputChange = (e) => {
       alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + error.message);
     }
   };
+  
   if (loading) {
     return <div>กำลังโหลดข้อมูล...</div>;
   }

@@ -5,22 +5,27 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
 // แก้ไขสำหรับ API routes (ทั้ง create และ update endpoints)
+// แก้ไขใน API routes (ทั้ง create และ [id] routes)
 const formatDateForDatabase = (dateString) => {
   if (!dateString) return null;
+  
+  // ตรวจสอบรูปแบบของ dateString ถ้าเป็น YYYY-MM-DD อยู่แล้วก็ใช้ได้เลย
+  if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString;
+  }
+  
   try {
-    // สร้างวัตถุ Date จาก string ที่รับมา
+    // สร้าง Date object
     const date = new Date(dateString);
     
-    // ปรับเวลาให้เป็น 00:00:00 ในโซนเวลาท้องถิ่น เพื่อเก็บเฉพาะวันเดือนปี
-    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    // แปลงเป็นรูปแบบ YYYY-MM-DD แบบตรงไปตรงมา โดยไม่ใช้ toISOString ที่มีปัญหา timezone
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     
-    // แปลงเป็น ISO String แต่ตัดส่วนเวลาออก (เหลือแค่ YYYY-MM-DD)
-    const isoDateOnly = localDate.toISOString().split('T')[0];
-    
-    // คืนค่าในรูปแบบ YYYY-MM-DD เพื่อให้ PostgreSQL อ่านเป็นวันที่ได้ถูกต้อง
-    return isoDateOnly;
+    return `${year}-${month}-${day}`;
   } catch (error) {
-    console.error('เกิดข้อผิดพลาดในการจัดรูปแบบวันที่สำหรับฐานข้อมูล:', error);
+    console.error('เกิดข้อผิดพลาดในการจัดรูปแบบวันที่:', error);
     return null;
   }
 };
