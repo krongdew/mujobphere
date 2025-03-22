@@ -1,3 +1,4 @@
+//mujobphere/app/api/job-types-all/route.js
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/queries';
 

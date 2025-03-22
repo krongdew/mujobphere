@@ -1,3 +1,4 @@
+//mujobphere/data/job-catergories.js
 module.exports = [
   {
     id: 1,

@@ -315,7 +315,7 @@ const calculateAge = (birthDate) => {
     rows="3"
   />
 </div>
-<div className="form-group col-lg-12 col-md-12">
+        {/* <div className="form-group col-lg-12 col-md-12">
           <label>Student Card Image</label>
           <div className="uploading-outer">
             <div className="uploadButton">
@@ -347,7 +347,7 @@ const calculateAge = (birthDate) => {
               />
             </div>
           )}
-        </div>
+        </div> */}
 
         <div className="form-group col-lg-12 col-md-12">
           <button
