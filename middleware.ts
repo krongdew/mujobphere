@@ -12,6 +12,7 @@ const intlMiddleware = createMiddleware({
 });
 
 const publicPaths = [
+  '/api', 
   '/api/auth',
   '/_next',
   '/images',
@@ -27,6 +28,13 @@ function isPublicPath(path: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  console.log('Middleware processing:', pathname);
+  
+  // ตรวจสอบถ้าเป็น API routes
+  if (pathname.startsWith('/api')) {
+    console.log('Skipping middleware for API route:', pathname);
+    return NextResponse.next();
+  }
 
   // Skip middleware for public paths and static files
   if (isPublicPath(pathname) || pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp)$/)) {
@@ -61,7 +69,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!images/uploads|api|_next|_vercel|.*\\..*).*)'
+    '/((?!api|_next|_vercel|uploads|images|.*\\..*).*)'
+    // '/((?!images/uploads|api|_next|_vercel|.*\\..*).*)',
+    // '/((?!api/auth|api|_next|_vercel|uploads|images|.*\\..*).*)'
       // '/((?!api|_next|_vercel|images|.*\\.(jpg|jpeg|png|gif|ico)).*)'
   ]
 };
