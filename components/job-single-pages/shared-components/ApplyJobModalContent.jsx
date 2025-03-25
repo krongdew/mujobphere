@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
+
 
 const ApplyJobModalContent = ({ jobId }) => {
   const { data: session } = useSession();
@@ -12,6 +14,7 @@ const ApplyJobModalContent = ({ jobId }) => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const t = useTranslations("ApplyJob");
 
   // Debug: Log jobId when component mounts or jobId changes
   useEffect(() => {
@@ -135,13 +138,12 @@ const ApplyJobModalContent = ({ jobId }) => {
         )}
 
         <div className="col-lg-12 col-md-12 col-sm-12 form-group">
-          <textarea
-            className="darma"
-            name="message"
-            placeholder="Message (Optional)"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          ></textarea>
+          <p>
+              {t('PDPA')}
+            <Link href="https://privacy.mahidol.ac.th/en/mu-data-privacy-policy/">  
+            https://privacy.mahidol.ac.th/en/mu-data-privacy-policy/
+            </Link>
+        </p>
         </div>
 
         <div className="col-lg-12 col-md-12 col-sm-12 form-group">
@@ -156,7 +158,7 @@ const ApplyJobModalContent = ({ jobId }) => {
             <label htmlFor="rememberMe" className="remember">
               <span className="custom-checkbox"></span> You accept our{" "}
               <span data-bs-dismiss="modal">
-                <Link href="/terms">
+                <Link href="https://privacy.mahidol.ac.th/en/mu-data-privacy-policy/">
                   Terms and Conditions and Privacy Policy
                 </Link>
               </span>

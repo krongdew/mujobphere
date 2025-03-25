@@ -4,14 +4,28 @@ import { query } from '@/lib/db/queries';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
+// แก้ไขสำหรับ API routes (ทั้ง create และ update endpoints)
+// แก้ไขใน API routes (ทั้ง create และ [id] routes)
 const formatDateForDatabase = (dateString) => {
   if (!dateString) return null;
+  
+  // ตรวจสอบรูปแบบของ dateString ถ้าเป็น YYYY-MM-DD อยู่แล้วก็ใช้ได้เลย
+  if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString;
+  }
+  
   try {
+    // สร้าง Date object
     const date = new Date(dateString);
-    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-    return date.toISOString();
+    
+    // แปลงเป็นรูปแบบ YYYY-MM-DD แบบตรงไปตรงมา โดยไม่ใช้ toISOString ที่มีปัญหา timezone
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
   } catch (error) {
-    console.error('Error formatting date:', error);
+    console.error('เกิดข้อผิดพลาดในการจัดรูปแบบวันที่:', error);
     return null;
   }
 };

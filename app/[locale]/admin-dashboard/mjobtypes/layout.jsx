@@ -1,5 +1,6 @@
 // app/admin-dashboard/job-types/layout.jsx
 export const metadata = {
+
   title: "Admin Dashboard - จัดการประเภทงาน",
   description: "Admin Dashboard - Job Type Management - MUJobPhere",
 };
@@ -7,3 +8,4 @@ export const metadata = {
 export default function Layout({ children }) {
   return children;
 }
+

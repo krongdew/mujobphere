@@ -205,9 +205,9 @@ const JobSingleDynamicV1 = ({ params }) => {
 
                 <div className="btn-box">
                   {renderApplyButton()}
-                  <button className="bookmark-btn">
+                  {/* <button className="bookmark-btn">
                     <i className="flaticon-bookmark"></i>
-                  </button>
+                  </button> */}
                 </div>
 
                 {/* Apply Job Modal */}

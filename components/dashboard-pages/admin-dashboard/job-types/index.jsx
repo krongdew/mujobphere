@@ -6,7 +6,11 @@ import LoginPopup from "../../../common/form/login/LoginPopup";
 import DashboardAdminSidebar from "../../../header/DashboardAdminSidebar";
 import BreadCrumb from "../../BreadCrumb";
 import CopyrightFooter from "../../CopyrightFooter";
+<<<<<<< HEAD
 import AdminJobTypes from "./components/AdminJobTypes";
+=======
+import AdminJobTypes from "./component/AdminJobTypes";
+>>>>>>> e42a34e29b2780e1a7046b32717a1fb96c33db0f
 import MenuToggler from "../../MenuToggler";
 
 const index = () => {

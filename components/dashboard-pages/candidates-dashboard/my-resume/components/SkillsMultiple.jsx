@@ -1,10 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const SkillsMultiple = () => {
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     description: '',
     programming_skills: '',
@@ -46,6 +49,15 @@ const SkillsMultiple = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // เช็คการยอมรับเงื่อนไขก่อนส่งฟอร์ม
+    if (!acceptTerms) {
+      setError("กรุณายอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว");
+      return;
+    }
+    
+    // ล้างข้อความผิดพลาด
+    setError("");
+    
     // ฟังก์ชันกรองข้อมูล
     const sanitizeInput = (input) => {
       // กรองเฉพาะอักขระที่อนุญาต
@@ -84,11 +96,10 @@ const SkillsMultiple = () => {
   
     } catch (err) {
       console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล:', err);
-      alert(err.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+      setError(err.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     }
   };
 
-  
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -144,11 +155,37 @@ const SkillsMultiple = () => {
           />
         </div>
 
+        {error && (
+          <div className="col-12">
+            <div className="alert alert-danger">{error}</div>
+          </div>
+        )}
+
         {successMessage && (
           <div className="col-12">
             <div className="alert alert-success">{successMessage}</div>
           </div>
         )}
+
+        <div className="col-lg-12 col-md-12 col-sm-12 form-group">
+          <div className="input-group checkboxes square">
+            <input
+              type="checkbox"
+              name="remember-me"
+              id="rememberMe"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
+            />
+            <label htmlFor="rememberMe" className="remember">
+              <span className="custom-checkbox"></span> You accept our{" "}
+              <span data-bs-dismiss="modal">
+                <Link href="https://privacy.mahidol.ac.th/en/mu-data-privacy-policy/">
+                  Terms and Conditions and Privacy Policy
+                </Link>
+              </span>
+            </label>
+          </div>
+        </div>
 
         <div className="form-group col-lg-12 col-md-12">
           <button type="submit" className="theme-btn btn-style-one">

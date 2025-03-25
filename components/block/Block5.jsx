@@ -30,15 +30,16 @@ const Block5 = () => {
           <div className="image-column col-lg-6 col-md-12 col-sm-12">
             <div className="inner-column">
               <figure className="image">
+                <br/><br/><br/>
                 <Image
                   width={608}
                   height={600}
-                  src="/images/resource/steps-img.png"
+                  src="/images/background/009-2-1.jpg"
                   alt="resource"
                 />
               </figure>
               {/* <!-- Count Employers --> */}
-              <div className="count-employers" data-aos="fade-up">
+              {/* <div className="count-employers" data-aos="fade-up">
                 <span className="title">{t('employersCount')}</span>
                 <figure className="image">
                   <Image
@@ -48,7 +49,7 @@ const Block5 = () => {
                     alt="resource"
                   />
                 </figure>
-              </div>
+              </div> */}
             </div>
           </div>
           {/* End image-column */}

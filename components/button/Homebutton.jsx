@@ -41,7 +41,7 @@ const UserTypeButtons = () => {
             <div className="user-type-btn d-flex flex-column align-items-center justify-content-center">
               <div className="subtitle mb-2">{t('For')}</div>
               <div className="title">{t('Find a job')}</div>
-              <div className="subtitle">{t('Mahidol student only')}</div>
+              <div className="subtitle-only"><>({t('Mahidol student only')})</></div>
             </div>
           </Link>
         </div>

@@ -14,7 +14,7 @@
 
 .user-type-btn .title {
   color: #1e3a8a;
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: bold;
   line-height: 1.2; /* เพิ่มระยะห่างบรรทัดภายใน title */
   margin-bottom: 0.5em; /* เพิ่มระยะห่างระหว่าง title กับ subtitle */
@@ -23,7 +23,11 @@
 .user-type-btn .subtitle {
   color: #666;
   font-size: 2rem;
-  
+}
+
+.subtitle-only{
+  color: #666;
+  font-size: 1.5rem;
 }
 
 @media (max-width: 768px) {
