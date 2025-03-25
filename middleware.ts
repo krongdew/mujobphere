@@ -72,7 +72,7 @@ export const config = {
     '/((?!api|_next|_vercel|uploads|images|.*\\..*).*)'
     // '/((?!images/uploads|api|_next|_vercel|.*\\..*).*)',
     // '/((?!api/auth|api|_next|_vercel|uploads|images|.*\\..*).*)'
-      // '/((?!api|_next|_vercel|images|.*\\.(jpg|jpeg|png|gif|ico)).*)'
+    // '/((?!api|_next|_vercel|images|.*\\.(jpg|jpeg|png|gif|ico)).*)'
   ]
 };
 
