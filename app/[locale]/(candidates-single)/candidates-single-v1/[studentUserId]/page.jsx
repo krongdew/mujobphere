@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import dynamic from "next/dynamic";
 import LoginPopup from "@/components/common/form/login/LoginPopup";
-import FooterDefault from "@/components/footer/common-footer";
+import Footer from "@/components/home-9/Footer";
 import DefaulHeader from "@/components/header/DefaulHeader2";
 import MobileMenu from "@/components/header/MobileMenu";
 import Contact from "@/components/candidates-single-pages/shared-components/Contact";
@@ -351,7 +351,7 @@ const CandidateSingleDynamicV1 = ({ params }) => {
         </div>
       </section>
 
-      <FooterDefault footerStyle="alternate5" />
+      <Footer />
     </>
   );
 };

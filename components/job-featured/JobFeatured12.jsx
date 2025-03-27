@@ -62,70 +62,75 @@ const JobFeatured12 = () => {
     fetchProfiles();
   }, [jobs]);
 
-  if (isLoading || isLoadingProfiles) {
-    return (
-      <div className="text-center py-10">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">กำลังโหลด...</span>
-        </div>
+ // แก้ไขบริเวณที่มีปัญหา โดยเพิ่มการตรวจสอบว่า jobs เป็น array หรือไม่
+
+// เพิ่มการตรวจสอบรูปแบบข้อมูลที่ได้รับจาก API
+if (isLoading || isLoadingProfiles) {
+  return (
+    <div className="text-center py-10">
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">กำลังโหลด...</span>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  if (error) {
-    return (
-      <div className="text-center py-10 text-red-500">
-        เกิดข้อผิดพลาด: {error.message}
-      </div>
-    );
-  }
+if (error) {
+  return (
+    <div className="text-center py-10 text-red-500">
+      เกิดข้อผิดพลาด: {error.message}
+    </div>
+  );
+}
 
-  if (!jobs || jobs.length === 0) {
-    return (
-      <div className="text-center py-10">
-        ไม่มีงานด่วนในขณะนี้
-      </div>
-    );
-  }
+// ตรวจสอบว่า jobs เป็น array หรือไม่
+if (!jobs || !Array.isArray(jobs) || jobs.length === 0) {
+  console.log("Jobs data is not an array:", jobs); // เพิ่ม logging เพื่อตรวจสอบปัญหา
+  return (
+    <div className="text-center py-10">
+      ไม่มีงานด่วนในขณะนี้
+    </div>
+  );
+}
 
-  // กำหนดค่า settings
-  const settings = {
-    dots: true,
-    speed: 1400,
-    slidesToShow: Math.min(3, jobs.length),
-    slidesToScroll: 1,
-    autoplay: false,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-        },
+// กำหนดค่า settings
+const settings = {
+  dots: true,
+  speed: 1400,
+  slidesToShow: Math.min(3, jobs.length),
+  slidesToScroll: 1,
+  autoplay: false,
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 3,
       },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-        },
+    },
+    {
+      breakpoint: 768,
+      settings: {
+        slidesToShow: 2,
       },
-      {
-        breakpoint: 500,
-        settings: {
-          slidesToShow: 1,
-        },
+    },
+    {
+      breakpoint: 500,
+      settings: {
+        slidesToShow: 1,
       },
-    ],
-  };
+    },
+  ],
+};
 
-  // ตรวจสอบข้อมูลซ้ำซ้อน
-  const displayedIds = new Set();
-  const uniqueJobs = jobs.filter(job => {
-    if (displayedIds.has(job.id)) {
-      return false;
-    }
-    displayedIds.add(job.id);
-    return true;
-  });
+// ตรวจสอบข้อมูลซ้ำซ้อน
+const displayedIds = new Set();
+const uniqueJobs = jobs.filter(job => {
+  if (!job || !job.id || displayedIds.has(job.id)) {
+    return false;
+  }
+  displayedIds.add(job.id);
+  return true;
+});
 
   return (
     <>

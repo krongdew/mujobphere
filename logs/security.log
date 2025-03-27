@@ -190,3 +190,6 @@
 {"level":"info","message":{"event":"user_updated","role":"admin","timestamp":"2025-03-22T03:33:48.962Z","userId":20}}
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-03-22T03:34:06.202Z","userId":27}}
 {"level":"info","message":{"event":"user_updated","role":"student","timestamp":"2025-03-22T03:37:05.676Z","userId":27}}
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.ac.th","error":"connect ETIMEDOUT 35.227.164.209:5432","event":"user_error","timestamp":"2025-03-27T02:27:18.220Z"}}
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.ac.th","error":"connect ETIMEDOUT 35.227.164.209:5432","event":"user_error","timestamp":"2025-03-27T02:28:31.222Z"}}
+{"level":"info","message":{"email":"krongkwan.bua@mahidol.ac.th","error":"connect ETIMEDOUT 35.227.164.209:5432","event":"user_error","timestamp":"2025-03-27T03:34:59.607Z"}}
